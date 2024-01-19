@@ -1,4 +1,5 @@
 import os
+import sys
 import argparse
 import concurrent.futures
 
@@ -66,6 +67,7 @@ def parallel_job(i, client, arxiv_id, args):
   run.attach()
   for log in run.logs():
     print(log)
+    sys.stdout.flush()
   run.detach()
 
   return f'{args.dstack_run_name}({arxiv_id}) is completed'
@@ -85,10 +87,13 @@ def main(args):
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
     futures = [
-      executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
+      executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs-1)
     ]
     
     concurrent.futures.wait(futures)
+
+  last_idx = num_jobs-1
+  parallel_job(last_idx, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
