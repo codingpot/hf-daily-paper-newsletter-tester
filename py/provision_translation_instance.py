@@ -61,7 +61,10 @@ def parallel_job(i, client, arxiv_id, args):
       resources=Resources(
           gpu=GPU(memory="16GB")
       ),
-      spot_policy="on-demand"
+      spot_policy="auto",
+      retry_policy=RetryPolicy(
+        retry=True, limit=3
+      )
   )
   
   run.attach()
@@ -93,7 +96,7 @@ def main(args):
     concurrent.futures.wait(futures)
 
   last_idx = num_jobs-1
-  parallel_job(last_idx, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
+  parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
