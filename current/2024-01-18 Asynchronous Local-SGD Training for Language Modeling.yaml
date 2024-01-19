@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Bo Liu
+title: Asynchronous Local-SGD Training for Language Modeling
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/wV15FTUGHbZ62WNxqwYgF.png
+link: https://huggingface.co/papers/2401.09135
+summary: The paper presents an empirical study of asynchronous Local-SGD for training language models. They find that it converges slower than synchronous Local-SGD, due to stale gradients causing momentum acceleration. They propose a method using a delayed Nesterov momentum update and adjusting worker training steps based on computation speed, which matches the performance of synchronous Local-SGD in terms of perplexity per update step and surpasses it in wall clock time....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Natural Language Processing
