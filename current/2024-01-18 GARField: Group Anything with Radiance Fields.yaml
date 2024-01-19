@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Chung Min Kim
+title: 'GARField: Group Anything with Radiance Fields'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/v-0P4LwFSz1TA8CKoElRZ.webm
+link: https://huggingface.co/papers/2401.09419
+summary: The paper presents GARField, an approach for decomposing 3D scenes into a hierarchy of semantically meaningful groups from posed image inputs. The approach uses a scale-conditioned 3D affinity feature field and optimizes it from 2D masks provided by Segment Anything. It can derive a hierarchy of possible groupings and represents multi-view consistent groupings. It is evaluated on a variety of in-the-wild scenes and has potential downstream applications such as 3D asset extraction or dynamic scen...
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning
+    - Unsupervised Learning

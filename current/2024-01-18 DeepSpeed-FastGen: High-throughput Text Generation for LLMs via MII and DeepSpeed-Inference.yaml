@@ -1,0 +1,9 @@
+date: "2024-01-18"
+author: Connor Holmes
+title: 'DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/kHRcfLyUO_kQLUihKFoGL.png
+link: https://huggingface.co/papers/2401.08671
+summary: DeepSpeed-FastGen is an efficient and easy-to-use serving system for large language models that uses dynamic prompt and generation composition strategies, DeepSpeed-MII, and DeepSpeed-Inference to increase effective throughput by up to 2.3x and reduce latency by up to 3.7x. It supports a range of models and offers both non-persistent and persistent deployment options, catering to diverse user scenarios. The paper presents a detailed benchmarking methodology and analyzes performance through laten...
+opinion: placeholder
+tags:
+    - Deep Learning
