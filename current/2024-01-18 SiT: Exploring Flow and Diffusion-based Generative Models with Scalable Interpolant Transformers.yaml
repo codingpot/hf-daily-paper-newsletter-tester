@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Nanye Ma
+title: 'SiT: Exploring Flow and Diffusion-based Generative Models with Scalable Interpolant Transformers'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/hdPDnPoXo91-ivR-5d52c.png
+link: https://huggingface.co/papers/2401.08740
+summary: Scalable Interpolant Transformers (SiT) are generative models that improve upon Diffusion Transformers (DiT) by allowing for flexible connections between distributions in a modular way. SiT outperforms DiT on conditional ImageNet benchmark and has an FID-50K score of 2.06....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Generative Models
+    - Computer Vision
