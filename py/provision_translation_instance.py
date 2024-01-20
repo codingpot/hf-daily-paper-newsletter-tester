@@ -3,7 +3,7 @@ import sys
 import argparse
 import concurrent.futures
 
-from dstack.api import Client, Task, GPU, Client, Resources
+from dstack.api import Client, Task, GPU, Client, Resources, RetryPolicy
 
 def parallel_job(i, client, arxiv_id, args):
   port = 6006 + i
