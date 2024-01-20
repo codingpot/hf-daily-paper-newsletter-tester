@@ -56,7 +56,7 @@ def parallel_job(i, client, arxiv_id, args):
   )
   
   run = client.runs.submit(
-      run_name=f'{args.dstack_run_name}({arxiv_id})',
+      run_name=f'{args.dstack_run_name}({arxiv_id.replace('"', '').replace('.', '-')})',
       configuration=task,
       resources=Resources(
           gpu=GPU(memory="16GB")
