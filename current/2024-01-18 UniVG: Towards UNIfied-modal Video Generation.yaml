@@ -1,0 +1,13 @@
+date: "2024-01-18"
+author: Ludan Ruan
+title: 'UniVG: Towards UNIfied-modal Video Generation'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/4FyqtWZf5J8vgDRF6xFK7.png
+link: https://huggingface.co/papers/2401.09084
+summary: This paper proposes a unified video generation system called UniVG that can handle multiple video generation tasks across text and image modalities. The system employs Multi-condition Cross Attention for high-freedom video generation and introduces Biased Gaussian Noise for low-freedom video generation. UniVG achieves state-of-the-art results on the MSR-VTT benchmark and outperforms open-source methods in human evaluations....
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning
+    - Natural Language Processing
+    - Generative Modeling
+    - Video Generation

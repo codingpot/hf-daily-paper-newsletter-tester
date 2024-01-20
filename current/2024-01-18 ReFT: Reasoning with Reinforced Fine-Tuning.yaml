@@ -1,0 +1,12 @@
+date: "2024-01-18"
+author: Trung Quoc Luong
+title: 'ReFT: Reasoning with Reinforced Fine-Tuning'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/bPp1x6IrywnkFJUhY7QLH.png
+link: https://huggingface.co/papers/2401.08967
+summary: The paper proposes ReFT, a way to train LLMs for reasoning that uses supervised fine-tuning and reinforcement learning with a PPO algorithm. ReFT outperforms supervised fine-tuning on GSM8K, MathQA, and SVAMP datasets, and can further be boosted with inference-time strategies such as majority voting and re-ranking. It is effective in learning from the same training questions as supervised fine-tuning, indicating a superior generalization ability....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Reinforcement Learning
+    - Deep Learning
+    - Natural Language Processing

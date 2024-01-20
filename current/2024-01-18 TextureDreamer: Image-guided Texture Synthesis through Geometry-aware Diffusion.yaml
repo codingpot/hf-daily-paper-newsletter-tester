@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Yu-Ying Yeh
+title: 'TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/h7DGdKotisn9wcJciHHNX.mp4
+link: https://huggingface.co/papers/2401.09416
+summary: TextureDreamer is a novel image-guided texture synthesis method that uses geometry-aware diffusion models to transfer relightable textures from a few input images to target 3D shapes across different categories. Unlike traditional and learning-based methods, TextureDreamer can transfer complex textures from real-world environments to arbitrary objects, potentially democratizing texture creation. Its main technology is Personalized Geometry-aware Score Distillation (PGSD), which combines personal...
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning
+    - Emerging Applications of Machine Learning
