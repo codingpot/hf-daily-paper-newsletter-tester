@@ -1,0 +1,1 @@
+- [ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/27/2024-01-18+ICON%3A+Incremental+CONfidence+for+Joint+Pose+and+Radiance+Field+Optimization.yaml) / 2024-01-18
