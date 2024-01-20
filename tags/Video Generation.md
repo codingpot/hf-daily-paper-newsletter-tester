@@ -2,3 +2,4 @@
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/22/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/24/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/29/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
+- [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/30/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
