@@ -1,0 +1,12 @@
+date: "2024-01-18"
+author: Trung Quoc Luong
+title: 'ReFT: Reasoning with Reinforced Fine-Tuning'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/bPp1x6IrywnkFJUhY7QLH.png
+link: https://huggingface.co/papers/2401.08967
+summary: ReFT is an approach for fine-tuning Large Language Models using Reinforced Fine-Tuning for improved reasoning capability. It first warms up with Supervised Fine-Tuning using Chain-of-Thought annotations and then uses Reinforced Fine-Tuning with the PPO algorithm to further fine-tune the model, where reasoning paths are sampled and rewards are derived from the ground-truth answers. Extensive experiments show ReFT outperforms Supervised Fine-Tuning and can be boosted with inference-time strategies...
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Reinforcement Learning
+    - Deep Learning
+    - Natural Language Processing

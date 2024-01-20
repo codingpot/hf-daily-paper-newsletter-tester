@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Ludan Ruan
+title: 'UniVG: Towards UNIfied-modal Video Generation'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/4FyqtWZf5J8vgDRF6xFK7.png
+link: https://huggingface.co/papers/2401.09084
+summary: The paper proposes a Unified-modal Video Generation system that can handle multiple video generation tasks across text and image modalities by revisiting them from the perspective of generative freedom and classifying them into high-freedom and low-freedom categories. The method achieves the lowest Frechet Video Distance (FVD) on the public academic benchmark MSR-VTT, surpasses open-source methods in human evaluations, and is on par with the current close-source method Gen2. More samples can be ...
+opinion: placeholder
+tags:
+    - Video Generation
+    - Natural Language Processing
+    - Computer Vision
