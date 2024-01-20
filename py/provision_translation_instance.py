@@ -61,8 +61,8 @@ def parallel_job(i, client, arxiv_id, args):
       resources=Resources(
           gpu=GPU(memory="16GB")
       ),
-      spot_policy="auto",
-      retry_policy={"retry":True, "limit":3}
+      spot_policy="on-demand",
+#     retry_policy={"retry":True, "limit":3}
 #      retry_policy=RetryPolicy(
 #        retry=True, limit=3
 #      )
