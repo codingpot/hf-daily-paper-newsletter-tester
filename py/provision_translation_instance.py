@@ -157,7 +157,7 @@ if __name__ == "__main__":
   parser.add_argument('--target-archive-github-repo', type=str, default="deep-diver/hf-daily-paper-newsletter")
   parser.add_argument('--target-archive-dir', type=str, default="translated-papers")
 
-  parser.add_argument('--num-of_workers', type=int, default=3)
+  parser.add_argument('--num-of-workers', type=int, default=4)
   args = parser.parse_args()
   print(args)
   main(args)
