@@ -6,8 +6,10 @@ import concurrent.futures
 
 from dstack.api import Client, Task, GPU, Client, Resources
 
-def parallel_job(i, client, arxiv_id, args):
+def parallel_job_split(i, client, arxiv_ids, args):
   port = 6006 + i
+
+  arxiv_ids_str = ' '.join(arxiv_ids)
   
   task = Task(
       python=args.dstack_python_version,
@@ -28,61 +30,76 @@ def parallel_job(i, client, arxiv_id, args):
           'pip install nougat-ocr arxiv-dl kss',
   
           'echo "Creating temporary directory for holding the paper..."',
-          f'mkdir -p papers/{arxiv_id}',
+          f'for arxiv_id in {arxiv_ids_str}; do mkdir -p papers/$arxiv_id; done',
   
-          f'echo "Downloading paper (ID: {arxiv_id})"...',
-          f'paper {arxiv_id} -p -d papers/{arxiv_id}/',
-          f'PDF_FN=$(ls -1 papers/{arxiv_id}/*.pdf | head -n 1)',
+          f'echo "Downloading paper (IDs: {arxiv_ids_str})"...',
+          f'for arxiv_id in {arxiv_ids_str}; do paper $arxiv_id -p -d papers/$arxiv_id/; done',
 
           'echo "OCR processing with nougat-ocr..."',
-          f'nougat $PDF_FN -o papers/{arxiv_id}',
-          'MMD_FN=$(echo $PDF_FN | sed "s/pdf/mmd/g")',
+          f'for arxiv_id in {arxiv_ids_str}; do PDF_FN=$(ls -1 papers/$arxiv_id/*.pdf | head -n 1); nougat $PDF_FN -o papers/$arxiv_id; done',
   
           'echo "Translation processing"...',
-          'python arxiv-translator/translate_mmd.py $MMD_FN',
-          f'python arxiv-translator/ready_templates.py $MMD_FN arxiv-translator/assets/html_template.html papers/{arxiv_id}',
+          f'for arxiv_id in {arxiv_ids_str}; do PDF_FN=$(ls -1 papers/$arxiv_id/*.pdf | head -n 1); MMD_FN=$(echo $PDF_FN | sed "s/pdf/mmd/g"); python arxiv-translator/translate_mmd.py $MMD_FN; python arxiv-translator/ready_templates.py $MMD_FN arxiv-translator/assets/html_template.html papers/$arxiv_id; done',
   
           'echo "Git commit & push"...',
           f'cd {os.path.normpath(args.target_archive_github_repo).split(os.sep)[1]}',
           f'git pull',
-          f'mkdir -p {args.target_archive_dir}/{arxiv_id}',
-          f'cp ../papers/{arxiv_id}/paper.ko.html ./{args.target_archive_dir}/{arxiv_id}',
+          f'for arxiv_id in {arxiv_ids_str}; do mkdir -p {args.target_archive_dir}/$arxiv_id; cp ../papers/$arxiv_id/paper.ko.html ./{args.target_archive_dir}/$arxiv_id; done',
           f'git config --global user.name "{args.github_realname}"',
           f'git config --global user.email "{args.github_email}"',
           'git add . ',
-          f'git commit -m "automatically added {arxiv_id}-ko paper"',
+          f'git commit -m "automatically added [{arxiv_ids_str}]-ko paper"',
           'git push origin main',
       ],
-      ports=[str(port)],
+      ports=["6006"],
   )
-
-  arxiv_id = arxiv_id.replace('"', '').replace('.', '-')
+  
   run = client.runs.submit(
-      run_name=f'{args.dstack_run_name}({arxiv_id})',
+      run_name=args.dstack_run_name,
       configuration=task,
       resources=Resources(
           gpu=GPU(memory="16GB")
       ),
-      spot_policy="on-demand",
-     retry_policy={"retry":True, "limit":3}
+      spot_policy="on-demand"
   )
 
   return run
 
-  """
-  interval = 10
-  attached = False
-  attached = run.attach()
-  print(f"0. attached = {attached}")
-  
-  while run.status is not "done":
-    time.sleep(interval)
-    run.refresh()
+def split_jobs(total_jobs, num_workers):
+  # Ensure that the number of workers is not zero to avoid division by zero error
+  if num_workers <= 0:
+    return "Number of workers must be greater than 0"
 
-    print(f"run.is_finished() on {args.dstack_run_name}({arxiv_id}) = {run.is_finished()}")
+  jobs_per_worker = total_jobs // num_workers
+  remaining_jobs = total_jobs % num_workers
 
-  return f'{args.dstack_run_name}({arxiv_id})'
-"""
+  result = []
+
+  for i in range(num_workers):
+    if i < remaining_jobs:
+      # Assign an extra job to the first 'remaining_jobs' workers
+      result.append(jobs_per_worker + 1)
+    else:
+      result.append(jobs_per_worker)
+
+  return result
+
+def distribute_parameters(parameters, job_distribution):
+  distributed_params = []
+  start_index = 0
+
+  for jobs in job_distribution:
+    # The end index for slicing is calculated by adding the number of jobs to the start index
+    end_index = start_index + jobs
+    # Slice the parameters list from start_index to end_index
+    worker_params = parameters[start_index:end_index]
+    # Append the sliced parameters to the distributed_params list
+    distributed_params.append(worker_params)
+    # Update the start_index for the next iteration
+    start_index = end_index
+
+  return distributed_params
+
 def main(args):
   client = Client.from_config(
       project_name=args.dstack_project,
@@ -90,44 +107,31 @@ def main(args):
       user_token=args.dstack_token
   )
   
-  num_jobs = len(args.arxiv_ids)
-  
-  clients = [client for _ in range(num_jobs)]
-  arxiv_ids = [arxiv_id for arxiv_id in args.arxiv_ids]
-  args_list = [args for _ in range(num_jobs)]
-
-  """
-  with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
-    futures = [
-      executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
-    ]
-    
-    concurrent.futures.wait(futures)
-  """
-
-  # last_idx = num_jobs-1
-  # parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
+  total_num_jobs = len(args.arxiv_ids)
 
   done_status = ["done", "terminated", "failed"]
-  runs = {}
-  for i, (arxiv_id, args_item) in enumerate(zip(arxiv_ids, args_list)):
-    run = parallel_job(i, client, arxiv_id, args_item)
-    runs[arxiv_id] = run
+  work_splits = split_jobs(total_num_jobs, args.num_of_workers)
+  arxiv_id_splits = distribute_parameters([arxiv_id for arxiv_id in args.arxiv_ids], work_splits)
+
+  for i, arxiv_ids in enumerate(arxiv_id_splits):
+    run = parallel_job_split(i, client, arxiv_ids, args)
+    run.arxiv_ids = arxiv_ids
+    runs[i] = run
 
   count = len(runs)
 
   while True:
     to_be_removed = []
     
-    for index, (arxiv_id, run) in enumerate(runs.items()):
+    for index, (idx, run) in enumerate(runs.items()):
       if run.status not in done_status:
         run.refresh()
 
         if run.status in done_status:
-          to_be_removed.append(arxiv_id)
+          to_be_removed.append(idx)
           
-    for to_be_removed_arxiv_id in to_be_removed:
-      del runs[to_be_removed_arxiv_id]
+    for to_be_removed_arxiv_id in idx:
+      del runs[idx]
 
     print(runs)
     time.sleep(10)
@@ -147,6 +151,8 @@ if __name__ == "__main__":
   parser.add_argument('--arxiv-ids', nargs='+', help='List of paper ids')
   parser.add_argument('--target-archive-github-repo', type=str, default="deep-diver/hf-daily-paper-newsletter")
   parser.add_argument('--target-archive-dir', type=str, default="translated-papers")
+
+  parser.add_argument('--num-of_workers', type=int, default=3)
   args = parser.parse_args()
   print(args)
   main(args)
