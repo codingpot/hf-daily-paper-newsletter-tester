@@ -109,6 +109,7 @@ def main(args):
   
   total_num_jobs = len(args.arxiv_ids)
 
+  runs = {}
   done_status = ["done", "terminated", "failed"]
   work_splits = split_jobs(total_num_jobs, args.num_of_workers)
   arxiv_id_splits = distribute_parameters([arxiv_id for arxiv_id in args.arxiv_ids], work_splits)
@@ -130,8 +131,8 @@ def main(args):
         if run.status in done_status:
           to_be_removed.append(idx)
           
-    for to_be_removed_arxiv_id in idx:
-      del runs[idx]
+    for to_be_removed_worker_idx in to_be_removed:
+      del runs[to_be_removed_worker_idx]
 
     print(runs)
     time.sleep(10)
