@@ -1,1 +1,2 @@
 - [Towards Conversational Diagnostic AI](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/3/2024-01-12+Towards+Conversational+Diagnostic+AI.yaml) / 2024-01-12
+- [DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/32/2024-01-18+DeepSpeed-FastGen%3A+High-throughput+Text+Generation+for+LLMs+via+MII+and+DeepSpeed-Inference.yaml) / 2024-01-18
