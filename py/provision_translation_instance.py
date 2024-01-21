@@ -109,20 +109,28 @@ def main(args):
   # parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
 
   done_status = ["done", "terminated", "failed"]
-  runs = []
+  runs = {}
   for i, (arxiv_id, args_item) in enumerate(zip(arxiv_ids, args_list)):
     run = parallel_job(i, client, arxiv_id, args_item)
-    runs.append(run)
+    runs[arxiv_id] = run
 
   count = len(runs)
-  while count > 0:
-    count = len(runs)
-    for i, run in enumerate(runs):
-      run.refresh()
-      if run.status is done_status:
-        count = count - 1
-      else:
-        print(f"{arxiv_ids[i]} is not done status")
+
+  while True:
+    to_be_removed = []
+    
+    for index, (arxiv_id, run) in enumerate(runs.items()):
+      if run.status not in done_status:
+        run.refresh()
+
+        if run.status in done_status:
+          to_be_removed.append(arxiv_id)
+          
+    for to_be_removed_arxiv_id in to_be_removed:
+      del runs[to_be_removed_arxiv_id]
+
+    print(runs)
+    time.sleep(10)
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
