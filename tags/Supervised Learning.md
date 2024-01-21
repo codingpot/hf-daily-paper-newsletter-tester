@@ -119,3 +119,4 @@
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/45/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
 - [SiT: Exploring Flow and Diffusion-based Generative Models with Scalable Interpolant Transformers](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/45/2024-01-18+SiT%3A+Exploring+Flow+and+Diffusion-based+Generative+Models+with+Scalable+Interpolant+Transformers.yaml) / 2024-01-18
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/45/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
+- [Asynchronous Local-SGD Training for Language Modeling](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/46/2024-01-18+Asynchronous+Local-SGD+Training+for+Language+Modeling.yaml) / 2024-01-18
