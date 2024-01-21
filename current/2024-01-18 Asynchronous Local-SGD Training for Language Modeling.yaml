@@ -1,0 +1,10 @@
+date: "2024-01-18"
+author: Bo Liu
+title: Asynchronous Local-SGD Training for Language Modeling
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/wV15FTUGHbZ62WNxqwYgF.png
+link: https://huggingface.co/papers/2401.09135
+summary: This paper presents an empirical study of asynchronous Local-SGD for language model training. Asynchronous Local-SGD allows each worker to update the global parameters as soon as it has finished its SGD updates, increasing the model updates frequency. The study investigates the impact of worker hardware heterogeneity, model size, number of workers, and optimizer on the learning performance. While asynchronous Local-SGD takes more iterations to converge, the paper proposes a novel method utilizin...
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Natural Language Processing
