@@ -113,6 +113,7 @@ def main(args):
   interval = 5
 
   while not all_finished:
+    print(finished_list)
     count = len(finished_list)
     for i in range(len(runs)):
       if not finished_list[i]:
@@ -126,6 +127,8 @@ def main(args):
         except:
           finished_list[i] = True
         
+        count = count - 1
+      else:
         count = count - 1
 
     if count == 0:
