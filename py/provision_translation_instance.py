@@ -108,6 +108,7 @@ def main(args):
   # last_idx = num_jobs-1
   # parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
 
+  done_status = ["done", "terminated", "failed"]
   runs = []
   for i, (arxiv_id, args_item) in enumerate(zip(arxiv_ids, args_list)):
     run = parallel_job(i, client, arxiv_id, args_item)
@@ -118,7 +119,7 @@ def main(args):
     count = len(runs)
     for run in runs:
       run.refresh()
-      if run.status is "done":
+      if run.status is done_status:
         count = count - 1
 
 if __name__ == "__main__":
