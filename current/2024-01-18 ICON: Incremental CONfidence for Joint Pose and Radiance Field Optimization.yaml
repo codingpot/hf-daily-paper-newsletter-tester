@@ -1,0 +1,10 @@
+date: "2024-01-18"
+author: Weiyao Wang
+title: 'ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/h9IUGJ-Cp4Beq_v5JaZDt.png
+link: https://huggingface.co/papers/2401.08937
+summary: ICON is an optimization procedure for training Neural Radiance Fields (NeRF) from 2D video frames. It relies on smooth camera motion to estimate initial camera poses and uses an adaptive measure of model quality to dynamically reweight gradients. By iteratively learning both 3D structure and camera poses, ICON achieves superior performance over SfM-based methods in CO3D and HO3D datasets....
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Optimization and Learning Algorithms

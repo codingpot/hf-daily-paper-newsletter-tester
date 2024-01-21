@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Haoxin Chen
+title: 'VideoCrafter2: Overcoming Data Limitations for High-Quality Video Diffusion Models'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/jgPqbzAZBFM7Anlxsjxpi.png
+link: https://huggingface.co/papers/2401.09047
+summary: This paper proposes a method to overcome the limitations of accessing high-quality videos for training text-to-video generation models. The method extends from the Stable Diffusion model and leverages low-quality videos and synthesized high-quality images to obtain high-quality video models. The authors analyze the connection between spatial and temporal modules of video models and investigate the feasibility of finetuning spatial modules with high-quality images. Evaluations demonstrate the sup...
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Natural Language Processing
