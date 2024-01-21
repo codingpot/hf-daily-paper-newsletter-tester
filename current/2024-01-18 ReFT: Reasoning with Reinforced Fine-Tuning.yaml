@@ -1,0 +1,12 @@
+date: "2024-01-18"
+author: Trung Quoc Luong
+title: 'ReFT: Reasoning with Reinforced Fine-Tuning'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/bPp1x6IrywnkFJUhY7QLH.png
+link: https://huggingface.co/papers/2401.08967
+summary: Reinforced Fine-Tuning (ReFT) uses reinforcement learning to fine tune large language models for reasoning tasks like math problem solving, and outperforms supervised fine-tuning without relying on extra or augmented training data....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Reinforcement Learning
+    - Deep Learning
+    - Natural Language Processing
