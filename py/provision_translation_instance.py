@@ -135,17 +135,6 @@ def main(args):
     
     time.sleep(interval)
 
-  for i in range(len(runs)):
-    if not finished_list[i]:
-      
-  
-  for finished in finished_list:
-    if not finished
-  
-  for run in runs:
-    run.attach()
-    
-
   # with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
   #   futures = [
   #     executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
