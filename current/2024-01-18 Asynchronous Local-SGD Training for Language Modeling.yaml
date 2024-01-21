@@ -1,0 +1,10 @@
+date: "2024-01-18"
+author: Bo Liu
+title: Asynchronous Local-SGD Training for Language Modeling
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/wV15FTUGHbZ62WNxqwYgF.png
+link: https://huggingface.co/papers/2401.09135
+summary: This paper presents an empirical study of asynchronous Local-SGD for training language models. They find that with naive implementations, it takes more iterations to converge than synchronous Local-SGD, but propose a novel method that utilizes a delayed Nesterov momentum update and adjusts workers' local training steps based on their computation speed, which matched the performance of synchronous Local-SGD in terms of perplexity per update step and surpassed it in wall clock time....
+opinion: placeholder
+tags:
+    - Optimization and Learning Algorithms
+    - Natural Language Processing

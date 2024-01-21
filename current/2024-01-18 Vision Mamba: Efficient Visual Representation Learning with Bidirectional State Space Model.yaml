@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Lianghui Zhu
+title: 'Vision Mamba: Efficient Visual Representation Learning with Bidirectional State Space Model'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/3CR9QVEIjbOr4I8mOvDy1.png
+link: https://huggingface.co/papers/2401.09417
+summary: This paper introduces a new generic vision backbone called Vision Mamba (Vim) for efficient visual representation learning using bidirectional state space models. Unlike traditional self-attention models, Vim marks image sequences with position embeddings and uses bidirectional state space models for visual representation, which leads to higher performance on ImageNet classification, COCO object detection, and ADE20k semantic segmentation tasks while also demonstrating significant improvements i...
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Optimization and Learning Algorithms
