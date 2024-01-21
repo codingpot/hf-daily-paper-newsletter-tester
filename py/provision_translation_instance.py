@@ -126,8 +126,7 @@ def main(args):
           run.detach()
         except:
           finished_list[i] = True
-        
-        count = count - 1
+      
       else:
         count = count - 1
 
