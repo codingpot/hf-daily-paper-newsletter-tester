@@ -1,0 +1,10 @@
+date: "2024-01-18"
+author: Jonghyun Lee
+title: 'Compose and Conquer: Diffusion-Based 3D Depth Aware Composable Image Synthesis'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/-yf5DxmvTrVDfbGeLFsZd.png
+link: https://huggingface.co/papers/2401.09048
+summary: This paper presents a conditional diffusion model that integrates control over three-dimensional object placement with disentangled representations of global stylistic semantics from multiple exemplar images. They leverage depth disentanglement training to identify the absolute positions of unseen objects and introduce soft guidance for imposing global semantics onto targeted regions. Their integrated framework, Compose and Conquer, unifies these techniques to localize multiple conditions in a d...
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
