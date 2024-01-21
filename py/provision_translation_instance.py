@@ -51,7 +51,7 @@ def parallel_job_split(i, client, arxiv_ids, args):
           f'git commit -m "automatically added [{arxiv_ids_str}]-ko paper"',
           'git push origin main',
       ],
-      ports=["6006"],
+      ports=[str(port)],
   )
   
   run = client.runs.submit(
