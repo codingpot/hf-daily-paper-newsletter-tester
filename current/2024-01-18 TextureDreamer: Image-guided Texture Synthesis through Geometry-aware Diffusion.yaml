@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Yu-Ying Yeh
+title: 'TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/h7DGdKotisn9wcJciHHNX.mp4
+link: https://huggingface.co/papers/2401.09416
+summary: We present TextureDreamer, a novel image-guided texture synthesis method to transfer relightable textures from a small number of input images (3 to 5) to target 3D shapes across arbitrary categories. Texture creation is a pivotal challenge in vision and graphics. Industrial companies hire experienced artists to manually craft textures for 3D assets. Classical methods require densely sampled views and accurately aligned geometry, while learning-based methods are confined to category-specific shap...
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Graphics
