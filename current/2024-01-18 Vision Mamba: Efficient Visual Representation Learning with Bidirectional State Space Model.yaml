@@ -1,10 +1,18 @@
-date: "2024-01-18"
 author: Lianghui Zhu
-title: 'Vision Mamba: Efficient Visual Representation Learning with Bidirectional State Space Model'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/3CR9QVEIjbOr4I8mOvDy1.png
+date: '2024-01-18'
 link: https://huggingface.co/papers/2401.09417
-summary: The paper proposes a new vision backbone called Vim, which uses bidirectional state space models (SSMs) to efficiently learn visual representations. Vim performs better on ImageNet classification, COCO object detection, and ADE20k semantic segmentation tasks compared to well-established vision transformers like DeiT, while also being faster and more memory-efficient. The results demonstrate its potential as a next-generation backbone for vision foundation models....
 opinion: placeholder
+summary: The paper proposes a new vision backbone called Vim, which uses bidirectional
+  state space models (SSMs) to efficiently learn visual representations. Vim performs
+  better on ImageNet classification, COCO object detection, and ADE20k semantic segmentation
+  tasks compared to well-established vision transformers like DeiT, while also being
+  faster and more memory-efficient. The results demonstrate its potential as a next-generation
+  backbone for vision foundation models....
 tags:
-    - Deep Learning
-    - Computer Vision
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/3CR9QVEIjbOr4I8mOvDy1.png
+title: 'Vision Mamba: Efficient Visual Representation Learning with Bidirectional
+  State Space Model'
+translated_path:
+  ko: ../translated-papers/2401.09417/paper.ko.html

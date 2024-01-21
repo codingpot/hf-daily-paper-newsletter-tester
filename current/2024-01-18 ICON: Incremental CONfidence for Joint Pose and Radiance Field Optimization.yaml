@@ -1,11 +1,19 @@
-date: "2024-01-18"
 author: Weiyao Wang
-title: 'ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/h9IUGJ-Cp4Beq_v5JaZDt.png
+date: '2024-01-18'
 link: https://huggingface.co/papers/2401.08937
-summary: 'ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization is an optimization procedure for training NeRFs from 2D video frames. It estimates initial guess for poses based on smooth camera motion and uses adaptive measures of model quality to dynamically reweight gradients. ICON learns NeRF with high-confidence poses and poses with high-confidence 3D structure. It achieves superior performance without prior pose initialization in CO3D and HO3D versus methods which use SfM pose....'
 opinion: placeholder
+summary: 'ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization
+  is an optimization procedure for training NeRFs from 2D video frames. It estimates
+  initial guess for poses based on smooth camera motion and uses adaptive measures
+  of model quality to dynamically reweight gradients. ICON learns NeRF with high-confidence
+  poses and poses with high-confidence 3D structure. It achieves superior performance
+  without prior pose initialization in CO3D and HO3D versus methods which use SfM
+  pose....'
 tags:
-    - Optimization and Learning Algorithms
-    - Computer Vision
-    - Deep Learning
+- Optimization and Learning Algorithms
+- Computer Vision
+- Deep Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/h9IUGJ-Cp4Beq_v5JaZDt.png
+title: 'ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization'
+translated_path:
+  ko: ../translated-papers/2401.08937/paper.ko.html
