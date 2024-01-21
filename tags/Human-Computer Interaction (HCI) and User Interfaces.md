@@ -1,3 +1,4 @@
 - [Towards Conversational Diagnostic AI](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/3/2024-01-12+Towards+Conversational+Diagnostic+AI.yaml) / 2024-01-12
 - [DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/32/2024-01-18+DeepSpeed-FastGen%3A+High-throughput+Text+Generation+for+LLMs+via+MII+and+DeepSpeed-Inference.yaml) / 2024-01-18
 - [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/38/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18
+- [GARField: Group Anything with Radiance Fields](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/44/2024-01-18+GARField%3A+Group+Anything+with+Radiance+Fields.yaml) / 2024-01-18

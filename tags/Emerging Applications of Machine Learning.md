@@ -38,3 +38,5 @@
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/37/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
 - [VideoCrafter2: Overcoming Data Limitations for High-Quality Video Diffusion Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/40/2024-01-18+VideoCrafter2%3A+Overcoming+Data+Limitations+for+High-Quality+Video+Diffusion+Models.yaml) / 2024-01-18
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/42/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
+- [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/44/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18
+- [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/44/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18

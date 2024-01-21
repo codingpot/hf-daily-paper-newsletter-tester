@@ -26,3 +26,4 @@
 - [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/33/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18
 - [Compose and Conquer: Diffusion-Based 3D Depth Aware Composable Image Synthesis](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/36/2024-01-18+Compose+and+Conquer%3A+Diffusion-Based+3D+Depth+Aware+Composable+Image+Synthesis.yaml) / 2024-01-18
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/36/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
+- [GARField: Group Anything with Radiance Fields](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/44/2024-01-18+GARField%3A+Group+Anything+with+Radiance+Fields.yaml) / 2024-01-18
