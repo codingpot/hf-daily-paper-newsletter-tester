@@ -134,7 +134,11 @@ def main(args):
     for to_be_removed_worker_idx in to_be_removed:
       del runs[to_be_removed_worker_idx]
 
-    print(runs)
+    if runs:
+      print(runs)
+    if not runs:
+      break
+    
     time.sleep(10)
 
 if __name__ == "__main__":
