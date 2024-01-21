@@ -44,3 +44,4 @@
 - [UniVG: Towards UNIfied-modal Video Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/48/2024-01-18+UniVG%3A+Towards+UNIfied-modal+Video+Generation.yaml) / 2024-01-18
 - [GARField: Group Anything with Radiance Fields](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/49/2024-01-18+GARField%3A+Group+Anything+with+Radiance+Fields.yaml) / 2024-01-18
 - [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/49/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18
+- [Compose and Conquer: Diffusion-Based 3D Depth Aware Composable Image Synthesis](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/51/2024-01-18+Compose+and+Conquer%3A+Diffusion-Based+3D+Depth+Aware+Composable+Image+Synthesis.yaml) / 2024-01-18
