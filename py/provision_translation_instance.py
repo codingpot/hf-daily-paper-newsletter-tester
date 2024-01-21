@@ -55,7 +55,7 @@ def parallel_job_split(i, client, arxiv_ids, args):
   )
   
   run = client.runs.submit(
-      run_name=args.dstack_run_name,
+      run_name=f"{args.dstack_run_name}_{i}",
       configuration=task,
       resources=Resources(
           gpu=GPU(memory="16GB")
