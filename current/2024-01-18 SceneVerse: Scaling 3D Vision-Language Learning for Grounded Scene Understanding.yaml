@@ -1,0 +1,11 @@
+date: "2024-01-18"
+author: Baoxiong Jia
+title: 'SceneVerse: Scaling 3D Vision-Language Learning for Grounded Scene Understanding'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/SpPYrZ75Uee17OWAQrm1q.png
+link: https://huggingface.co/papers/2401.09340
+summary: The paper presents a unified learning framework called GPS for scaling up 3D vision-language learning in indoor environments. It introduces a new dataset called SceneVerse, which is the first million-scale 3D vision-language dataset, encompassing 68K 3D indoor scenes and 2.5M vision-language pairs. GPS demonstrates effective learning and achieves state-of-the-art performance on existing 3D visual grounding benchmarks. The vast potential of SceneVerse and GPS is shown through zero-shot transfer e...
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Natural Language Processing
