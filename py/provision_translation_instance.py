@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 import argparse
 import concurrent.futures
 
@@ -68,12 +69,23 @@ def parallel_job(i, client, arxiv_id, args):
 #        retry=True, limit=3
 #      )
   )
+
+  interval = 10
+  attached = False
+  attached = run.attach()
+  print(f"0. attached = {attached}")
   
-  run.attach()
-  for log in run.logs():
-    print(log)
-    sys.stdout.flush()
-  run.detach()
+  while run.is_finished():
+    if not attached:
+      attached = run.attach()
+
+    print(f"1. attached = {attached}")
+    
+    time.sleep(interval)
+    run.detach()
+    attached = False
+
+    print(f"2. attached = {attached}")
 
   return f'{args.dstack_run_name}({arxiv_id}) is completed'
 
@@ -92,13 +104,13 @@ def main(args):
   
   with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
     futures = [
-      executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs-1)
+      executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
     ]
     
     concurrent.futures.wait(futures)
 
-  last_idx = num_jobs-1
-  parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
+  # last_idx = num_jobs-1
+  # parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
