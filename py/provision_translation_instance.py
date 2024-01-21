@@ -113,7 +113,8 @@ def main(args):
   interval = 5
 
   while not all_finished:
-    print(finished_list)
+    finished_list = [False for _ in range(len(runs))]
+    
     count = len(finished_list)
     for i in range(len(runs)):
       if not finished_list[i]:
@@ -123,9 +124,11 @@ def main(args):
           run.attach()
           if run.is_finished():
             finished_list[i] = True
+            count = count - 1
           run.detach()
         except:
           finished_list[i] = True
+          count = count - 1
       
       else:
         count = count - 1
@@ -134,7 +137,8 @@ def main(args):
       all_finished = True
     else:
       all_finished = False
-    
+
+    print(finished_list)
     time.sleep(interval)
 
   # with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
