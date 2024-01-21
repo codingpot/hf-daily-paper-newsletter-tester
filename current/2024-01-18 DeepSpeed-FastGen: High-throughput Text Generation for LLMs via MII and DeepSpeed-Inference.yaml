@@ -1,10 +1,18 @@
-date: "2024-01-18"
 author: Connor Holmes
-title: 'DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/kHRcfLyUO_kQLUihKFoGL.png
+date: '2024-01-18'
 link: https://huggingface.co/papers/2401.08671
-summary: DeepSpeed-FastGen is a system that uses Dynamic SplitFuse, a novel prompt and generation composition strategy, to deliver high-throughput and low-latency text generation for large language models. It leverages DeepSpeed-MII and DeepSpeed-Inference for efficient serving, and supports a range of models with both non-persistent and persistent deployment options. Through benchmarking and analysis, the paper shows substantial improvements in throughput and latency across various models and hardware c...
 opinion: placeholder
+summary: DeepSpeed-FastGen is a system that uses Dynamic SplitFuse, a novel prompt
+  and generation composition strategy, to deliver high-throughput and low-latency
+  text generation for large language models. It leverages DeepSpeed-MII and DeepSpeed-Inference
+  for efficient serving, and supports a range of models with both non-persistent and
+  persistent deployment options. Through benchmarking and analysis, the paper shows
+  substantial improvements in throughput and latency across various models and hardware
+  c...
 tags:
-    - Deep Learning
-    - Natural Language Processing
+- Deep Learning
+- Natural Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/kHRcfLyUO_kQLUihKFoGL.png
+title: 'DeepSpeed-FastGen: High-throughput Text Generation for LLMs via MII and DeepSpeed-Inference'
+translated_path:
+  ko: ../translated-papers/2401.08671/paper.ko.html
