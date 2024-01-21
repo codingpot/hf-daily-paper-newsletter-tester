@@ -124,3 +124,5 @@
 - [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/47/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18
 - [Asynchronous Local-SGD Training for Language Modeling](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/48/2024-01-18+Asynchronous+Local-SGD+Training+for+Language+Modeling.yaml) / 2024-01-18
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/48/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
+- [Asynchronous Local-SGD Training for Language Modeling](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/49/2024-01-18+Asynchronous+Local-SGD+Training+for+Language+Modeling.yaml) / 2024-01-18
+- [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/49/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
