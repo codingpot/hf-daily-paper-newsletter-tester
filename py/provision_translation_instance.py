@@ -67,6 +67,9 @@ def parallel_job(i, client, arxiv_id, args):
      retry_policy={"retry":True, "limit":3}
   )
 
+  return run
+
+  """
   interval = 10
   attached = False
   attached = run.attach()
@@ -79,7 +82,7 @@ def parallel_job(i, client, arxiv_id, args):
     print(f"run.is_finished() on {args.dstack_run_name}({arxiv_id}) = {run.is_finished()}")
 
   return f'{args.dstack_run_name}({arxiv_id})'
-
+"""
 def main(args):
   client = Client.from_config(
       project_name=args.dstack_project,
@@ -92,16 +95,31 @@ def main(args):
   clients = [client for _ in range(num_jobs)]
   arxiv_ids = [arxiv_id for arxiv_id in args.arxiv_ids]
   args_list = [args for _ in range(num_jobs)]
-  
+
+  """
   with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
     futures = [
       executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
     ]
     
     concurrent.futures.wait(futures)
+  """
 
   # last_idx = num_jobs-1
   # parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
+
+  runs = []
+  for i, (arxiv_id, args_item) in enumerate(zip(arxiv_ids, args_list)):
+    run = parallel_job(i, client, arxiv_id, args_item)
+    runs.append(run)
+
+  count = len(runs)
+  while count > 0:
+    count = len(runs)
+    for run in runs:
+      run.refresh()
+      if run.status is "done":
+        count = count - 1
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
