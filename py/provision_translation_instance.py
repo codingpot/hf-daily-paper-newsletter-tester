@@ -72,7 +72,7 @@ def parallel_job(i, client, arxiv_id, args):
   attached = run.attach()
   print(f"0. attached = {attached}")
   
-  while not run.is_finished():
+  while run.status is not "done" 
     time.sleep(interval)
     run.refresh()
 
