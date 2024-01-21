@@ -117,10 +117,12 @@ def main(args):
   count = len(runs)
   while count > 0:
     count = len(runs)
-    for run in runs:
+    for i, run in enumerate(runs):
       run.refresh()
       if run.status is done_status:
         count = count - 1
+      else:
+        print(f"{arxiv_ids[i]} is not done status")
 
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
