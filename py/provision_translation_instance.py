@@ -6,7 +6,7 @@ import concurrent.futures
 
 from dstack.api import Client, Task, GPU, Client, Resources
 
-def provisioning_job(i, client, arxiv_id, args):
+def parallel_job(i, client, arxiv_id, args):
   port = 6006 + i
   
   task = Task(
@@ -66,26 +66,19 @@ def provisioning_job(i, client, arxiv_id, args):
       spot_policy="on-demand",
      retry_policy={"retry":True, "limit":3}
   )
-  return run
 
-  # interval = 10
-  # attached = False
-  # attached = run.attach()
-  # print(f"0. attached = {attached}")
+  interval = 10
+  attached = False
+  attached = run.attach()
+  print(f"0. attached = {attached}")
   
-  # while run.is_finished():
-  #   if not attached:
-  #     attached = run.attach()
+  while not run.is_finished():
+    time.sleep(interval)
+    run.refresh()
 
-  #   print(f"1. attached = {attached}")
-    
-  #   time.sleep(interval)
-  #   run.detach()
-  #   attached = False
+    print(f"run.is_finished() on {args.dstack_run_name}({arxiv_id}) = {run.is_finished()}")
 
-  #   print(f"2. attached = {attached}")
-
-  # return f'{args.dstack_run_name}({arxiv_id}) is completed'
+  return f'{args.dstack_run_name}({arxiv_id})'
 
 def main(args):
   client = Client.from_config(
@@ -95,58 +88,17 @@ def main(args):
   )
   
   num_jobs = len(args.arxiv_ids)
-
-  runs = []
   
+  clients = [client for _ in range(num_jobs)]
   arxiv_ids = [arxiv_id for arxiv_id in args.arxiv_ids]
   args_list = [args for _ in range(num_jobs)]
-
-  for i, (arxiv_id, args_item) in enumerate(zip(arxiv_ids, args_list)):
-    run = provisioning_job(
-      i, client, arxiv_id, args_item
-    )
-    runs.append(run)
-
-  attached_list = [False for _ in range(len(runs))]
-  finished_list = [False for _ in range(len(runs))]
-  all_finished = False
-  interval = 5
-
-  while not all_finished:
-    finished_list = [False for _ in range(len(runs))]
+  
+  with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
+    futures = [
+      executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
+    ]
     
-    count = len(finished_list)
-    for i in range(len(runs)):
-      if not finished_list[i]:
-        run = runs[i]
-
-        try:
-          run.attach()
-          if run.is_finished():
-            finished_list[i] = True
-            count = count - 1
-          run.detach()
-        except:
-          finished_list[i] = True
-          count = count - 1
-      
-      else:
-        count = count - 1
-
-    if count == 0:
-      all_finished = True
-    else:
-      all_finished = False
-
-    print(finished_list)
-    time.sleep(interval)
-
-  # with concurrent.futures.ThreadPoolExecutor(max_workers=num_jobs) as executor:
-  #   futures = [
-  #     executor.submit(parallel_job, i, clients[i], arxiv_ids[i], args_list[i]) for i in range(num_jobs)
-  #   ]
-    
-  #   concurrent.futures.wait(futures)
+    concurrent.futures.wait(futures)
 
   # last_idx = num_jobs-1
   # parallel_job(last_idx+1, clients[last_idx], arxiv_ids[last_idx], args_list[last_idx])
