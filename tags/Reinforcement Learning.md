@@ -39,3 +39,4 @@
 - [VideoCrafter2: Overcoming Data Limitations for High-Quality Video Diffusion Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/32/2024-01-18+VideoCrafter2%3A+Overcoming+Data+Limitations+for+High-Quality+Video+Diffusion+Models.yaml) / 2024-01-18
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/33/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/34/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
+- [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/35/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
