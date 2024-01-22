@@ -45,3 +45,5 @@
 - [GARField: Group Anything with Radiance Fields](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/49/2024-01-18+GARField%3A+Group+Anything+with+Radiance+Fields.yaml) / 2024-01-18
 - [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/49/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18
 - [Compose and Conquer: Diffusion-Based 3D Depth Aware Composable Image Synthesis](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/51/2024-01-18+Compose+and+Conquer%3A+Diffusion-Based+3D+Depth+Aware+Composable+Image+Synthesis.yaml) / 2024-01-18
+- [DiffusionGPT: LLM-Driven Text-to-Image Generation System](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+DiffusionGPT%3A+LLM-Driven+Text-to-Image+Generation+System.yaml) / 2024-01-19
+- [Self-Rewarding Language Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+Self-Rewarding+Language+Models.yaml) / 2024-01-19
