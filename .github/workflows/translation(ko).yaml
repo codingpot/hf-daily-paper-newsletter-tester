@@ -49,16 +49,14 @@ jobs:
 
       - name: Run arxiv ids extractions from yamls
         if: steps.number_check.outputs.number > 0
-        working-directory: py
         run : |
-          python arxiv_ids_extractor.py \
+          python py/arxiv_ids_extractor.py \
             --yaml-dir ${{ steps.parameters.outputs.yaml_dir }} \
             --output-file ${{ steps.parameters.outputs.output_filename }}
 
       - name: Check File Existence
         if: steps.number_check.outputs.number > 0
         id: check_file
-        working-directory: py
         run: |
           if [ -f ${{ steps.parameters.outputs.output_filename }} ]; then
             echo "::set-output name=arxiv_ids_file_exist::true"
@@ -68,9 +66,8 @@ jobs:
 
       - name: Run translation jobs
         if: steps.number_check.outputs.number > 0 && steps.check_file.outputs.arxiv_ids_file_exist == 'true'
-        working-directory: py
         run: |
-          python provision_translation_instance.py \
+          python py/provision_translation_instance.py \
             --dstack-token="${{ secrets.DSTACK_TOKEN }}" \
             --github-token="${{ secrets.GH_TOKEN }}" \
             --target-archive-github-repo="codingpot/hf-daily-paper-newsletter-tester" \
