@@ -10,28 +10,11 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/setup-python@v5
+      - name: Set up Go
+        uses: actions/setup-go@v2
         with:
-          python-version: '3.10'
+          go-version: 1.21.5
 
-      - name: setup dependencies
-        working-directory: py
+      - name: Test
         run: |
-          pip install -r requirements.txt
-
-      - name: Set SSH file permissions
-        working-directory: py
-        run: |
-          mkdir -p ~/.ssh
-          touch ~/.ssh/config
-          chmod 700 ~/.ssh
-          chmod 600 ~/.ssh/config
-
-      - name: run translation jobs
-        working-directory: py
-        run: |
-          python provision_translation_instance.py \
-            --dstack-token="${{ secrets.DSTACK_TOKEN }}" \
-            --github-token="${{ secrets.GH_TOKEN }}" \
-            --target-archive-github-repo="codingpot/hf-daily-paper-newsletter-tester" \
-            --arxiv-ids "2401.08541" "2401.07519" "2401.07727"
+          cd ./src && go run main.go solar -s ${{ secrets.SOLAR_API_KEY }}

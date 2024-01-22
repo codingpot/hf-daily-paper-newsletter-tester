@@ -1,0 +1,17 @@
+general:
+  github_repo_url: "https://github.com/deep-diver/hf-daily-paper-newsletter"
+  git_branch: "main"
+
+email:
+  title: "🤗 Daily Paper"
+  footer_title: "Hope you found some gems!"
+  receivers:
+    - deep.diver.csp@gmail.com
+  header_title: "🤗 Daily Papers"
+  header_description: "have a good read!"
+  header_image_url: "https://i.ibb.co/1Gx4TF7/Screenshot-2024-01-13-at-8-51-14-PM.png"
+  community_link: "https://github.com/deep-diver/hf-daily-paper-newsletter"
+  community_link_btn_title: "🤗 Daily Papers Newsletter Project"
+  section_title: "Check out the project page for more organized paper list"
+  content_link_btn_title: "Read full paper"
+  bgcolor: "orange"
