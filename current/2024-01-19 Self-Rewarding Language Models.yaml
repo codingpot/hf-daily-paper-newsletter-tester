@@ -1,0 +1,11 @@
+date: "2024-01-19"
+author: Weizhe Yuan
+title: Self-Rewarding Language Models
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/GvhF-FArhZFDSQJirlPSv.png
+link: https://huggingface.co/papers/2401.10020
+summary: The paper proposes Self-Rewarding Language Models, where the language model itself provides its own rewards during training. The approach is shown to improve both instruction following ability and the ability to provide high-quality rewards. Fine-tuning Llama 2 70B on this approach outperforms many existing systems on the AlpacaEval 2.0 leaderboard....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Natural Language Processing

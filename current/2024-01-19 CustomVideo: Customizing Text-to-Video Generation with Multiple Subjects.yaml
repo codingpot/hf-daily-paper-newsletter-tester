@@ -1,0 +1,12 @@
+date: "2024-01-19"
+author: Zhao Wang
+title: 'CustomVideo: Customizing Text-to-Video Generation with Multiple Subjects'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/GFvdOMUcvcL_cSHtfo0BG.mp4
+link: https://huggingface.co/papers/2401.09962
+summary: The paper proposes CustomVideo, a framework for customizing text-to-video generation with multiple subjects. It addresses the challenge of tackling multiple subjects in text-to-video generation and promotes multi-subject guided customization. CustomVideo preserves the identity of each subject by composing multiple subjects in a single image and disentangles them in the latent space of the diffusion model. The paper also collects a comprehensive multi-subject text-to-video generation dataset and ...
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Computer Vision
+    - Natural Language Processing
