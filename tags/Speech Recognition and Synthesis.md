@@ -2,3 +2,4 @@
 - [FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/16/2024-01-19+FreGrad%3A+Lightweight+and+Fast+Frequency-aware+Diffusion+Vocoder.yaml) / 2024-01-19
 - [FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+FreGrad%3A+Lightweight+and+Fast+Frequency-aware+Diffusion+Vocoder.yaml) / 2024-01-19
 - [FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+FreGrad%3A+Lightweight+and+Fast+Frequency-aware+Diffusion+Vocoder.yaml) / 2024-01-19
+- [FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/3/2024-01-19+FreGrad%3A+Lightweight+and+Fast+Frequency-aware+Diffusion+Vocoder.yaml) / 2024-01-19

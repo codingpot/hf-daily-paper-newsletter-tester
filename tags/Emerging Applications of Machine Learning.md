@@ -49,3 +49,4 @@
 - [Self-Rewarding Language Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+Self-Rewarding+Language+Models.yaml) / 2024-01-19
 - [CustomVideo: Customizing Text-to-Video Generation with Multiple Subjects](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+CustomVideo%3A+Customizing+Text-to-Video+Generation+with+Multiple+Subjects.yaml) / 2024-01-19
 - [DiffusionGPT: LLM-Driven Text-to-Image Generation System](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+DiffusionGPT%3A+LLM-Driven+Text-to-Image+Generation+System.yaml) / 2024-01-19
+- [WorldDreamer: Towards General World Models for Video Generation via Predicting Masked Tokens](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/3/2024-01-19+WorldDreamer%3A+Towards+General+World+Models+for+Video+Generation+via+Predicting+Masked+Tokens.yaml) / 2024-01-19
