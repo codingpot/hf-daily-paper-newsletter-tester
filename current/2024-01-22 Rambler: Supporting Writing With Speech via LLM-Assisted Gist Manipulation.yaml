@@ -1,11 +1,18 @@
-date: "2024-01-22"
 author: Susan Lin
-title: 'Rambler: Supporting Writing With Speech via LLM-Assisted Gist Manipulation'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/th8GnobHIcHVFfCzmbbb6.png
+date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10838
-summary: 'This paper presents Rambler, an LLM-powered GUI that supports gist-level manipulation of dictated text with two main sets of functions: gist extraction and macro revision. Rambler outperforms a speech-to-text editor + ChatGPT in a comparative study with 12 participants performing verbal composition tasks, as it better facilitates iterative revisions with enhanced user control over content while supporting diverse user strategies....'
 opinion: placeholder
+summary: 'This paper presents Rambler, an LLM-powered GUI that supports gist-level
+  manipulation of dictated text with two main sets of functions: gist extraction and
+  macro revision. Rambler outperforms a speech-to-text editor + ChatGPT in a comparative
+  study with 12 participants performing verbal composition tasks, as it better facilitates
+  iterative revisions with enhanced user control over content while supporting diverse
+  user strategies....'
 tags:
-    - Natural Language Processing
-    - Human-Computer Interaction (HCI) and User Interfaces
-    - Emerging Applications of Machine Learning
+- Natural Language Processing
+- Human-Computer Interaction (HCI) and User Interfaces
+- Emerging Applications of Machine Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/th8GnobHIcHVFfCzmbbb6.png
+title: 'Rambler: Supporting Writing With Speech via LLM-Assisted Gist Manipulation'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10838/paper.ko.html

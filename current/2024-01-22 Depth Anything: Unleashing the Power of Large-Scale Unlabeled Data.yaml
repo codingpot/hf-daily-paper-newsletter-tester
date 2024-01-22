@@ -1,11 +1,17 @@
-date: "2024-01-22"
 author: Lihe Yang
-title: 'Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/xnuiMMUgeI_CHzmmNwR8x.png
+date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10891
-summary: Depth Anything is a method for robust monocular depth estimation using a foundation model trained on a large-scale dataset of unlabeled data. The dataset is created using a data engine that automatically annotates images with the help of data augmentation tools and auxiliary supervision. The resulting model demonstrates impressive generalization ability and sets new state-of-the-art records on two benchmarks....
 opinion: placeholder
+summary: Depth Anything is a method for robust monocular depth estimation using a
+  foundation model trained on a large-scale dataset of unlabeled data. The dataset
+  is created using a data engine that automatically annotates images with the help
+  of data augmentation tools and auxiliary supervision. The resulting model demonstrates
+  impressive generalization ability and sets new state-of-the-art records on two benchmarks....
 tags:
-    - Unsupervised Learning
-    - Deep Learning
-    - Computer Vision
+- Unsupervised Learning
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/xnuiMMUgeI_CHzmmNwR8x.png
+title: 'Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10891/paper.ko.html

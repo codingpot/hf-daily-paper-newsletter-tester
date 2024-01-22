@@ -1,11 +1,19 @@
-date: "2024-01-22"
 author: Boxiao Pan
-title: 'ActAnywhere: Subject-Aware Video Background Generation'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/vt5f7ZwiqPRMUqh4-IiGF.png
+date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10822
-summary: The paper introduces ActAnywhere, a generative model that automates the process of generating video background that aligns with the motion and appearance of the foreground subject, while also adhering to the artist's creative intention. The model is specifically tailored for this task and leverages the power of large-scale video diffusion models. ActAnywhere takes a sequence of foreground subject segmentation as input and an image that describes the desired scene as condition, and produces a coh...
 opinion: placeholder
+summary: The paper introduces ActAnywhere, a generative model that automates the process
+  of generating video background that aligns with the motion and appearance of the
+  foreground subject, while also adhering to the artist's creative intention. The
+  model is specifically tailored for this task and leverages the power of large-scale
+  video diffusion models. ActAnywhere takes a sequence of foreground subject segmentation
+  as input and an image that describes the desired scene as condition, and produces
+  a coh...
 tags:
-    - Deep Learning
-    - Computer Vision
-    - Emerging Applications of Machine Learning
+- Deep Learning
+- Computer Vision
+- Emerging Applications of Machine Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/vt5f7ZwiqPRMUqh4-IiGF.png
+title: 'ActAnywhere: Subject-Aware Video Background Generation'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10822/paper.ko.html

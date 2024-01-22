@@ -1,10 +1,17 @@
-date: "2024-01-22"
 author: Penghui Qi
-title: Zero Bubble Pipeline Parallelism
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/gITPhCb7DEvKRiVeZUuI0.png
+date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10241
-summary: The paper introduces a scheduling strategy for synchronous training that achieves zero pipeline bubbles. The key idea is to split the backward computation into two parts and develop an algorithm that automatically finds an optimal schedule based on specific model configuration and memory limit. The method outperforms the 1F1B schedule up to 31% in throughput under a similar memory limit and is open sourced on GitHub....
 opinion: placeholder
+summary: The paper introduces a scheduling strategy for synchronous training that
+  achieves zero pipeline bubbles. The key idea is to split the backward computation
+  into two parts and develop an algorithm that automatically finds an optimal schedule
+  based on specific model configuration and memory limit. The method outperforms the
+  1F1B schedule up to 31% in throughput under a similar memory limit and is open sourced
+  on GitHub....
 tags:
-    - Deep Learning
-    - Optimization and Learning Algorithms
+- Deep Learning
+- Optimization and Learning Algorithms
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/gITPhCb7DEvKRiVeZUuI0.png
+title: Zero Bubble Pipeline Parallelism
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10241/paper.ko.html
