@@ -7,3 +7,5 @@
 - [LEGO:Language Enhanced Multi-modal Grounding Model](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/3/2024-01-12+LEGO%3ALanguage+Enhanced+Multi-modal+Grounding+Model.yaml) / 2024-01-12
 - [Towards Conversational Diagnostic AI](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/3/2024-01-12+Towards+Conversational+Diagnostic+AI.yaml) / 2024-01-12
 - [Quantum Denoising Diffusion Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/4/2024-01-17+Quantum+Denoising+Diffusion+Models.yaml) / 2024-01-17
+- [Inflation with Diffusion: Efficient Temporal Adaptation for Text-to-Video Super-Resolution](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/7/2024-01-22+Inflation+with+Diffusion%3A+Efficient+Temporal+Adaptation+for+Text-to-Video+Super-Resolution.yaml) / 2024-01-22
+- [Rambler: Supporting Writing With Speech via LLM-Assisted Gist Manipulation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/7/2024-01-22+Rambler%3A+Supporting+Writing+With+Speech+via+LLM-Assisted+Gist+Manipulation.yaml) / 2024-01-22
