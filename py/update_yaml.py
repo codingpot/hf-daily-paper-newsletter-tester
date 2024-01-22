@@ -20,8 +20,8 @@ def main(args):
           if arxiv_id_in_yaml in arxiv_ids_in_dir:
               parsed_yaml.update(
                   {
-                      'translated_path': {
-                          "ko": f"{args.translated_output_dir}/{arxiv_id_in_yaml}/{args.translated_filename}"
+                      'translated_paths': {
+                          "KR": f"https://raw.githack.com/{args.translated_output_github_repo}/main/{args.translated_output_dir}/{arxiv_id_in_yaml}/{args.translated_filename}"
                       }
                   }
               )
@@ -32,6 +32,7 @@ def main(args):
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument('--yaml-dir', type=str, default="current")
+  parser.add_argument('--translated-output-github-repo', type=str, default="codingpot/hf-daily-paper-newsletter-tester")
   parser.add_argument('--translated-output-dir', type=str, default="translated-papers")
   parser.add_argument('--translated-filename', type=str, default="paper.ko.html")
 
