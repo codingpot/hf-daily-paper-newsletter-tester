@@ -9,7 +9,7 @@ type Article struct {
 	Tags      []string `yaml:"tags"`
 	Summary   string   `yaml:"summary"`
 	Opinion   string   `yaml:"opinion"`
-	TranslatedPath map[string]string `yaml:"translated_path"`
+	TranslatedPaths map[string]string `yaml:"translated_paths"`
 }
 
 type Newsletter struct {
