@@ -1,0 +1,10 @@
+date: "2024-01-19"
+author: Yue Liu
+title: 'VMamba: Visual State Space Model'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/MMWId1L6muy8vFuad1NO2.png
+link: https://huggingface.co/papers/2401.10166
+summary: This paper presents the Visual State Space Model (VMamba), a novel architecture that leverages global receptive fields and dynamic weights, while achieving linear complexity. VMamba utilizes a Cross-Scan Module (CSM) to traverse the spatial domain and convert any non-causal visual image into ordered patch sequences, enabling it to perform well on various visual perception tasks, especially as image resolution increases....
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning

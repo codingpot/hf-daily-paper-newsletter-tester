@@ -1,0 +1,12 @@
+date: "2024-01-19"
+author: Sadeep Jayasumana
+title: 'Rethinking FID: Towards a Better Evaluation Metric for Image Generation'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Ik64AlizVmcMBdGMZpzk8.png
+link: https://huggingface.co/papers/2401.09603
+summary: This paper critiques the use of the Frechet Inception Distance (FID) as a metric for evaluating image generation, highlighting its drawbacks and inconsistencies. It proposes a new metric, CMMD, based on CLIP embeddings and the maximum mean discrepancy distance with the Gaussian RBF kernel, which offers a more robust and reliable assessment of image quality....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Computer Vision
+    - Evaluation Metrics
