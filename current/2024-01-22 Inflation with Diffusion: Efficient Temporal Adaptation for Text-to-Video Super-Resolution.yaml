@@ -1,20 +1,12 @@
+date: "2024-01-22"
 author: Xin Yuan
-date: '2024-01-22'
-link: https://huggingface.co/papers/2401.10404
-opinion: placeholder
-summary: This paper proposes an efficient diffusion-based approach for text-to-video
-  super-resolution tuning, leveraging the learned capacity of a pixel level image
-  diffusion model to capture spatial information for video generation. The approach
-  designs an efficient architecture by inflating the weightings of the text-to-image
-  SR model and includes a temporal adapter to ensure temporal coherence across video
-  frames. Empirical evaluation on the Shutterstock video dataset demonstrates good
-  visual quality ...
-tags:
-- Supervised Learning
-- Deep Learning
-- Computer Vision
+title: 'Inflation with Diffusion: Efficient Temporal Adaptation for Text-to-Video Super-Resolution'
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/q361haSX7HYwayegkL3HW.png
-title: 'Inflation with Diffusion: Efficient Temporal Adaptation for Text-to-Video
-  Super-Resolution'
-translated_paths:
-  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10404/paper.ko.html
+link: https://huggingface.co/papers/2401.10404
+summary: This paper proposes an efficient diffusion-based text-to-video super-resolution tuning approach that leverages the readily learned capacity of a pixel-level image diffusion model to capture spatial information for video generation. The authors design an efficient architecture by inflating the weightings of the text-to-image SR model into their video generation framework and incorporate a temporal adapter to ensure temporal coherence across video frames. Empirical evaluation on the Shutterstock v...
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Computer Vision
+    - Emerging Applications of Machine Learning

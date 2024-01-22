@@ -1,19 +1,12 @@
+date: "2024-01-22"
 author: Matthew Kowal
-date: '2024-01-22'
-link: https://huggingface.co/papers/2401.10831
-opinion: placeholder
-summary: This paper proposes a method for understanding the decision-making process
-  of transformer models for video by automatically discovering high-level spatiotemporal
-  concepts. The paper introduces the Video Transformer Concept Discovery (VTCD) algorithm
-  for unsupervised identification of units of video transformer representations and
-  ranking their importance. The resulting concepts are highly interpretable and reveal
-  spatio-temporal reasoning mechanisms and object-centric representations in unstruct...
-tags:
-- Unsupervised Learning
-- Deep Learning
-- Explainable AI and Interpretability
-- Computer Vision
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/BhQg3EtpWXelFayp8Iaiz.png
 title: Understanding Video Transformers via Universal Concept Discovery
-translated_paths:
-  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10831/paper.ko.html
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/BhQg3EtpWXelFayp8Iaiz.png
+link: https://huggingface.co/papers/2401.10831
+summary: This paper presents the first Video Transformer Concept Discovery (VTCD) algorithm to address the problem of concept-based interpretability of transformer representations for videos. The VTCD algorithm is used to unsupervisedly identify and rank units of video transformer representations - concepts, revealing spatio-temporal reasoning mechanisms and object-centric representations in unstructured video models. The resulting concepts are highly interpretable and can be used to improve model perfor...
+opinion: placeholder
+tags:
+    - Unsupervised Learning
+    - Deep Learning
+    - Computer Vision
+    - Explainable AI and Interpretability
