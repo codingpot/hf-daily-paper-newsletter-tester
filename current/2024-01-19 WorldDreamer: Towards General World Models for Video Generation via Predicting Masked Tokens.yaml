@@ -1,11 +1,20 @@
-date: "2024-01-19"
 author: Xiaofeng Wang
-title: 'WorldDreamer: Towards General World Models for Video Generation via Predicting Masked Tokens'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/R3qk6IqP6WI_X4W9_ykJA.png
+date: '2024-01-19'
 link: https://huggingface.co/papers/2401.09985
-summary: WorldDreamer is a revolutionary world model that fosters a comprehensive comprehension of general world physics and motions by framing world modeling as an unsupervised visual sequence modeling challenge. Using this approach, the model predicts masked tokens by mapping visual inputs to discrete tokens and incorporates multi-modal prompts for interaction. The model excels in generating videos across different scenarios and exhibits versatility in tasks such as text-to-video conversion, image-to-v...
 opinion: placeholder
+summary: WorldDreamer is a revolutionary world model that fosters a comprehensive
+  comprehension of general world physics and motions by framing world modeling as
+  an unsupervised visual sequence modeling challenge. Using this approach, the model
+  predicts masked tokens by mapping visual inputs to discrete tokens and incorporates
+  multi-modal prompts for interaction. The model excels in generating videos across
+  different scenarios and exhibits versatility in tasks such as text-to-video conversion,
+  image-to-v...
 tags:
-    - Unsupervised Learning
-    - Deep Learning
-    - Computer Vision
+- Unsupervised Learning
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/R3qk6IqP6WI_X4W9_ykJA.png
+title: 'WorldDreamer: Towards General World Models for Video Generation via Predicting
+  Masked Tokens'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.09985/paper.ko.html

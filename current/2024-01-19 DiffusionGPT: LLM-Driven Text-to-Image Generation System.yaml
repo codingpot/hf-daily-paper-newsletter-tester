@@ -1,12 +1,19 @@
-date: "2024-01-19"
 author: Jie Qin
-title: 'DiffusionGPT: LLM-Driven Text-to-Image Generation System'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/S7274X86qLOt_miW5W9qL.png
+date: '2024-01-19'
 link: https://huggingface.co/papers/2401.10061
-summary: This paper proposes DiffusionGPT, a unified text-to-image generation system that utilizes both Large Language Models (LLMs) and domain-expert models for diverse inputs. The LLM parses the prompt and selects the appropriate model using Trees-of-Thought constructed based on prior knowledge, relaxing input constraints and ensuring exceptional performance across diverse domains. Additionally, the Tree-of-Thought is enriched with human feedback through Advantage Databases for model selection. Experim...
 opinion: placeholder
+summary: This paper proposes DiffusionGPT, a unified text-to-image generation system
+  that utilizes both Large Language Models (LLMs) and domain-expert models for diverse
+  inputs. The LLM parses the prompt and selects the appropriate model using Trees-of-Thought
+  constructed based on prior knowledge, relaxing input constraints and ensuring exceptional
+  performance across diverse domains. Additionally, the Tree-of-Thought is enriched
+  with human feedback through Advantage Databases for model selection. Experim...
 tags:
-    - Deep Learning
-    - Natural Language Processing
-    - Computer Vision
-    - Emerging Applications of Machine Learning
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Emerging Applications of Machine Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/S7274X86qLOt_miW5W9qL.png
+title: 'DiffusionGPT: LLM-Driven Text-to-Image Generation System'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10061/paper.ko.html
