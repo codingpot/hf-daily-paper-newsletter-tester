@@ -1,0 +1,13 @@
+date: "2024-01-19"
+author: Xiaofeng Wang
+title: 'WorldDreamer: Towards General World Models for Video Generation via Predicting Masked Tokens'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/R3qk6IqP6WI_X4W9_ykJA.png
+link: https://huggingface.co/papers/2401.09985
+summary: WorldDreamer is a pioneering world model that aims to enhance video generation capabilities by capturing the complexity of general world dynamics. Inspired by large language models, it frames world modeling as predicting masked tokens in visual sequences. This versatile model excels in generating videos across various scenarios, including natural scenes and driving environments, and performs tasks such as text-to-video conversion, image-to-video synthesis, and video editing....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Video Generation
+    - World Modeling
+    - Generative Adversarial Networks (GANs)
