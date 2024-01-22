@@ -1,9 +1,0 @@
-date: "2024-01-19"
-author: Zihan Liu
-title: 'ChatQA: Building GPT-4 Level Conversational QA Models'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/UkABNPp5_cGu24Z_PYrnA.png
-link: https://huggingface.co/papers/2401.10225
-summary: This paper proposes a two-stage instruction tuning method for conversational question answering models, called ChatQA, that obtain GPT-4 level accuracies. ChatQA uses a dense retriever to handle retrieval in conversational QA and fine-tunes it on a multi-turn QA dataset, which provides comparable results to using the state-of-the-art query rewriting model while reducing deployment cost. Notably, ChatQA-70B models can outperform GPT-4 on 10 conversational QA datasets without relying on synthetic ...
-opinion: placeholder
-tags:
-    - Natural Language Processing

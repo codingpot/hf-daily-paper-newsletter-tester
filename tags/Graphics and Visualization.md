@@ -1,1 +1,0 @@
-- [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/38/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18

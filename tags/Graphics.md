@@ -1,2 +1,0 @@
-- [ICON: Incremental CONfidence for Joint Pose and Radiance Field Optimization](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/36/2024-01-18+ICON%3A+Incremental+CONfidence+for+Joint+Pose+and+Radiance+Field+Optimization.yaml) / 2024-01-18
-- [TextureDreamer: Image-guided Texture Synthesis through Geometry-aware Diffusion](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/37/2024-01-18+TextureDreamer%3A+Image-guided+Texture+Synthesis+through+Geometry-aware+Diffusion.yaml) / 2024-01-18

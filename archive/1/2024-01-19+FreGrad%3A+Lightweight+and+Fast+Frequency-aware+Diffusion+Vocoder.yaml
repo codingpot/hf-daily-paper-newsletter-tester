@@ -1,9 +1,0 @@
-date: "2024-01-19"
-author: Tan Dat Nguyen
-title: 'FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/BE4b_4cz9zQl5idby3k_B.png
-link: https://huggingface.co/papers/2401.10032
-summary: This paper proposes a lightweight and fast diffusion-based vocoder called FreGrad that generates realistic audio. The framework consists of using discrete wavelet transform for simpler feature space, frequency-aware dilated convolution for accurate frequency information, and a bag of tricks for improved quality. FreGrad is faster and smaller than its baseline while maintaining output quality. Audio samples can be found at the provided link....
-opinion: placeholder
-tags:
-    - Speech Recognition and Synthesis

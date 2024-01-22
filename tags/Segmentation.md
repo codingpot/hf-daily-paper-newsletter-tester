@@ -1,1 +1,0 @@
-- [GARField: Group Anything with Radiance Fields](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/18/2024-01-18+GARField%3A+Group+Anything+with+Radiance+Fields.yaml) / 2024-01-18
