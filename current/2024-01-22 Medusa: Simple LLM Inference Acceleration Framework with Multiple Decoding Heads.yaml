@@ -1,10 +1,18 @@
-date: "2024-01-22"
 author: Tianle Cai
-title: 'Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding Heads'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/gxvTu6T6sN1X8MJshLwux.gif
+date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10774
-summary: This paper proposes Medusa, a method to accelerate LLM inference by adding extra decoding heads that predict multiple subsequent tokens in parallel using a tree-based attention mechanism. The method significantly reduces the number of decoding steps required and is evaluated on models of various sizes and training procedures. Medusa-1 achieves over 2.2x speedup without compromising generation quality, while Medusa-2 further improves the speedup to 2.3-3.6x....
 opinion: placeholder
+summary: This paper proposes Medusa, a method to accelerate LLM inference by adding
+  extra decoding heads that predict multiple subsequent tokens in parallel using a
+  tree-based attention mechanism. The method significantly reduces the number of decoding
+  steps required and is evaluated on models of various sizes and training procedures.
+  Medusa-1 achieves over 2.2x speedup without compromising generation quality, while
+  Medusa-2 further improves the speedup to 2.3-3.6x....
 tags:
-    - Deep Learning
-    - Natural Language Processing
+- Deep Learning
+- Natural Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/gxvTu6T6sN1X8MJshLwux.gif
+title: 'Medusa: Simple LLM Inference Acceleration Framework with Multiple Decoding
+  Heads'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10774/paper.ko.html

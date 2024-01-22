@@ -1,10 +1,17 @@
-date: "2024-01-22"
 author: Lihe Yang
-title: 'Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/xnuiMMUgeI_CHzmmNwR8x.png
+date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10891
-summary: The paper proposes Depth Anything, a solution for robust monocular depth estimation using large-scale unlabeled data. The authors collect and annotate ~62M images to enlarge the dataset, and use data augmentation and auxiliary supervision to improve model performance. They achieve impressive results on multiple datasets and set new state-of-the-art records with fine-tuning. The models are available at <https://github.com/LiheYoung/Depth-Anything>....
 opinion: placeholder
+summary: The paper proposes Depth Anything, a solution for robust monocular depth
+  estimation using large-scale unlabeled data. The authors collect and annotate ~62M
+  images to enlarge the dataset, and use data augmentation and auxiliary supervision
+  to improve model performance. They achieve impressive results on multiple datasets
+  and set new state-of-the-art records with fine-tuning. The models are available
+  at <https://github.com/LiheYoung/Depth-Anything>....
 tags:
-    - Unsupervised Learning
-    - Computer Vision
+- Unsupervised Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/xnuiMMUgeI_CHzmmNwR8x.png
+title: 'Depth Anything: Unleashing the Power of Large-Scale Unlabeled Data'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10891/paper.ko.html
