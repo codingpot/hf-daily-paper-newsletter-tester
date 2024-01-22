@@ -130,3 +130,5 @@
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/50/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
 - [ReFT: Reasoning with Reinforced Fine-Tuning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/51/2024-01-18+ReFT%3A+Reasoning+with+Reinforced+Fine-Tuning.yaml) / 2024-01-18
 - [Self-Rewarding Language Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+Self-Rewarding+Language+Models.yaml) / 2024-01-19
+- [CustomVideo: Customizing Text-to-Video Generation with Multiple Subjects](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+CustomVideo%3A+Customizing+Text-to-Video+Generation+with+Multiple+Subjects.yaml) / 2024-01-19
+- [Rethinking FID: Towards a Better Evaluation Metric for Image Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+Rethinking+FID%3A+Towards+a+Better+Evaluation+Metric+for+Image+Generation.yaml) / 2024-01-19

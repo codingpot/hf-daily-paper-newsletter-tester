@@ -1,0 +1,1 @@
+- [Rethinking FID: Towards a Better Evaluation Metric for Image Generation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+Rethinking+FID%3A+Towards+a+Better+Evaluation+Metric+for+Image+Generation.yaml) / 2024-01-19

@@ -277,3 +277,8 @@
 - [DiffusionGPT: LLM-Driven Text-to-Image Generation System](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+DiffusionGPT%3A+LLM-Driven+Text-to-Image+Generation+System.yaml) / 2024-01-19
 - [Improving fine-grained understanding in image-text pre-training](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+Improving+fine-grained+understanding+in+image-text+pre-training.yaml) / 2024-01-19
 - [Self-Rewarding Language Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-19+Self-Rewarding+Language+Models.yaml) / 2024-01-19
+- [ChatQA: Building GPT-4 Level Conversational QA Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+ChatQA%3A+Building+GPT-4+Level+Conversational+QA+Models.yaml) / 2024-01-19
+- [CustomVideo: Customizing Text-to-Video Generation with Multiple Subjects](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+CustomVideo%3A+Customizing+Text-to-Video+Generation+with+Multiple+Subjects.yaml) / 2024-01-19
+- [DiffusionGPT: LLM-Driven Text-to-Image Generation System](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+DiffusionGPT%3A+LLM-Driven+Text-to-Image+Generation+System.yaml) / 2024-01-19
+- [Improving fine-grained understanding in image-text pre-training](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+Improving+fine-grained+understanding+in+image-text+pre-training.yaml) / 2024-01-19
+- [Self-Rewarding Language Models](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/2/2024-01-19+Self-Rewarding+Language+Models.yaml) / 2024-01-19
