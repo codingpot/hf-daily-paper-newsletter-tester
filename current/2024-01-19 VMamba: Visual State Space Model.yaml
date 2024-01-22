@@ -1,10 +1,17 @@
-date: "2024-01-19"
 author: Yue Liu
-title: 'VMamba: Visual State Space Model'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/MMWId1L6muy8vFuad1NO2.png
+date: '2024-01-19'
 link: https://huggingface.co/papers/2401.10166
-summary: VMamba is a new architecture inspired by the state space model that combines the elements of convolutional neural networks and vision transformers, achieving linear complexity and global receptive fields through the addition of Cross-Scan Module(CSM) which converts non-causal visual images into ordered patch sequences, and demonstrates promising visual modeling performance across various visual perception tasks....
 opinion: placeholder
+summary: VMamba is a new architecture inspired by the state space model that combines
+  the elements of convolutional neural networks and vision transformers, achieving
+  linear complexity and global receptive fields through the addition of Cross-Scan
+  Module(CSM) which converts non-causal visual images into ordered patch sequences,
+  and demonstrates promising visual modeling performance across various visual perception
+  tasks....
 tags:
-    - Deep Learning
-    - Computer Vision
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/MMWId1L6muy8vFuad1NO2.png
+title: 'VMamba: Visual State Space Model'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10166/paper.ko.html

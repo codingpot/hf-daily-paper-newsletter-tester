@@ -1,11 +1,19 @@
-date: "2024-01-19"
 author: Ioana Bica
-title: Improving fine-grained understanding in image-text pre-training
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/S6rsTD3mFqV4MVXbH3YUK.png
+date: '2024-01-19'
 link: https://huggingface.co/papers/2401.09865
-summary: The paper introduces SPARC, a method for pretraining fine-grained multimodal representations from image-text pairs. It proposes learning a grouping of image patches for every token in the caption and contrasting token and language-grouped vision embeddings through a fine-grained sequence-wise loss that depends on individual samples. SPARC combines this fine-grained loss with a contrastive loss between global image and text embeddings to learn representations that encode global and local informat...
 opinion: placeholder
+summary: The paper introduces SPARC, a method for pretraining fine-grained multimodal
+  representations from image-text pairs. It proposes learning a grouping of image
+  patches for every token in the caption and contrasting token and language-grouped
+  vision embeddings through a fine-grained sequence-wise loss that depends on individual
+  samples. SPARC combines this fine-grained loss with a contrastive loss between global
+  image and text embeddings to learn representations that encode global and local
+  informat...
 tags:
-    - Deep Learning
-    - Natural Language Processing
-    - Computer Vision
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/S6rsTD3mFqV4MVXbH3YUK.png
+title: Improving fine-grained understanding in image-text pre-training
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.09865/paper.ko.html

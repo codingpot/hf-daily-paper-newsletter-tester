@@ -1,9 +1,16 @@
-date: "2024-01-19"
 author: Tan Dat Nguyen
-title: 'FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/BE4b_4cz9zQl5idby3k_B.png
+date: '2024-01-19'
 link: https://huggingface.co/papers/2401.10032
-summary: FreGrad is a lightweight and fast diffusion-based vocoder that generates realistic audio. It decomposes a complex waveform into sub-band wavelets, utilizes frequency-aware dilated convolution, and employs tricks to improve quality. FreGrad is 3.7 times faster to train, 2.2 times faster to infer, and has 0.6 times the model size compared to the baseline without sacrificing quality. Audio samples can be found at https://mm.kaist.ac.kr/projects/FreGrad....
 opinion: placeholder
+summary: FreGrad is a lightweight and fast diffusion-based vocoder that generates
+  realistic audio. It decomposes a complex waveform into sub-band wavelets, utilizes
+  frequency-aware dilated convolution, and employs tricks to improve quality. FreGrad
+  is 3.7 times faster to train, 2.2 times faster to infer, and has 0.6 times the model
+  size compared to the baseline without sacrificing quality. Audio samples can be
+  found at https://mm.kaist.ac.kr/projects/FreGrad....
 tags:
-    - Speech Recognition and Synthesis
+- Speech Recognition and Synthesis
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/BE4b_4cz9zQl5idby3k_B.png
+title: 'FreGrad: Lightweight and Fast Frequency-aware Diffusion Vocoder'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10032/paper.ko.html

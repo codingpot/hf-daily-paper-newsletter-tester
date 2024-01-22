@@ -1,11 +1,17 @@
-date: "2024-01-19"
 author: Zihan Liu
-title: 'ChatQA: Building GPT-4 Level Conversational QA Models'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/UkABNPp5_cGu24Z_PYrnA.png
+date: '2024-01-19'
 link: https://huggingface.co/papers/2401.10225
-summary: In this work, the authors introduce a new family of conversational question answering (QA) models called ChatQA which achieve GPT-4 level accuracies. They propose a two-stage instruction tuning method and a fine-tuned dense retriever to handle retrieval in conversational QA. ChatQA-70B outperforms GPT-4 on 10 conversational QA datasets without using any synthetic data from OpenAI GPT models....
 opinion: placeholder
+summary: In this work, the authors introduce a new family of conversational question
+  answering (QA) models called ChatQA which achieve GPT-4 level accuracies. They propose
+  a two-stage instruction tuning method and a fine-tuned dense retriever to handle
+  retrieval in conversational QA. ChatQA-70B outperforms GPT-4 on 10 conversational
+  QA datasets without using any synthetic data from OpenAI GPT models....
 tags:
-    - Natural Language Processing
-    - Supervised Learning
-    - Deep Learning
+- Natural Language Processing
+- Supervised Learning
+- Deep Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/UkABNPp5_cGu24Z_PYrnA.png
+title: 'ChatQA: Building GPT-4 Level Conversational QA Models'
+translated_paths:
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10225/paper.ko.html
