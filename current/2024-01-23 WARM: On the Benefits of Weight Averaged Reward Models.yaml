@@ -1,10 +1,17 @@
-date: "2024-01-23"
-author: Alexandre Ramé
-title: 'WARM: On the Benefits of Weight Averaged Reward Models'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/T4eMvoGUt2g-EoLiQRDqP.png
+author: "Alexandre Ram\xE9"
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12187
-summary: The paper proposes Weight Averaged Reward Models (WARM) to mitigate reward hacking in large language models (LLMs) by averaging multiple fine-tuned RMs in the weight space. The average improves efficiency and reliability under distribution shifts and robustness to preference inconsistencies. Experiments show that WARM improves the overall quality and alignment of LLM predictions....
 opinion: placeholder
+summary: The paper proposes Weight Averaged Reward Models (WARM) to mitigate reward
+  hacking in large language models (LLMs) by averaging multiple fine-tuned RMs in
+  the weight space. The average improves efficiency and reliability under distribution
+  shifts and robustness to preference inconsistencies. Experiments show that WARM
+  improves the overall quality and alignment of LLM predictions....
 tags:
-    - Supervised Learning
-    - Natural Language Processing
+- Supervised Learning
+- Natural Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/T4eMvoGUt2g-EoLiQRDqP.png
+title: 'WARM: On the Benefits of Weight Averaged Reward Models'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12187/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12187/paper.ko.html

@@ -1,14 +1,22 @@
-date: "2024-01-23"
 author: Boyuan Chen
-title: 'SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/J0kW5ndf_m_5uGKxQ2WXf.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12168
-summary: SpatialVLM is a system for enhancing Vision-Language Models' spatial reasoning capabilities by training them with internet-scale spatial reasoning data. The system uses an automatic 3D spatial VQA data generation framework that generates 2 billion VQA examples on 10 million real-world images. The trained VLM achieves significant improvement in both qualitative and quantitative spatial VQA and enables new downstream applications in robotics....
 opinion: placeholder
+summary: SpatialVLM is a system for enhancing Vision-Language Models' spatial reasoning
+  capabilities by training them with internet-scale spatial reasoning data. The system
+  uses an automatic 3D spatial VQA data generation framework that generates 2 billion
+  VQA examples on 10 million real-world images. The trained VLM achieves significant
+  improvement in both qualitative and quantitative spatial VQA and enables new downstream
+  applications in robotics....
 tags:
-    - Vision-Language Models
-    - Spatial Reasoning
-    - Automatic 3D Spatial VQA Data Generation
-    - Natural Language Processing
-    - Computer Vision
-    - Robotics
+- Vision-Language Models
+- Spatial Reasoning
+- Automatic 3D Spatial VQA Data Generation
+- Natural Language Processing
+- Computer Vision
+- Robotics
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/J0kW5ndf_m_5uGKxQ2WXf.png
+title: 'SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12168/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12168/paper.ko.html
