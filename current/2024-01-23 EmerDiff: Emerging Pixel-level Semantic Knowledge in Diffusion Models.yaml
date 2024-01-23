@@ -1,0 +1,10 @@
+date: "2024-01-23"
+author: Koichi Namekata
+title: 'EmerDiff: Emerging Pixel-level Semantic Knowledge in Diffusion Models'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/xyrEB9_HYQv8Rd2MkFtie.jpeg
+link: https://huggingface.co/papers/2401.11739
+summary: This paper presents EmerDiff, a framework for extracting fine-grained semantic information from pre-trained diffusion models for image segmentation. It leverages the semantic knowledge extracted from Stable Diffusion and directly extracts pixel-level semantic relations using spatial correspondences. The results show that the generated segmentation maps are well-delineated, indicating the existence of accurate pixel-level semantic knowledge in diffusion models without additional training....
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning

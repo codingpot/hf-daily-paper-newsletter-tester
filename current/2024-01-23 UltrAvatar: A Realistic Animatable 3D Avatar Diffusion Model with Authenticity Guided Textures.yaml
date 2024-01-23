@@ -1,0 +1,10 @@
+date: "2024-01-23"
+author: Mingyuan Zhou
+title: 'UltrAvatar: A Realistic Animatable 3D Avatar Diffusion Model with Authenticity Guided Textures'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/i_1ovEkSCTjalX23CJGDe.png
+link: https://huggingface.co/papers/2401.11078
+summary: The paper presents a novel 3D avatar generation approach, UltrAvatar, that has enhanced fidelity of geometry and superior quality of physically based rendering textures. The approach includes a diffuse color extraction model and an authenticity guided texture diffusion model. The former removes unwanted lighting effects, while the latter uses gradient-based guidances to generate PBR textures that better align with the 3D mesh geometry. The method outperforms state-of-the-art methods in experimen...
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning

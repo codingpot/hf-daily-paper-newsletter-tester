@@ -1,0 +1,11 @@
+date: "2024-01-23"
+author: Katherine Crowson
+title: Scalable High-Resolution Pixel-Space Image Synthesis with Hourglass Diffusion Transformers
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/sZR76aqnwhbPc3EJDds6f.png
+link: https://huggingface.co/papers/2401.11605
+summary: This paper presents a new image generative model called Hourglass Diffusion Transformer (HDiT) that exhibits linear scaling with pixel count and can be trained at high-resolution directly in pixel-space. The model bridges the gap between the efficiency of convolutional U-Nets and the scalability of Transformers....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Natural Language Processing

@@ -1,0 +1,11 @@
+date: "2024-01-23"
+author: Zhichao Wang
+title: 'StreamVoice: Streamable Context-Aware Language Modeling for Real-time Zero-Shot Voice Conversion'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/4sD3uwJ_rJZWORp031G_S.png
+link: https://huggingface.co/papers/2401.11053
+summary: 'This paper introduces StreamVoice, a novel streaming LM-based model for zero-shot voice conversion that enables real-time conversion given arbitrary speaker prompts and source speech. It employs a fully causal context-aware LM with a temporal-independent acoustic predictor and alternately processes semantic and acoustic features at each time step. To address potential performance degradation, it enhances the context-awareness of the LM through two strategies: teacher-guided context foresight and...'
+opinion: placeholder
+tags:
+    - Speech Recognition and Synthesis
+    - Natural Language Processing
+    - Deep Learning

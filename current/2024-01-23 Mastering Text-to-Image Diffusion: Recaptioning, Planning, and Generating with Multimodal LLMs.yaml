@@ -1,0 +1,11 @@
+date: "2024-01-23"
+author: Ling Yang
+title: 'Mastering Text-to-Image Diffusion: Recaptioning, Planning, and Generating with Multimodal LLMs'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/x8Du5h62UaslJ3-VwzFK7.png
+link: https://huggingface.co/papers/2401.11708
+summary: This paper presents a novel diffussion-based text-to-image generation and editing framework called RPG, which utilizes multimodal LLMs to enhance the composability of models. The approach decomposes the image generation process into subregions and uses regional diffusion for compositional generation. RPG demonstrates better performance compared to state-of-the-art models, particularly in multi-category object composition and text-image semantic alignment. The code for RPG is available on GitHub....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Natural Language Processing

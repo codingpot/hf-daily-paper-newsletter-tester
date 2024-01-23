@@ -1,0 +1,11 @@
+date: "2024-01-23"
+author: Alexandre Ramé
+title: 'WARM: On the Benefits of Weight Averaged Reward Models'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/T4eMvoGUt2g-EoLiQRDqP.png
+link: https://huggingface.co/papers/2401.12187
+summary: 'The paper proposes a method called Weight Averaged Reward Models (WARM) to address the challenge of reward hacking in LLMs fine-tuned through reinforcement learning (RLHF). WARM addresses two primary challenges: distribution shifts and inconsistencies in human preferences. The method involves fine-tuning multiple RMs and averaging their weights, which maintains linear mode connectivity and improves efficiency over traditional ensembling methods. Experiments on summarization tasks show that WARM ...'
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Reinforcement Learning
+    - Natural Language Processing
