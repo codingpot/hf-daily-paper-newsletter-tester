@@ -1,12 +1,20 @@
-date: "2024-01-23"
 author: Peiqi Liu
-title: 'OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Lw2SdzIXwCbZZEwTfnzFL.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12202
-summary: The paper introduces OK-Robot, a new open-knowledge-based robotics framework that combines vision-language models, navigation primitives, and grasping primitives for pick-and-drop operations without training. Evaluated in 10 real-world home environments, OK-Robot achieves a new state-of-the-art for open-ended mobile manipulation with a success rate of 58.5% and highlights the importance of nuanced details when combining open knowledge systems with robotic modules. Videos of the experiments are a...
 opinion: placeholder
+summary: The paper introduces OK-Robot, a new open-knowledge-based robotics framework
+  that combines vision-language models, navigation primitives, and grasping primitives
+  for pick-and-drop operations without training. Evaluated in 10 real-world home environments,
+  OK-Robot achieves a new state-of-the-art for open-ended mobile manipulation with
+  a success rate of 58.5% and highlights the importance of nuanced details when combining
+  open knowledge systems with robotic modules. Videos of the experiments are a...
 tags:
-    - Robotics and Control
-    - Natural Language Processing
-    - Deep Learning
-    - Computer Vision
+- Robotics and Control
+- Natural Language Processing
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Lw2SdzIXwCbZZEwTfnzFL.png
+title: 'OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12202/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12202/paper.ko.html

@@ -1,11 +1,20 @@
-date: "2024-01-23"
 author: Ling Yang
-title: 'Mastering Text-to-Image Diffusion: Recaptioning, Planning, and Generating with Multimodal LLMs'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/x8Du5h62UaslJ3-VwzFK7.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.11708
-summary: This paper introduces a new framework called Recaption, Plan and Generate (RPG) for text-to-image generation and editing. The approach leverages the chain-of-thought reasoning ability of multimodal large language models (MLLMs) to enhance the compositionality of text-to-image diffusion models. The framework uses MLLM as a global planner to decompose the process of generating complex images into multiple simpler tasks and proposes complementary regional diffusion for region-wise compositional gen...
 opinion: placeholder
+summary: This paper introduces a new framework called Recaption, Plan and Generate
+  (RPG) for text-to-image generation and editing. The approach leverages the chain-of-thought
+  reasoning ability of multimodal large language models (MLLMs) to enhance the compositionality
+  of text-to-image diffusion models. The framework uses MLLM as a global planner to
+  decompose the process of generating complex images into multiple simpler tasks and
+  proposes complementary regional diffusion for region-wise compositional gen...
 tags:
-    - Deep Learning
-    - Natural Language Processing
-    - Computer Vision
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/x8Du5h62UaslJ3-VwzFK7.png
+title: 'Mastering Text-to-Image Diffusion: Recaptioning, Planning, and Generating
+  with Multimodal LLMs'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11708/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11708/paper.ko.html
