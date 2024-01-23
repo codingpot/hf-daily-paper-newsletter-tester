@@ -1,0 +1,1 @@
+- [Make-A-Shape: a Ten-Million-scale 3D Shape Model](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/9/2024-01-23+Make-A-Shape%3A+a+Ten-Million-scale+3D+Shape+Model.yaml) / 2024-01-23
