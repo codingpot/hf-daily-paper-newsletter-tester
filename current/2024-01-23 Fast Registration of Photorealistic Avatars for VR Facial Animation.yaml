@@ -3,8 +3,8 @@ author: Chaitanya Patel
 title: Fast Registration of Photorealistic Avatars for VR Facial Animation
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/JeLnWQFP2JaBL3woLeb37.png
 link: https://huggingface.co/papers/2401.11002
-summary: 'This paper proposes a new system for fast registration of photorealistic avatars for VR facial animation. The system is designed to overcome the challenges of online registration and degradation of generic real-time models. The authors identify the domain gap between the avatar and headset-camera images as the primary source of difficulty and develop a system that decouples the problem into two parts: an iterative refinement module and a generic avatar-guided image-to-image style transfer module...'
+summary: 'This paper presents a system that allows for fast and accurate registration of photorealistic avatars for VR facial animation. The system utilizes a transformer-based architecture that decouples the problem into two parts: an iterative refinement module and a generic avatar-guided image-to-image style transfer module. The system produces high-quality results efficiently, obviating the need for costly offline registration to generate personalized labels. The method is validated through experiment...'
 opinion: placeholder
 tags:
     - Computer Vision
-    - Graphics and Virtual Reality
+    - Deep Learning

@@ -3,10 +3,9 @@ author: Ling Yang
 title: 'Mastering Text-to-Image Diffusion: Recaptioning, Planning, and Generating with Multimodal LLMs'
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/x8Du5h62UaslJ3-VwzFK7.png
 link: https://huggingface.co/papers/2401.11708
-summary: This paper proposes a new training-free text-to-image generation/editing framework called Recaption, Plan and Generate (RPG) that harnesses the chain-of-thought reasoning ability of multimodal LLMs to enhance the compositionality of text-to-image diffusion models. RPG uses an MLLM to decompose the process of generating complex images into simpler tasks within subregions and proposes complementary regional diffusion to enable region-wise compositional generation. The approach enhances generalizat...
+summary: This paper proposed RPG, a text-to-image generation and editing framework harnessing the reasoning ability of multimodal LLMs. It decomposes generating complex images into simpler tasks in subregions and enables regional diffusion for compositional generation. The approach outperforms state-of-the-art text-to-image diffusion models while exhibiting wide compatibility with different MLLM architectures and diffusion backbones....
 opinion: placeholder
 tags:
     - Deep Learning
     - Natural Language Processing
     - Computer Vision
-    - Emerging Applications of Machine Learning

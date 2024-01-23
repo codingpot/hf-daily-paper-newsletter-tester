@@ -1,16 +1,10 @@
+date: "2024-01-23"
 author: Tatiana Lopez-Guevara
-date: '2024-01-23'
-link: https://huggingface.co/papers/2401.11985
-opinion: placeholder
-summary: This paper introduces a memory-efficient method to scale graph-based learned
-  simulators for handling real world scenes with hundreds of objects. The method presents
-  a perceptual interface using editable NeRFs to convert real world scenes into a
-  structured representation for graph network simulators. The learned simulators in
-  synthetic environments can be applied to real world scenes captured from multiple
-  camera angles with the proposed method's accuracy while using less memory than previous
-  gra...
-tags:
-- Computer Vision
-- Deep Learning
-thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blog/main/assets/2401.11985.gif
 title: Scaling Face Interaction Graph Networks to Real World Scenes
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/JCg4arQ95JzZMsdnGIBrn.mp4
+link: https://huggingface.co/papers/2401.11985
+summary: 'Accurately simulating real world object dynamics is essential for various applications such as robotics, engineering, graphics, and design. To better capture complex real dynamics such as contact and friction, learned simulators based on graph networks have recently shown great promise. However, applying these learned simulators to real scenes comes with two major challenges: first, scaling learned simulators to handle the complexity of real world scenes which can involve hundreds of objects eac...'
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Robotics and Control
