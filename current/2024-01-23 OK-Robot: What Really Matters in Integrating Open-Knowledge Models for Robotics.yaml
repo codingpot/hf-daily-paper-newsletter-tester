@@ -3,9 +3,9 @@ author: Peiqi Liu
 title: 'OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics'
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Lw2SdzIXwCbZZEwTfnzFL.png
 link: https://huggingface.co/papers/2401.12202
-summary: The paper presents OK-Robot, a new open-knowledge-based robotics framework that integrates vision-language models for object detection, navigation primitives, and grasping primitives for object manipulation. It achieves a new state-of-the-art in open vocabulary mobile manipulation, demonstrating its potential and highlighting the importance of combining different systems to improve robotics applications....
+summary: The paper presents OK-Robot, a new Open Knowledge-based robotics framework that integrates vision, language, navigation, and grasping models for pick-and-drop operations without training. The framework achieves a new state-of-the-art in Open Vocabulary Mobile Manipulation with nearly 1.8x the performance of prior work. The paper highlights the importance of nuanced details when combining Open Knowledge systems with robotic modules. Videos of the experiments are available on the project's website...
 opinion: placeholder
 tags:
     - Robotics and Control
+    - Deep Learning
     - Computer Vision
-    - Natural Language Processing

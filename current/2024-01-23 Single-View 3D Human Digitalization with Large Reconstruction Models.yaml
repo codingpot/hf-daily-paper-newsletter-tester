@@ -1,15 +1,11 @@
+date: "2024-01-23"
 author: Zhenzhen Weng
-date: '2024-01-23'
-link: https://huggingface.co/papers/2401.12175
-opinion: placeholder
-summary: This paper presents Human-LRM, a single-stage large reconstruction model
-  designed to predict human neural radiance fields (NeRF) from a single image. The
-  model is trained on extensive datasets containing 3D scans and multi-view capture
-  and has the ability to reconstruct human body shapes from occluded images through
-  a conditional triplane diffusion model. Human-LRM outperforms previous methods on
-  several benchmarks....
-tags:
-- Computer Vision
-- Deep Learning
-thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blog/main/assets/2401.12175.gif
 title: Single-View 3D Human Digitalization with Large Reconstruction Models
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/C3zSCCFBEnSazjnDOXB9J.mp4
+link: https://huggingface.co/papers/2401.12175
+summary: This paper presents Human-LRM, a Large Reconstruction Model for predicting human NeRFs from a single image. It demonstrates adaptability in training with extensive datasets and proposes a novel strategy using a conditional triplane diffusion model to enhance applicability for in-the-wild scenarios, especially with occlusions. Human-LRM surpasses previous methods on several benchmarks....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
+    - Human-Computer Interaction (HCI) and User Interfaces
