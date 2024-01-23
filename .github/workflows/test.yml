@@ -10,11 +10,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
-          go-version: 1.21.5
+          python-version: '3.10'
 
-      - name: Test
+      - name: Set up dependencies
+        working-directory: py
+        run : |
+          pip install -r requirements-gif.txt
+
+      - name: test moviepy
         run: |
-          cd ./src && go run main.go solar -s ${{ secrets.SOLAR_API_KEY }}
+          python -c "from moviepy.editor import VideoFileClip"
+          
+      # - name: Set up Go
+      #   uses: actions/setup-go@v2
+      #   with:
+      #     go-version: 1.21.5
+
+      # - name: Test
+      #   run: |
+      #     cd ./src && go run main.go solar -s ${{ secrets.SOLAR_API_KEY }}
