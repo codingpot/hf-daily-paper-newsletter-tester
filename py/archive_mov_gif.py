@@ -34,7 +34,8 @@ def main(args):
         
         print(f"converting {tmp_filename} => {gif_filename}")
         videoClip = VideoFileClip(tmp_filename)
-        videoClip = videoClip.subclip(0, 10)
+        videoClip = videoClip.resize(0.5)
+        videoClip = videoClip.subclip(0, 15)
         videoClip.speedx(args.speedx).to_gif(gif_filename)
 
         parsed_yaml['thumbnail'] = f"https://github.com/{args.gif_output_github_repo}/blog/main/{gif_filename}"
