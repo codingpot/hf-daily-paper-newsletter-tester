@@ -15,6 +15,10 @@ jobs:
         with:
           python-version: '3.10'
 
+      - name: Set up Git LFS
+        run: |
+          git lfs install
+
       - name: Set up dependencies
         working-directory: py
         run : |
@@ -26,7 +30,7 @@ jobs:
             --yaml-dir current \
             --gif-output-github-repo codingpot/hf-daily-paper-newsletter-tester \
             --gif-output-dir assets \
-            --speedx 5
+            --speedx 6
 
       - name: Commit Changes
         run: |
