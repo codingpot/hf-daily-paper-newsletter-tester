@@ -1,14 +1,19 @@
-date: "2024-01-23"
 author: Zachary Novack
-title: 'DITTO: Diffusion Inference-Time T-Optimization for Music Generation'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/u0Qsb3ywE6gfKb98ojc4h.mp4
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12179
-summary: DITTO is a general-purpose framework that allows for controlling pre-trained text-to-music diffusion models at inference-time via optimizing initial noise latents. It can be used to optimize through any differentiable feature matching loss to achieve a target output and has a wide range of applications for music generation, including inpainting, outpainting, and looping as well as intensity, melody, and musical structure control. It outperforms comparable approaches in controllability, audio qua...
 opinion: placeholder
+summary: DITTO is a general-purpose framework that allows for controlling pre-trained
+  text-to-music diffusion models at inference-time via optimizing initial noise latents.
+  It can be used to optimize through any differentiable feature matching loss to achieve
+  a target output and has a wide range of applications for music generation, including
+  inpainting, outpainting, and looping as well as intensity, melody, and musical structure
+  control. It outperforms comparable approaches in controllability, audio qua...
 tags:
-    - Supervised Learning
-    - Deep Learning
-    - Natural Language Processing
-    - Computer Vision
-    - Speech Recognition and Synthesis
-    - Emerging Applications of Machine Learning
+- Supervised Learning
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Speech Recognition and Synthesis
+- Emerging Applications of Machine Learning
+thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.12179.gif?raw=true
+title: 'DITTO: Diffusion Inference-Time T-Optimization for Music Generation'

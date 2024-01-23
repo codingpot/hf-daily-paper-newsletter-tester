@@ -1,11 +1,17 @@
-date: "2024-01-23"
 author: Zhenzhen Weng
-title: Single-View 3D Human Digitalization with Large Reconstruction Models
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/C3zSCCFBEnSazjnDOXB9J.mp4
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12175
-summary: This paper introduces Human-LRM, a Large Reconstruction Model designed to predict human Neural Radiance Fields (NeRF) from a single image. The model is trained using extensive datasets containing 3D scans and multi-view capture, and demonstrates remarkable adaptability. The authors also propose a novel strategy that distills multi-view reconstruction into single-view via a conditional triplane diffusion model, which makes it possible to reconstruct the full body human from an occluded image. Exp...
 opinion: placeholder
+summary: This paper introduces Human-LRM, a Large Reconstruction Model designed to
+  predict human Neural Radiance Fields (NeRF) from a single image. The model is trained
+  using extensive datasets containing 3D scans and multi-view capture, and demonstrates
+  remarkable adaptability. The authors also propose a novel strategy that distills
+  multi-view reconstruction into single-view via a conditional triplane diffusion
+  model, which makes it possible to reconstruct the full body human from an occluded
+  image. Exp...
 tags:
-    - Computer Vision
-    - Deep Learning
-    - Emerging Applications of Machine Learning
+- Computer Vision
+- Deep Learning
+- Emerging Applications of Machine Learning
+thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.12175.gif?raw=true
+title: Single-View 3D Human Digitalization with Large Reconstruction Models

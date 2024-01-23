@@ -1,11 +1,16 @@
-date: "2024-01-23"
 author: Tatiana Lopez-Guevara
-title: Scaling Face Interaction Graph Networks to Real World Scenes
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/JCg4arQ95JzZMsdnGIBrn.mp4
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.11985
-summary: This paper presents a method to scale and apply learned graph network simulators to real world scenes involving multiple objects with complex 3D shapes. The paper introduces a memory-efficient simulation model and a perceptual interface in the form of editable NeRFs, which can convert real-world scenes into a structured representation that can be processed by graph network simulators. The method uses less memory than previous graph-based simulators while maintaining accuracy and is able to apply...
 opinion: placeholder
+summary: This paper presents a method to scale and apply learned graph network simulators
+  to real world scenes involving multiple objects with complex 3D shapes. The paper
+  introduces a memory-efficient simulation model and a perceptual interface in the
+  form of editable NeRFs, which can convert real-world scenes into a structured representation
+  that can be processed by graph network simulators. The method uses less memory than
+  previous graph-based simulators while maintaining accuracy and is able to apply...
 tags:
-    - Computer Vision
-    - Deep Learning
-    - Explainable AI and Interpretability
+- Computer Vision
+- Deep Learning
+- Explainable AI and Interpretability
+thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.11985.gif?raw=true
+title: Scaling Face Interaction Graph Networks to Real World Scenes
