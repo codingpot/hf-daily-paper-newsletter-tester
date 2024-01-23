@@ -19,30 +19,30 @@ def main(args):
         parsed_yaml = yaml.safe_load(file)
 
       thumbnail_url = parsed_yaml['thumbnail']
+      tmp_filename = os.path.normpath(url).split(os.sep)[-1]
+      response = requests.get(thumbnail_url)
+      response.raise_for_status()
+
+      with open(tmp_filename, 'wb') as f:
+        f.write(response.content)
+      print(f"File downloaded and saved as {tmp_filename}")
+      
       if is_video(thumbnail_url):
         print(f"video type found: {thumbnail_url}")
-        tmp_filename = os.path.normpath(url).split(os.sep)[-1]
         arxiv_id = os.path.normpath(parsed_yaml['link']).split(os.sep)[-1]
         gif_filename = f"{args.gif_output_path}/{arxiv_id}.gif"
-
-        response = requests.get(thumbnail_url)
-        response.raise_for_status()
-
-        with open(tmp_filename, 'wb') as f:
-          f.write(response.content)
-        print(f"File downloaded and saved as {tmp_filename}")
         
         print(f"converting {tmp_filename} => {gif_filename}")
         videoClip = VideoFileClip(tmp_filename)
         videoClip.speedx(args.speedx).to_gif(gif_filename)
 
-        print(f"remove {tmp_filename}")
-        os.remove(tmp_filename)
-
         parsed_yaml['thumbnail'] = f"https://github.com/{args.gif_output_github_repo}/blog/main/{gif_filename}"
         with open(file_path, 'w') as file:
             yaml.dump(parsed_yaml, file, default_flow_style=False)
 
+        print(f"remove {tmp_filename}")
+        os.remove(tmp_filename)
+        
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument('--yaml-dir', type=str, default="current")
