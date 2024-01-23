@@ -1,1 +1,2 @@
 - [URHand: Universal Relightable Hands](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/1/2024-01-11+URHand%3A+Universal+Relightable+Hands.yaml) / 2024-01-11 00:00
+- [OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/8/2024-01-23+OK-Robot%3A+What+Really+Matters+in+Integrating+Open-Knowledge+Models+for+Robotics.yaml) / 2024-01-23

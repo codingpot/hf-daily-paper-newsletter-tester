@@ -1,0 +1,1 @@
+- [CMMMU: A Chinese Massive Multi-discipline Multimodal Understanding Benchmark](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/8/2024-01-23+CMMMU%3A+A+Chinese+Massive+Multi-discipline+Multimodal+Understanding+Benchmark.yaml) / 2024-01-23
