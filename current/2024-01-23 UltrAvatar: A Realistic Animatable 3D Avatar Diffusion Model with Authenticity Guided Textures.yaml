@@ -3,8 +3,7 @@ author: Mingyuan Zhou
 title: 'UltrAvatar: A Realistic Animatable 3D Avatar Diffusion Model with Authenticity Guided Textures'
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/i_1ovEkSCTjalX23CJGDe.png
 link: https://huggingface.co/papers/2401.11078
-summary: UltrAvatar is a novel 3D avatar generation approach that uses a diffusion model with text conditioning and a differentiable renderer to generate realistic, animatable avatars with high-quality PBR textures. It includes a diffuse color extraction model to remove unwanted lighting effects and an authenticity guided texture diffusion model to generate diverse face-identity features and details. The approach outperforms state-of-the-art methods in experiments....
+summary: This paper proposes a new 3D avatar generation approach called UltrAvatar. It improves fidelity of geometry and quality of PBR textures by using two gradient-based guidance models. The first model extracts diffuse color to remove unwanted lighting effects and the second model generates PBR textures to render face-identity features and details better aligned with 3D mesh geometry. This approach outperforms state-of-the-art methods in experiments....
 opinion: placeholder
 tags:
-    - Deep Learning
     - Computer Vision

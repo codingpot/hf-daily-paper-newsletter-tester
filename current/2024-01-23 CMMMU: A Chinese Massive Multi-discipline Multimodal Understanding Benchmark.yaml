@@ -3,8 +3,7 @@ author: Ge Zhang
 title: 'CMMMU: A Chinese Massive Multi-discipline Multimodal Understanding Benchmark'
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/a6AjTDn9HkcaocwE3tHfy.png
 link: https://huggingface.co/papers/2401.11944
-summary: The paper introduces CMMMU, a new Chinese Massive Multi-discipline Multimodal Understanding benchmark designed to evaluate the performance of large multimodal models on tasks requiring college-level subject knowledge and deliberate reasoning in a Chinese context. CMMMU is composed of 12k manually collected multimodal questions from college exams, quizzes, and textbooks, covering six core disciplines and 30 subjects, and including 39 heterogeneous image types. The paper evaluates 11 open-source L...
+summary: This paper introduces CMMMU, a new Chinese Massive Multi-discipline Multimodal Understanding benchmark designed to evaluate large multimodal models (LMMs) on tasks requiring college-level subject knowledge and deliberate reasoning in a Chinese context. CMMMU includes 12k manually collected multimodal questions from college exams, quizzes, and textbooks, covering six core disciplines and 30 subjects. It focuses on complex perception and reasoning with domain-specific knowledge in the Chinese cont...
 opinion: placeholder
 tags:
     - Natural Language Processing
-    - Computer Vision
