@@ -40,8 +40,8 @@ def main(args):
         with open(file_path, 'w') as file:
             yaml.dump(parsed_yaml, file, default_flow_style=False)
 
-        print(f"remove {tmp_filename}")
-        os.remove(tmp_filename)
+      print(f"remove {tmp_filename}")
+      os.remove(tmp_filename)
         
 if __name__ == "__main__":
   parser = argparse.ArgumentParser()
