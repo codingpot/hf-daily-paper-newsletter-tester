@@ -21,7 +21,7 @@ def main(args):
               parsed_yaml.update(
                   {
                       'translated_paths': {
-                          "INT": f"https://raw.githack.com/{args.translated_output_github_repo}/main/{args.translated_output_dir}/{arxiv_id_in_yaml}/{args.non_translated_filename}"
+                          "INT": f"https://raw.githack.com/{args.translated_output_github_repo}/main/{args.translated_output_dir}/{arxiv_id_in_yaml}/{args.non_translated_filename}",
                           "KR": f"https://raw.githack.com/{args.translated_output_github_repo}/main/{args.translated_output_dir}/{arxiv_id_in_yaml}/{args.translated_filename}"
                       }
                   }
