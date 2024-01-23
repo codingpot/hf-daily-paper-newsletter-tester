@@ -30,7 +30,7 @@ def main(args):
       if is_video(tmp_filename):
         print(f"video type found: {thumbnail_url}")
         arxiv_id = os.path.normpath(parsed_yaml['link']).split(os.sep)[-1]
-        gif_filename = f"{args.gif_output_path}/{arxiv_id}.gif"
+        gif_filename = f"{args.gif_output_dir}/{arxiv_id}.gif"
         
         print(f"converting {tmp_filename} => {gif_filename}")
         videoClip = VideoFileClip(tmp_filename)
