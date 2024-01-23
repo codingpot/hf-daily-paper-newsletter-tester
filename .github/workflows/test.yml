@@ -22,13 +22,8 @@ jobs:
 
       - name: test moviepy
         run: |
-          python -c "from moviepy.editor import VideoFileClip"
-          
-      # - name: Set up Go
-      #   uses: actions/setup-go@v2
-      #   with:
-      #     go-version: 1.21.5
-
-      # - name: Test
-      #   run: |
-      #     cd ./src && go run main.go solar -s ${{ secrets.SOLAR_API_KEY }}
+          python py/archive_mov_gif.py \
+            --yaml-dir current \
+            --gif-output-github-repo codingpot/hf-daily-paper-newsletter-tester \
+            --gif-output-dir assets \
+            --speedx 5
