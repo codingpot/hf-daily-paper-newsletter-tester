@@ -1,3 +1,4 @@
 pyyaml
+Pillow
 moviepy
 python-magic
