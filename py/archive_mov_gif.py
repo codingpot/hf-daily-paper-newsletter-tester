@@ -34,11 +34,11 @@ def main(args):
         
         print(f"converting {tmp_filename} => {gif_filename}")
         videoClip = VideoFileClip(tmp_filename)
-        videoClip = videoClip.resize(0.5)
-        videoClip = videoClip.subclip(0, 15)
+        videoClip = videoClip.resize(args.resize_factor)
+        videoClip = videoClip.subclip(0, args.clip_to)
         videoClip.speedx(args.speedx).to_gif(gif_filename)
 
-        parsed_yaml['thumbnail'] = f"https://github.com/{args.gif_output_github_repo}/blog/main/{gif_filename}"
+        parsed_yaml['thumbnail'] = f"https://github.com/{args.gif_output_github_repo}/blob/main/{gif_filename}?raw=true"
         with open(file_path, 'w') as file:
             yaml.dump(parsed_yaml, file, default_flow_style=False)
 
@@ -50,7 +50,9 @@ if __name__ == "__main__":
   parser.add_argument('--yaml-dir', type=str, default="current")
   parser.add_argument('--gif-output-github-repo', type=str, default="codingpot/hf-daily-paper-newsletter-tester")
   parser.add_argument('--gif-output-dir', type=str, default="assets")
-  parser.add_argument('--speedx', type=int, default=5)
+  parser.add_argument('--speedx', type=int, default=6)
+  parser.add_argument('--clip-to', type=int, default=15)
+  parser.add_argument('--resize-factor', type=float, default=0.4)
 
   args = parser.parse_args()
   main(args)
