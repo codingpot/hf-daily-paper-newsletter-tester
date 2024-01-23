@@ -1,0 +1,14 @@
+date: "2024-01-23"
+author: Zhihong Chen
+title: 'CheXagent: Towards a Foundation Model for Chest X-Ray Interpretation'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/mkUrcgNzR_f4O7h7FOwnw.png
+link: https://huggingface.co/papers/2401.12208
+summary: This paper presents CheXagent, an instruction-tuned foundation model capable of analyzing and summarizing chest X-rays, addressing challenges in developing such models due to limited datasets, lack of suitable encoders, and the absence of evaluation frameworks. The model is evaluated on CheXbench, a novel benchmark designed for clinically-relevant CXR interpretation tasks. Evaluations demonstrate its superiority over previously-developed models, and fairness evaluation is also conducted to highl...
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Natural Language Processing
+    - Computer Vision
+    - Explainable AI and Interpretability
+    - Fairness, Bias, and Ethics
