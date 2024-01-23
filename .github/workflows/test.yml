@@ -9,17 +9,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-        with:
-          lfs: true
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
-
-      - name: Set up Git LFS
-        run: |
-          git lfs install
 
       - name: Set up dependencies
         working-directory: py
@@ -32,7 +26,9 @@ jobs:
             --yaml-dir current \
             --gif-output-github-repo codingpot/hf-daily-paper-newsletter-tester \
             --gif-output-dir assets \
-            --speedx 6
+            --speedx 6 \
+            --clip-to 15 \
+            --resize-factor 0.4
 
       - name: Commit Changes
         run: |
