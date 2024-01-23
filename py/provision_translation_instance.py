@@ -115,7 +115,7 @@ def main(args):
   arxiv_id_splits = distribute_parameters([arxiv_id for arxiv_id in args.arxiv_ids], work_splits)
 
   for i, arxiv_ids in enumerate(arxiv_id_splits):
-    if not arxiv_ids:
+    if arxiv_ids:
       run = parallel_job_split(i, client, arxiv_ids, args)
       run.arxiv_ids = arxiv_ids
       runs[i] = run
