@@ -1,10 +1,11 @@
 name: translation-ko
 
 on:
-  workflow_run:
-    workflows: ["collect_papers"]
-    types:
-      - completed
+  # workflow_run:
+  #   workflows: ["collect_papers"]
+  #   types:
+  #     - completed
+  workflow_dispatch
 
 jobs:
   build:
