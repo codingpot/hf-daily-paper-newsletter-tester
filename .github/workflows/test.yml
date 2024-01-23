@@ -27,3 +27,12 @@ jobs:
             --gif-output-github-repo codingpot/hf-daily-paper-newsletter-tester \
             --gif-output-dir assets \
             --speedx 5
+
+      - name: Commit Changes
+        run: |
+          git config --global user.name 'Chansung'
+          git config --global user.email 'deep.diver.csp@gmail.com'
+          git pull
+          git add .
+          git commit -m "Automated report"
+          git push
