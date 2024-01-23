@@ -81,6 +81,9 @@ to quickly create a Cobra application.`,
 		r.Send("../templates", email)
 
 		// 5. archive
+		gif_filenames := internal.GetListOfFilesAt("../current", ".gif")
+		filenames = append(filenames, gif_filenames...)
+		
 		base := fmt.Sprintf("%s/blob/%s/", general_config.GitHubRepoURL, general_config.GitBranch)
 		archive_dest, _ := filepath.Abs("../archive")
 		archive_destinations := internal.MoveFiles(filenames, archive_dest, base)
