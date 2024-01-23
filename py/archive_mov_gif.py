@@ -19,7 +19,7 @@ def main(args):
         parsed_yaml = yaml.safe_load(file)
 
       thumbnail_url = parsed_yaml['thumbnail']
-      tmp_filename = os.path.normpath(url).split(os.sep)[-1]
+      tmp_filename = os.path.normpath(thumbnail_url).split(os.sep)[-1]
       response = requests.get(thumbnail_url)
       response.raise_for_status()
 
@@ -27,7 +27,7 @@ def main(args):
         f.write(response.content)
       print(f"File downloaded and saved as {tmp_filename}")
       
-      if is_video(thumbnail_url):
+      if is_video(tmp_filename):
         print(f"video type found: {thumbnail_url}")
         arxiv_id = os.path.normpath(parsed_yaml['link']).split(os.sep)[-1]
         gif_filename = f"{args.gif_output_path}/{arxiv_id}.gif"
