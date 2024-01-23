@@ -48,6 +48,14 @@ const (
 	MIME = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 )
 
+func add(x, y int) int {
+    return x + y
+}
+
+func sub(x, y int) int {
+    return x - y
+}
+
 func NewRequest(from string, password string, to []string, subject string) *Request {
 	return &Request{
 		from:     from,
@@ -57,27 +65,12 @@ func NewRequest(from string, password string, to []string, subject string) *Requ
 	}
 }
 
-func (r *Request) parseTemplate(templatePath string, data interface{}) error {
-	// func add(x, y int) int {
-	//     return x + y
-	// }
-
-	// tmpl := template.New("mytemplate").Funcs(template.FuncMap{
-	//     "add": add,
-	// })
-
-	// tmpl, err := tmpl.Parse(templateString) // or tmpl.ParseFiles("filename")
-	// if err != nil {
-	//     // handle error
-	// }
-
-	// err = tmpl.ExecuteTemplate(writer, "mytemplate", data)
-	// if err != nil {
-	//     // handle error
-	// }	
-	
+func (r *Request) parseTemplate(templatePath string, data interface{}) error {	
 	templateFilenames := GetTemplatesInDir(templatePath)
-
+	tmpl := template.New("huggingface_template").Funcs(template.FuncMap{
+		"add": add,
+		"sub": sub,			
+	})
 	tmpl, _ := template.ParseFiles(templateFilenames...)
 
 	buffer := new(bytes.Buffer)
