@@ -1,0 +1,11 @@
+date: "2024-01-29"
+author: Jingyu Zhuang
+title: 'TIP-Editor: An Accurate 3D Editor Following Both Text-Prompts And Image-Prompts'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/ZpqNbxN8MUer8cEyyUJlq.png
+link: https://huggingface.co/papers/2401.14828
+summary: A new 3D scene editing framework called TIP-Editor is proposed, which allows users to specify both text and image prompts, as well as a 3D bounding box to control the editing region. This framework utilizes a stepwise 2D personalization strategy and explicit 3D Gaussian splatting to facilitate accurate and localized editing....
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning
+    - Natural Language Processing

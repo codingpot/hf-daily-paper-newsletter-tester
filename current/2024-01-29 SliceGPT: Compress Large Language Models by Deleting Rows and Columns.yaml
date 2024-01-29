@@ -1,0 +1,10 @@
+date: "2024-01-29"
+author: Saleh Ashkboos
+title: 'SliceGPT: Compress Large Language Models by Deleting Rows and Columns'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/X2ZXpHxYkhtCfKRwLZ0eP.png
+link: https://huggingface.co/papers/2401.15024
+summary: This paper introduces SliceGPT, a new technique to compress large language models by replacing each weight matrix with a smaller one without significantly degrading their ability to perform zero-shot tasks. This new technique reduces the memory and computation demands of pre-trained models while enabling them to run faster on fewer GPUs....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Optimization and Learning Algorithms

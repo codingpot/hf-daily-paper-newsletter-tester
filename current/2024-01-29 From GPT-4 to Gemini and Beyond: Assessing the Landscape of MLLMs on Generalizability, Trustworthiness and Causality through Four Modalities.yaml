@@ -1,0 +1,11 @@
+date: "2024-01-29"
+author: Chaochao Lu
+title: 'From GPT-4 to Gemini and Beyond: Assessing the Landscape of MLLMs on Generalizability, Trustworthiness and Causality through Four Modalities'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/-OZna4DZ1W3AWNufdsqoC.png
+link: https://huggingface.co/papers/2401.15071
+summary: This paper evaluates the generalizability, trustworthiness and causal reasoning capabilities of recent proprietary and open-source MLLMs across four modalities (text, code, image, and video) with the goal of improving their transparency and reliability for downstream multi-modal applications. The evaluation uses manual design and 230 cases to identify 14 empirical findings, including strengths and weaknesses of both proprietary and open-source models, ultimately aiming to provide a holistic unde...
+opinion: placeholder
+tags:
+    - Natural Language Processing
+    - Computer Vision
+    - Explainable AI and Interpretability

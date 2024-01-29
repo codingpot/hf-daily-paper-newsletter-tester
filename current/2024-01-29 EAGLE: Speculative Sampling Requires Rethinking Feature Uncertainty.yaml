@@ -1,0 +1,10 @@
+date: "2024-01-29"
+author: Yuhui Li
+title: 'EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/dYbXUEAvwAyyAxJ-51e9M.png
+link: https://huggingface.co/papers/2401.15077
+summary: EAGLE is a lossless, efficient framework for accelerating the inference of Large Language Models. It operates the drafting process at the feature level and addresses sampling uncertainty issues for faster, high-quality text generation....
+opinion: placeholder
+tags:
+    - Natural Language Processing
+    - Deep Learning
