@@ -24,11 +24,9 @@
       '\n' +
       '**Yan Song\\({}^{\\blacktriangle}\\)**\n' +
       '\n' +
-      '\\({}^{\\blacktriangledown}\\)International Digital Economy Academy\n' +
+      '\\({}^{\\blacktriangledown}\\)International Digital Economy Academy \\({}^{\\blacklozenge}\\)South China University of Technology\n' +
       '\n' +
-      'South China University of Technology\n' +
-      '\n' +
-      '\\({}^{\\blacklozenge}\\) University of Science and Technology of China\n' +
+      '\\({}^{\\blacklozenge}\\)University of Science and Technology of China\n' +
       '\n' +
       '{wuxiaojun, zhangdixiang, ganruyi, lujunyu, wuzwei, sunrenliang}@idea.edu.cn zhangjiaxing@idea.edu.cn pjzhang@scut.edu.cn clksong@gmail.com\n' +
       '\n' +
@@ -54,31 +52,9 @@
       '\n' +
       'Figure 1: An illustration of Taiyi-XL showcasing text-to-image generation results under various styles and prompts.\n' +
       '\n' +
-      '### Dataset Preparation\n' +
+      '[MISSING_PAGE_FAIL:3]\n' +
       '\n' +
-      'We curate a dataset consisting of high-quality image-text pairs \\((X,Y)\\), where \\(X\\) represents an image, and \\(Y\\) is a descriptive text. In contrast to traditional datasets with discretized tags, our dataset emphasizes comprehensive descriptions, capturing materials, styles, colors, and spatial layouts. To address the limitations of web-crawled resources, which often contain irrelevant or inaccurate tags, we employ vision-language large models (Lu et al., 2023; 20) to generate synthetic captions that more accurately describe the images, which inherits the language capabilities of the bilingual large language model (Gan et al., 2023) and expands the visual capabilities of LLMs. This approach not only enhances the richness of the dataset but also ensures a higher degree of relevance and detail in the descriptions. We use images, web crawl caption, and instructions for generating description as inputs for the Lyrics (Lu et al., 2023). In Chinese, we select "\' " as the instruction, and in English, we select "Write a detailed description of the given image." as the instruction. The Lyrics model generates new, accurate descriptive text by extracting features from the images as well as distilling useful information from inaccurate and imperfect web crawl captions. Finally, we combine the generated high-quality text with the original images to form image-text pairs, which are then input into the Taiyi-XL for training.\n' +
-      '\n' +
-      '### CLIP Training\n' +
-      '\n' +
-      'The foundation of our model is a vision-language large model, similar to CLIP (Radford et al., 2021), which aligns images and text representations effectively. We start with the pre-trained English-only CLIP model and extend its training to accommodate bilingual adaptation and the nuanced requirements of high-quality image-text data. The first stage of training involves processing a large-scale, bilingual dataset, including Laion (Schuhmann et al., 2021) and Wukong (Gu et al., 2022), with a focus on data cleaning and quality enhancement. We employ a contrastive loss function and a distributed, memory-efficient training approach (Chen et al., 2023). The second stage continues with training on our enriched dataset, emphasizing the diverse perspectives and details captured in high-quality image-text pairs.\n' +
-      '\n' +
-      '### Taiyi-XL Training\n' +
-      '\n' +
-      'The Taiyi-XL training process, a key component in our text-to-image generation methodology, especially with diffusion models, involves two primary phases:\n' +
-      '\n' +
-      'Initialization and Training.We initialize the Taiyi-XL model, denoted as \\(\\mathcal{G}_{\\theta}\\), with components including a noise predictor \\(\\epsilon_{\\theta}\\), a CLIP text encoder \\(\\tau_{\\theta}\\) from 2.2, a latent encoder \\(\\mathcal{E}\\), and a dataset \\(\\mathcal{D}\\). Each data instance in \\(\\mathcal{D}\\) is represented as a pair \\((x_{i},y_{i})\\), where \\(x_{i}\\) is an image and \\(y_{i}\\) is its corresponding textual descriptor. For the training phase at mix resolution of \\(512\\times 512\\) and \\(1024\\times 1024\\), we define a loss function \\(L\\) to guide the image denoising process:\n' +
-      '\n' +
-      '\\[L(\\theta):=\\mathbb{E}_{\\mathcal{E}(x),y,\\epsilon\\sim\\mathcal{N}(0,1),t}\\Big{[} \\|\\epsilon-\\epsilon_{\\theta}(z_{t},t,\\tau_{\\theta}(y))\\|_{2}^{2}\\Big{]}\\,, \\tag{1}\\]\n' +
-      '\n' +
-      'The model is conceptualized as a sequence of denoising latent autoencoders \\(\\epsilon_{\\theta}(z_{t},t);\\,t=1\\dots T\\), implemented as a time-conditional UNet (Ronneberger et al., 2015). The latent representations \\(z_{t}\\) are efficiently obtained from \\(\\mathcal{E}(x)\\) during training and decoded to the image space using a VAE decoder (Kingma & Welling, 2013). The text encoder \\(\\tau_{\\theta}\\), parameterized as a transformer model, is optimized jointly with \\(\\epsilon_{\\theta}\\) as per Eq. 1.\n' +
-      '\n' +
-      'Model parameters \\(\\theta\\) are iteratively updated using gradient descent to minimize the loss function \\(L(\\theta,e)\\):\n' +
-      '\n' +
-      '\\[\\theta_{e+1}=\\theta_{e}-\\eta\\cdot\\nabla_{\\theta}L(\\theta_{e},e) \\tag{2}\\]\n' +
-      '\n' +
-      'where \\(\\eta\\) represents the learning rate.\n' +
-      '\n' +
-      'Text-to-Image Generation.For text-to-image generation, we utilize the trained bilingual text encoder for extracting features from textual descriptions. The extracted textual features \\(\\tau_{\\theta}(y)\\) are then integrated into the latent diffusion process, enhancing computational efficiency and reducing processing time and memory requirements. In the generation phase, starting from the last time step\\(T\\) with pure noise, the model iteratively denoises the input, converging to \\(x_{0}\\), the clean image, as described by:\n' +
+      '\\(T\\) with pure noise, the model iteratively denoises the input, converging to \\(x_{0}\\), the clean image, as described by:\n' +
       '\n' +
       '\\[x_{t-1}=x_{t}-\\epsilon_{\\theta}(x_{t},t,\\tau_{\\theta}(y)),\\quad\\lim_{t\\to 0}x_{t}=x_{0} \\tag{3}\\]\n' +
       '\n' +
@@ -88,7 +64,7 @@
       '\n' +
       '**Evaluation Protocols.** Our evaluation framework encompasses both machine and human evaluation to provide a comprehensive understanding of the model\'s performance. Machine evaluation metrics include CLIP performance evaluation with image-to-text retrieval and text-to-image retrieval; CLIP Similarity (CLIP Sim), which measures the semantic alignment between the generated images and text descriptions; Inception Score (IS), assessing the quality and diversity of the images; and Frechet Inception Distance (FID), evaluating the distance between the distributions of generated and real images. In the context of human evaluation of text-to-image generation, it is acknowledged that such assessments inherently possess a degree of subjectivity. Consequently, this study primarily employs a case analysis approach to discern and articulate the distinct characteristics of image generation outcomes produced by different models. Rather than providing direct quantitative results that delineate superiority or inferiority among the models, the focus is on a qualitative examination that highlights the unique attributes and performance nuances of each model in image generation tasks.\n' +
       '\n' +
-      '**Baselines.** For our comparative analysis, we include several established models as baselines: SD-XL (Podell et al., 2023), Midjourney1, DALL-E \\(3\\)2 (Betker et al., 2023), along with other open-sourced models such as our previous work Taiyi-v0.1(Wang et al., 2022), Alt-Diffusion(Ye et al., 2023) and Pai-Diffusion(Wang et al., 2023). DALL-E 3, recognized for its innovative text-to-image capabilities, sets a high standard in generating quality images from text descriptions. SD-XL, a\n' +
+      '**Baselines.** For our comparative analysis, we include several established models as baselines: SD-XL (Podell et al., 2023), Midjourney1, DALL-E \\(3\\)2(Betker et al., 2023), along with other open-sourced models such as our previous work Taiyi-v0.1(Wang et al., 2022), Alt-Diffusion(Ye et al., 2023) and Pai-Diffusion(Wang et al., 2023). DALL-E 3, recognized for its innovative text-to-image capabilities, sets a high standard in generating quality images from text descriptions. SD-XL, a\n' +
       '\n' +
       'Figure 2: Overview of the Taiyi-Diffusion-XL(Taiyi-XL) training process, encompassing data pre-processing, image-text contrastive learning and multi-resolution denoising training process.\n' +
       '\n' +
@@ -103,7 +79,7 @@
       'Overall, the results from both datasets affirm the efficacy of the Taiyi-XL model in bilingual image generation tasks. Its ability to consistently produce high-quality, diverse images that accurately reflect the content of both English and Chinese text prompts positions it as a leading solution in\n' +
       '\n' +
       '\\begin{table}\n' +
-      '\\begin{tabular}{l c c c c c c c c c c c} \\hline \\hline  & \\multicolumn{6}{c}{Fickr30K} & \\multicolumn{6}{c}{MSCOCO} \\\\  & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} \\\\ Model & R@1 & R@5 & R@10 & R@1 & R@5 & R@10 & R@1 & R@5 & R@10 & R@1 & R@5 & R@10 \\\\ \\hline CLIP (Radford et al., 2021) & 85.1 & 97.3 & 99.2 & 65.0 & 87.1 & 92.2 & 56.4 & 79.5 & 86.5 & 36.5 & 61.1 & 71.1 \\\\ AltCLIP (Chen et al., 2022) & 86.0 & 98.0 & 99.1 & 72.5 & 91.6 & 95.4 & 58.6 & 80.6 & 87.8 & 42.9 & 68.0 & 77.4 \\\\ Our-CLIP & **88.4** & **95.8** & **99.9** & **75.7** & **93.8** & **96.9** & **61.2** & **84.8** & **90.3** & **49.2** & **70.3** & **79.6** \\\\ \\hline \\multicolumn{10}{c}{Fickr30K-CN} & \\multicolumn{6}{c}{MSCOCO-CN} \\\\  & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} \\\\ \\cline{1-1} CLIP (Radford et al., 2021) & 2.3 & 8.1 & 12.6 & 0 & 2.4 & 4.0 & 0.6 & 4.1 & 7.1 & 1.8 & 6.7 & 11.9 \\\\ AltCLIP (Chen et al., 2022) & 69.8 & 89.9 & 94.7 & 84.8 & 97.4 & 98.8 & 63.9 & 87.2 & 93.9 & 62.8 & 88.8 & 95.5 \\\\ Our-CLIP & **73.2** & **90.3** & **96.5** & **88.1** & **98.2** & **99.1** & **66.0** & **91.1** & **96.6** & **69.7** & **91.3** & **96.8** \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\begin{tabular}{l c c c c c c c c c c c} \\hline \\hline  & \\multicolumn{6}{c}{Fickr30K} & \\multicolumn{6}{c}{MSCOCO} \\\\  & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} \\\\ Model & R@1 & R@5 & R@10 & R@1 & R@5 & R@10 & R@1 & R@5 & R@10 & R@1 & R@5 & R@10 \\\\ \\hline CLIP (Radford et al., 2021) & 85.1 & 97.3 & 99.2 & 65.0 & 87.1 & 92.2 & 56.4 & 79.5 & 86.5 & 36.5 & 61.1 & 71.1 \\\\ AltCLIP (Chen et al., 2022) & 86.0 & 98.0 & 99.1 & 72.5 & 91.6 & 95.4 & 58.6 & 80.6 & 87.8 & 42.9 & 68.0 & 77.4 \\\\ Our-CLIP & **88.4** & **95.8** & **99.9** & **75.7** & **93.8** & **96.9** & **61.2** & **84.8** & **90.3** & **49.2** & **70.3** & **79.6** \\\\ \\hline  & \\multicolumn{6}{c}{Fickr30K-CN} & \\multicolumn{6}{c}{MSCOCO-CN} \\\\  & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} & \\multicolumn{3}{c}{Image \\(\\rightarrow\\) Text} & \\multicolumn{3}{c}{Text \\(\\rightarrow\\) Image} \\\\ CLIP (Radford et al., 2021) & 2.3 & 8.1 & 12.6 & 0 & 2.4 & 4.0 & 0.6 & 4.1 & 7.1 & 1.8 & 6.7 & 11.9 \\\\ AltCLIP (Chen et al., 2022) & 69.8 & 89.9 & 94.7 & 84.8 & 97.4 & 98.8 & 63.9 & 87.2 & 93.9 & 62.8 & 88.8 & 95.5 \\\\ Our-CLIP & **73.2** & **90.3** & **96.5** & **88.1** & **98.2** & **99.1** & **66.0** & **91.1** & **96.6** & **69.7** & **91.3** & **96.8** \\\\ \\hline \\hline \\end{tabular}\n' +
       '\\end{table}\n' +
       'Table 1: Zero-shot image-text retrieval results on Flickr30K, MSCOCO, Flickr30K-CN, and MSCOCO-CN datasets. The best results are marked in **bold**.\n' +
       '\n' +
@@ -126,13 +102,13 @@
       '\n' +
       '### Advancements in Image Generation and Diffusion Models\n' +
       '\n' +
-      'Recent years have seen substantial advancements in the field of text-to-image generation. This work diverges from traditional approaches such as Generative Adversarial Networks (GANs) (Goodfellow et al., 2014; Arjovsky et al., 2017), Variational Autoencoders (VAEs) (Kingma and Welling, 2013), Flow-based models (Rezende and Mohamed, 2015), and autoregressive models (Ramesh et al., 2021; Ding et al., 2021; 2022), focusing instead on the more advanced diffusion model. The evolution and refinement of diffusion theory and techniques (Vincent, 2011; Ho et al., 2020; Song et al., 2020; Cao et al., 2022) have positioned the diffusion model as a leading technology in image generation. Noteworthy developments in this area include Dall-E 2 (Ramesh et al., 2022), which utilizes a hier\n' +
+      'Recent years have seen substantial advancements in the field of text-to-image generation. This work diverges from traditional approaches such as Generative Adversarial Networks (GANs) (Goodfellow et al., 2014; Arjovsky et al., 2017), Variational Autoencoders (VAEs) (Kingma and Welling, 2013), Flow-based models (Rezende and Mohamed, 2015), and autoregressive models (Ramesh et al., 2021; Ding et al., 2021; 2022), focusing instead on the more advanced diffusion model. The evolution and refinement of diffusion theory and techniques (Vincent, 2011; Ho et al., 2020; Song et al., 2020; Cao et al., 2022) have positioned the diffusion model as a leading technology in image generation. Noteworthy developments in this area include Dall-E 2 (Ramesh et al., 2022), which utilizes a hierarchical network (Dall-E 2), and a hierarchical network (Dall-E 3). The proposed approach is to use the diffusion model to generate the diffusion model.\n' +
       '\n' +
       'Figure 4: Comparison of Different Models in English Text-to-Image Generation Performance.\n' +
       '\n' +
       'Figure 3: Comparison of Different Models in Chinese Text-to-Image Generation Performance.\n' +
       '\n' +
-      'archical approach for generating images based on textual descriptions with CLIP latents. Similarly, Imagen (Sahara et al., 2022) and Deepfloyd-IF (Shonenkov et al., 2023) demonstrate the capability of diffusion models to produce photorealistic images from text, emphasizing deep language understanding. The latent diffusion model (Rombach et al., 2022), encompassing works such as stable-diffusion-v1-5, stable-diffusion-2-1, and stable-diffusion-xl (Podell et al., 2023), represents the forefront of this technology. These models primarily leverage the CLIP text model for textual feature extraction, integrating these features into the latent diffusion process to reduce computational overhead and memory requirements.\n' +
+      'archical approach for generating images based on textual descriptions with CLIP latents. Similarly, Imagen (Saharia et al., 2022) and Deepfloyd-IF (Shonenkov et al., 2023) demonstrate the capability of diffusion models to produce photorealistic images from text, emphasizing deep language understanding. The latent diffusion model (Rombach et al., 2022), encompassing works such as stable-diffusion-v1-5, stable-diffusion-2-1, and stable-diffusion-xl (Podell et al., 2023), represents the forefront of this technology. These models primarily leverage the CLIP text model for textual feature extraction, integrating these features into the latent diffusion process to reduce computational overhead and memory requirements.\n' +
       '\n' +
       '### Text-to-Image Models in Bilingual Context\n' +
       '\n' +
@@ -183,8 +159,7 @@
       '* Saharia et al. (2022) Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily L Denton, Kamyar Ghasemipour, Raphael Gontijo Lopes, Burcu Karagol Ayan, Tim Salimans, et al. Photorealistic text-to-image diffusion models with deep language understanding. _Advances in Neural Information Processing Systems_, 35:36479-36494, 2022.\n' +
       '* Schuhmann et al. (2021) Christoph Schuhmann, Richard Vencu, Romain Beaumont, Robert Kaczmarczyk, Clayton Mullis, Aarush Katta, Theo Coombes, Jenia Jitsev, and Aran Komatsuzaki. Laion-400m: Open dataset of clip-filtered 400 million image-text pairs. _arXiv preprint arXiv:2111.02114_, 2021.\n' +
       '* Shonenkov et al. (2023) Alex Shonenkov, Misha Konstantinov, Daria Bakshandaeva, Christoph Schuhmann, Ksenia Ivanova, and Nadiia Klokova. If: Title of the repository, 2023.\n' +
-      '\n' +
-      '* Song et al. (2020) Jiaming Song, Chenlin Meng, and Stefano Ermon. Denoising diffusion implicit models. _arXiv preprint arXiv:2010.02502_, 2020.\n' +
+      '* Shonenkov et al. (2021)* Song et al. (2020) Jiaming Song, Chenlin Meng, and Stefano Ermon. Denoising diffusion implicit models. _arXiv preprint arXiv:2010.02502_, 2020.\n' +
       '* Song et al. (2023) Yang Song, Prafulla Dhariwal, Mark Chen, and Ilya Sutskever. Consistency models. 2023.\n' +
       '* Vincent (2011) Pascal Vincent. A connection between score matching and denoising autoencoders. _Neural computation_, 23(7):1661-1674, 2011.\n' +
       '* Wang et al. (2023) Chengyu Wang, Zhongjie Duan, Bingyan Liu, Xinyi Zou, Cen Chen, Kui Jia, and Jun Huang. Paidiffusion: Constructing and serving a family of open chinese diffusion models for text-to-image synthesis on the cloud. _arXiv preprint arXiv:2309.05534_, 2023.\n' +

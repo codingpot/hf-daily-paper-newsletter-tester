@@ -4,6 +4,216 @@
   <title>Title</title>
   <script>
     const text = '' +
+      '# EAGLE: 투기적 샘플링은 재사고 특징 불확실성을 필요로 한다\n' +
+      '\n' +
+      ' 유희리({}^{\\spadesuit}\\)\n' +
+      '\n' +
+      'Fangyun Wei\\({}^{\\ddagger}\\)\n' +
+      '\n' +
+      'Chao Zhang\\({}^{\\spadesuit}\\)\n' +
+      '\n' +
+      'Hongyang Zhang\\({}^{\\spadesuit}\\)\\({}^{\\dagger}\\)\n' +
+      '\n' +
+      '\\({}^{\\spadesuit}\\)Peking University\n' +
+      '\n' +
+      'Microsoft Research\n' +
+      '\n' +
+      '워털루대학교\n' +
+      '\n' +
+      'Vector Institute\n' +
+      '\n' +
+      'hongyang.zhang@uwaterloo.ca\n' +
+      '\n' +
+      '[https://github.com/SafeAILab/EAGLE](https://github.com/SafeAILab/EAGLE)\n' +
+      '\n' +
+      '###### Abstract\n' +
+      '\n' +
+      '자동 회귀 디코딩은 LLM(Large Language Models)의 추론을 시간이 많이 소요되게 한다. 본 논문에서는 무손실 가속을 위한 간단한 프레임워크인 EAGLE(Extrapolation Algorithm for Greater Language-model Efficiency)를 제안한다. 기존의 추측적 샘플링 방법과 달리 EAGLE는 보다 규칙적인(second-top-layer) 특징 수준에서 자동 회귀적으로 드래프팅 프로세스를 운영하며, 한 단계 앞선 토큰들을 통합하여 다음 특징 예측 문제에서 샘플링 불확실성 문제를 해결한다. AGLE에 의해 제공되는 가속은 무손실이다: 그것은 타겟 LLM의 미세 조정을 수반하지 않으며, 생성된 텍스트는 바닐라 자동-회귀 디코딩의 것과 동일한 분포를 유지한다. 이 논문의 제출을 기준으로 EAGLE는 추측 샘플링 패밀리 내에서 가장 빠른_알려진 프레임워크이다. MT-벤치에서 EAGLE는 바닐라 디코딩보다 3배, Lookahead보다 2배, Medusa보다 1.6배 빠르다. gpt-fast를 사용하여, EAGLE는 Huggingface의 구현의 24개의 토큰/s와 비교하여 단일 RTX 3090 GPU에서 LLaMA2-Chat 13B로 평균 160개의 토큰/s에 도달한다.\n' +
+      '\n' +
+      '## 1 Introduction\n' +
+      '\n' +
+      '자동 회귀 디코딩은 대규모 언어 모델(LLM)에 대한 사실상의 표준이 되었다. 이 프로세스는 한 번에 하나씩 출력 토큰을 생성하므로 LLM에 의한 생성이 비용이 많이 들고 느려집니다. 추측 샘플링(Leviathan et al., 2023; Chen et al., 2023) 기반 방법들은 이러한 챌린지에 대한 해결책을 제공한다. 그들은 LLM의 생성 과정을 두 단계로 나눈다: 잠재적인 토큰이 저렴한 비용으로 추측되는 초안 단계와 이러한 토큰이 LLM의 단일 순방향 패스를 통해 병렬_검증되는 검증 단계. 추측 샘플링의 병렬화는 LLM 포워드 패스당 다중 사후 검사 토큰 생성을 용이하게 하여 속도를 크게 향상시킨다. 더 중요한 것은, 추측 샘플링에서의 검증 단계는 텍스트 분포가 원래의 LLM의 디코딩 결과와 정확하게 정렬되어, 생성된 콘텐츠의 무결성을 유지하는 것을 보장한다.\n' +
+      '\n' +
+      '추측 샘플링을 적용하는 핵심은 원래 LLM과 충분히 유사하지만 대기 시간이 더 낮은 초안 모델을 식별하는 것이다. 추측 샘플링은 일반적으로 초안 모델과 동일한 시리즈의 LLM의 더 낮은 매개변수 버전을 사용한다. 예를 들어, 7B, 13B 및 70B 파라미터를 갖는 모델들을 포함하는 LLAMA2(Touvron et al., 2023) 시리즈에서, 70B 모델의 프록시로서 7B 모델을 사용하는 것은 유효하지만, 가장 작은 7B 변형에 대한 적합한 초안 모델을 찾는 것은 까다롭다. 다른 대안은 TinyLLaMA(Zhang et al., 2024)를 사용하는 것일 수 있지만, 이것은 LLAMA2-Chat과 TinyLLaMA-Chat 사이의 명령어 템플릿의 불일치로 인해 명령-튜닝된 모델에 대해 실현 가능하지 않다. 13B 및 70B 모델의 경우 동일한 시리즈 내의 7B 모델이 초안 모델 역할을 할 수 있다. 그러나 7B 모델의 높은 오버헤드로 인해 추측 샘플링의 가속 효과는 최적이 아니다. TinyLLaMA는 3,000B 토큰에 학습되는 반면 EAGLE는 2-4B 토큰에 학습된다.\n' +
+      '\n' +
+      '추측 샘플링에서 가속을 향상시키는 핵심은 시간 오버헤드를 감소시키고 원래의 LLM에 의한 초안의 수용률을 향상시키는 데 있다(Chen et al., 2023; Xia et al., 2023; Santilli et al., 2023). 많은 접근 방식은 드래프트 단계의 오버헤드를 줄이는 데 중점을 둔다. Lookahead(Fu et al., 2023)는 n-gram 및 Jacobi 반복을 채용하는 반면, Medusa(Cai et al., 2023)는 원래의 LLM의 두 번째-톱-레이어 특징에 기초하여 토큰을 예측하는 MLP들의 세트를 이용한다. 이러한 전략은 드래프트 생성의 대기 시간을 크게 감소시켜 가속도를 향상시킵니다. 그러나 이러한 방법의 궁극적인 잠재력은 그들이 생산하는 초안의 정확도가 낮기 때문에 제한한다.\n' +
+      '\n' +
+      '토큰 레벨보다 특징 레벨에서의 자동 회귀가 더 다루기 쉽다는 관찰을 바탕으로, 우리는 직접 토큰 예측에서 분기하고 대신 특징 레벨에서 자동 회귀 연산을 수행하는 간단한 프레임워크인 EAGLE(Extrapolation Algorithm for Greater Language-model Efficiency)를 소개한다. 하나의 시간 단계만큼 진보된 토큰 시퀀스를 통합함으로써, EAGLE는 특징-레벨 자동-회귀와 연관된 불확실성을 우회한다. 트랜스포머 디코더 계층만을 포함하는 드래프트 모델로 EAGLE는 약 0.8의 드래프트 정확도를 달성하여 메두사의 0.6을 실질적으로 능가한다.\n' +
+      '\n' +
+      '우리는 챗GPT와의 대화와 유사한 다중 회전 지침을 포함하여 실제 애플리케이션 및 실제 시나리오를 시뮬레이션하는 매우 현실적인 벤치마크인 MT-벤치(Zheng et al., 2023)에서 EAGLE를 평가했다. 우리는 이 벤치마크를 룩어헤드 및 메두사를 포함한 최신 기술이 그들의 속도 향상 비율을 보여주기 위해 사용했기 때문에 활용하기로 선택했다. 이 선택은 우리의 접근법과 이러한 벤치마크 간의 공정하고 직접적인 비교를 용이하게 한다. 욕심 많은 디코딩 설정 하에서, Vicuna-13B 및 LLAMA2-Chat 13B, 70B에 대해, EAGLE는 원래 LLM의 텍스트 분포를 유지하는 것이 이론적으로 보장되고 즉시 사용할 준비가 된 **3x** 가속도를 제공한다. 최근 제안된 추측 샘플링 기반 프레임워크인 Lookahead 및 Medusa와 비교하여 EAGLE는 각각 **2x** 및 **1.6x** 속도를 달성한다. 속도를 향상시키면서 EAGLE는 또한 LLM 시스템의 처리량을 **2x**만큼 증가시킨다. EAGLE는 양자화, 컴파일 등과 같은 다른 가속 또는 처리량 개선 방법과 병행하여 동작한다. AGLE와 이러한 기술을 결합하면 LLM 시스템의 운영 비용을 더욱 줄일 수 있다. 예를 들어, gpt-fast1을 사용하여 EAGLE는 단일 RTX 3090 GPU에서 LLAMA2-Chat 7B 디코딩을 24.5 토큰/s에서 160.4 토큰/s로 가속화한다.\n' +
+      '\n' +
+      '각주 1: [https://github.com/pytorch-labs/gpt-fast](https://github.com/pytorch-labs/gpt-fast)\n' +
+      '\n' +
+      'EAGLE는 낮은 훈련 비용을 자랑합니다. LLaMA2-Chat 70B 모델의 경우, EAGLE는 ShareGPT 데이터세트로부터 70k 이하의 다이얼로그를 사용하여 1B 미만의 파라미터를 갖는 디코더 계층을 트레이닝한다. 훈련은 4x A100(40G) GPU에서 1-2일 후에 완료됩니다. 실제 응용에서 EAGLE는 각 쿼리에 대한 가속을 제공하기 위해 단일 훈련 세션만 필요로 한다. 질의의 수가 증가함에 따라 EAGLE의 분할 학습 비용은 무시할 수 있게 된다.\n' +
+      '\n' +
+      '기존의 추측적 샘플링 기반 기술과 비교하여, EAGLE의 장점은 다음과 같다:\n' +
+      '\n' +
+      '****단순성:** EAGLE는 자동-회귀 디코딩을 가속화하기 위한 새로운 프레임워크이며 임의의 자동-회귀 LLM에 적용가능하다. 이 방법은 LLM에 경량 플러그인(단일 변압기 디코더 계층)만 추가하며, 이는 생산에서 쉽게 전개될 수 있다.\n' +
+      '\n' +
+      '그림 2: 비탐욕(온도=1) 설정에 대한 MT-벤치의 속도 향상 비율. Lookahead는 탐욕스러운 디코딩에만 국한되어 있고, 메두사의 비탐욕적인 세대는 무손실 성능을 보장하지 않는다. 따라서, EAGLE는 이러한 방법들과 비교되지 않는다.\n' +
+      '\n' +
+      '환경. 본 논문에서는 LLaMA2-Chat(7B, 13B, 70B), Vicuna(7B, 13B, 33B) 및 Mistral 8x7B Instruct-v0.1에 EAGLE를 MT-벤치와 GSM8K 데이터셋에 제로샷 방식으로 적용하였다.\n' +
+      '**신뢰도:** EAGLE는 원래 LLM의 미세 조정을 포함하지 않으며 EAGLE에 의한 출력 분포의 보존은 이론적으로 탐욕스러운 설정과 비탐욕스러운 설정 모두에 대해 보장된다. 이는 가속이 오류 또는 유해한 LLM 출력으로 이어질 수 있는 에지 사례에서 저하의 위험을 보장하지 않는다. 이것은 탐욕스러운 환경에만 초점을 맞춘 룩어헤드와 메두사와 극명한 대조를 이룬다.\n' +
+      '* **속도:** EAGLE는 본 논문의 제출을 기준으로 추측 샘플링 계열 내에서 _fast_ framework로 두드러진다. 특히, 탐욕 추론을 위한 Vicuna 및 LLaMA2-Chat(도 1 참조)에서, EAGLE는 바닐라 디코딩 속도를 3배 능가하고, Lookahead 디코딩을 2배 능가하며, 메두사 디코딩보다 1.6배 빠르다. gpt-fast를 사용하여, EAGLE는 Huggingface의 구현의 24개의 토큰/s와 비교하여 단일 RTX 3090 GPU에서 LLaMA2-Chat 13B로 평균 160개의 토큰/s에 도달한다. MoE(Mixture of Experts) 모델, 구체적으로 Mistral 8x7B Instruct-v0.1(Jiang et al., 2024)에서 EAGLE 알고리즘은 1.5배의 속도 증가를 달성한다.\n' +
+      '\n' +
+      '또한 EAGLE의 간단하면서도 효율적인 프레임워크를 도입하는 것 외에도 그 효과에 기여하는 요인에 대한 분석을 제공하며, 이는 다른 추측적 샘플링 방법(섹션 5.3.2)에 독립적으로 관심이 있을 수 있다. EAGLE는 다음의 두 가지 관찰에 기초하여 구축된다:\n' +
+      '\n' +
+      '* 첫째, 동일한 경량 네트워크를 사용할 때 최상위 계층의 특징을 활용하는 것이 하위 계층의 토큰 임베딩을 이용하는 것보다 더 효과적임을 증명한다.\n' +
+      '* 둘째, 샘플링 프로세스에 내재된 불확실성은 최상위 계층 특징만을 입력하는 초안 모델의 성능을 상당히 제약한다. 따라서 샘플링 결과(토큰)를 초안 모델에 통합하는 것이 중요하다.\n' +
+      '\n' +
+      '## 2 Preliminaries\n' +
+      '\n' +
+      '**notations.** 본 논문에서는 가속을 목적으로 하는 Large Language Model을 "target LLM"이라 하고, 빠른 드래프트 생성을 위해 사용되는 Model을 "draft model"이라 한다. 달리 명시되지 않는 한, "feature"는 LLM의 2-to-top-layer 특징, 즉 LM Head 이전의 숨겨진 상태를 지칭한다. 우리는 토큰은 소문자 \\(t\\), 그들의 임베딩은 \\(e\\), 특징은 \\(f\\), 분포는 \\(p\\)으로 표시한다. 우리는 순서를 나타내기 위해 대문자를 사용한다. 예를 들어, \\(T_{i:j}\\)는 시퀀스 \\((t_{i},t_{i+1},\\ldots,t_{j})\\)를 나타낸다. LLM을 고려하여 입력 토큰 시퀀스 \\(T_{1:j}\\)이 주어지면 LLM은 임베딩 레이어를 통해 해당 임베딩 \\(E_{1:j}\\)을 획득한다. 이들은 특징 \\(F_{1:j}\\)을 산출하기 위해 다수의 디코더 계층을 통해 처리된다. 그런 다음 LM 헤드는 분포\\(p_{j+1}=\\text{LM Head}(f_{j})\\에 매핑되며, 이로부터 다음 토큰\\(t_{j+1}\\)을 샘플링한다. 일 예로서, 토큰 레벨에서의 바닐라 자동 회귀는 임의의 정수\\(j\\geq 1\\)에 대한 프로세스(\\(T_{1:j}\\to E_{1:j}\\to f_{j}\\to p_{j+1}\\to t_{j+1}\\)에 의해 표현될 수 있다.\n' +
+      '\n' +
+      '**투기 표본 추출.**투기 표본 추출은 초안과 검증 단계를 번갈아 가며 수행됩니다. 현재 시퀀스\\(T_{1:j}\\)을 고려한다. 초안 단계에서 추정 샘플링은 목표 LLM보다 작은 모델을 사용하여 자동 회귀적으로 \\(\\gamma\\) 토큰 \\(\\hat{T}_{j+1:j+\\gamma}\\),2를 생성하고 해당 분포 \\(\\hat{P}_{j+1:j+\\gamma}\\)을 기록한다. 검증 단계에서, 타겟 LLM의 단일 순방향 패스는 대응하는 위치들에 대한 확률들을 산출한다. 검증 단계 동안, 타겟 LLM의 단일 순방향 패스는 대응하는 위치들에 대한 확률들을 제공한다. 그런 다음 토큰은 수용 확률\\(\\min(1,p_{j+i}/\\hat{p}_{j+i})\\)을 갖는 토큰\\(\\hat{t}_{j+i}\\)으로 순차적으로 수용 여부를 평가한다. 토큰(\\hat{t}_{j+i}\\)을 거절하면, 모든 후속 토큰은 폐기되고, 이 토큰은 분포\\(\\text{norm}(\\max(0,p_{j+i}-\\hat{p}_{j+i}))에 기초하여 재샘플링된다. 추측적 샘플링의 부록 A.1(Leviathan et al., 2023)은 전술한 샘플링 방법이 타겟 LLM의 분포로부터 직접 샘플링하는 것과 동일하다는 것을 증명한다. EAGLE는 또한 이 샘플링 접근법을 사용하여 생성된 텍스트의 분포가 탐욕스러운 설정과 비탐욕스러운 설정 모두에 대해 변경되지 않은 상태로 유지되도록 한다.\n' +
+      '\n' +
+      '각주 2: 우리는 모델 초안의 해당 항을 나타내기 위해 모자 표기법을 자주 사용할 것이다.\n' +
+      '\n' +
+      '## 3 Observations\n' +
+      '\n' +
+      '우리는 EAGLE의 설계에 직접적인 동기를 부여하는 두 가지 관찰로 시작한다.\n' +
+      '\n' +
+      '### 자동 회귀 기능은 토큰보다 쉽습니다.\n' +
+      '\n' +
+      '토큰 시퀀스는 자연 언어의 단순한 변환을 나타내며 본질적으로 복잡하다. 대조적으로, 선형 변환(LM Head)을 거친 후 LLM의 두 번째 최상위 계층 특징은 다음 토큰을 예측할 수 있어 특징 시퀀스가 더 구조화되고 규칙적이다. 결과적으로, 특징 레벨에서 자동 회귀를 수행하는 것은 토큰 레벨보다 더 관리가능할 것으로 예상된다. 우리는 시간이 지남에 따라 높은 수준의 피쳐의 진화 경로가 토큰보다 간단하기 때문에 전자가 더 작은 모델로 특징지어질 수 있기 때문이라고 가정한다. 이 가설을 검증하기 위해 Vicuna 7B(Chiang et al., 2023)를 사용하여 MT벤치에 대한 실험을 설계하였으며, 초안 모델을 특징 및 토큰 자동 회귀 모두에 대해 1계층 트랜스포머 디코더로 설정했다. 도 3에 예시된 바와 같이, 동결된 LM 헤드를 사용하여 자동 회귀 특징 처리 후 토큰 생성(\\((f_{1},f_{2})\\to f_{3}\\to t_{4}\\))을 수행하면 자동 회귀 토큰 처리(\\((t_{1},t_{2},t_{3})\\to t_{4}\\))에 비해 훨씬 더 높은 정확도를 얻을 수 있으며, 30%만큼 크게 개선된다. 이는 속도 증가율(1.5x\\(\\rightarrow\\)1.9x)을 훨씬 증가시킨다.\n' +
+      '\n' +
+      '### 다음 특징 예측에서 불확실성 문제\n' +
+      '\n' +
+      '텍스트를 생성할 때, 타겟 LLM은 토큰들을 직접 예측하지 않고, 대신 토큰들의 확률 분포를 예측한 다음, 이 분포에 기초하여 샘플들을 생성함으로써, 랜덤성을 생성 프로세스에 도입한다. 토큰과 달리 특징은 고차원적이고 연속적이어서 동일한 샘플링 기반 접근법의 사용을 배제한다. 도 4에 예시된 예를 고려한다. "am"이 샘플링되면, 특징 시퀀스는 \\((f_{I},f_{am})\\)이 된다. 반대로, "항상"이 샘플링되면, 특징 시퀀스는 \\((f_{I},f_{always})\\)이 된다. 이것은 특징 시퀀스의 자동 회귀 모델에 모호성을 도입한다. \\(f_{I}\\) 다음 특징이 \\(f_{am}\\)인지 \\(f_{always}\\)이어야 하는지는 불확실하다. 메두사는 또한 이 문제에 직면한다. 그 목적은 이 예에서 "I am" 또는 "I always"에 각각 후속하는 다음 토큰의 확률에 대응하는 \\(f_{I}\\)을 예측하는데 \\(p_{am}\\) 또는 \\(p_{always}\\)을 사용하는 것과 같이 간격만큼 이격된 토큰의 확률을 예측하는 것이다. 이러한 내재적 불확실성은 메두사의 초안 모델이 목표 LLM을 완벽하게 모방하는 것을 불가능하게 만든다. 이 문제를 해결하기 위해 EAGLE는 샘플링 결과를 포함하는 1시간 전 토큰 시퀀스를 초안 모델에 입력한다. 도 4에 예시된 예에서, 이것은 \\(f_{I}\\) 및 \\(t_{always}\\)에 기초하여 \\(f_{always}\\)을 예측하는 것과, \\(f_{I}\\) 및 \\(t_{am}\\)에 기초하여 \\(f_{am}\\)을 예측하는 것을 포함한다. 그림 5에서 알 수 있듯이 불확실성을 해결함으로써 속도 향상 비율은 1.9배에서 2.8배까지 더 증가한다.\n' +
+      '\n' +
+      '## 4 Eagle\n' +
+      '\n' +
+      'EAGLE는 위의 두 가지 관찰을 기반으로 한다. 다른 추측적 샘플링 기반 방법과 일치하도록 제도 단계와 검증 단계를 모두 포함한다.\n' +
+      '\n' +
+      '### Drafting phase\n' +
+      '\n' +
+      'EAGLE와 다른 방법의 주요 구분은 주로 제도 단계에 있다. 그림 6은 다양한 방법에 대한 제도 단계의 개략도를 보여준다. 투기적 샘플링(Leviathan et al., 2023; Chen et al., 2023) 및 Lookahead(Fu et al., 2023)는 토큰들에 기초하여 토큰들을 예측한다. 메두사(Cai et al., 2023)는 대상 LLM으로부터 특징 \\(f_{2}\\)을 이용하여 \\(t_{4}\\) 및 \\(t_{5}\\)을 독립적으로 예측한다. EAGLE는 특징 시퀀스 \\((f_{1},f_{2})\\)와 토큰 시퀀스 \\((t_{2},t_{3})\\)을 이용하여 한 단계 진보된 \\(f_{3}\\)을 예측한다. [\\(p_{4}=\\)LM Head(\\(f_{3}\\)), \\(t_{4}\\)를 샘플링한다. 이어서, 입력 시퀀스에 \\(f_{3}\\)과 \\(t_{4}\\)을 연결하여 다음 피쳐 \\(f_{4}\\)을 예측하고 후속 토큰 \\(t_{5}\\)을 샘플링한다.\n' +
+      '\n' +
+      '그림 7에 예시된 바와 같이 EAGLE의 초안 모델은 Embedding layer, LM Head, Auto-regression Head의 세 가지 모듈로 구성된다. 임베딩 레이어 및 LM 헤드는 원래 LLM의 매개변수를 사용하며 추가 교육을 필요로 하지 않는다. 초안 모델은 형상의 특징 시퀀스(bs, seq_len, hidden_dim) 및 형상의 고급 토큰 시퀀스(bs, seq_len)를 입력으로서 취한다. 그런 다음, 상기 토큰 시퀀스를 모양(bs, seq_len, hidden_dim)의 토큰 임베딩 시퀀스로 변환하고, 이를 연결한다\n' +
+      '\n' +
+      '도 4: 특징 시퀀스의 불확실성. 다음 특징\\(f_{I}\\)은 샘플링 결과에 따라 결정되며 "항상"과 "am"이 모두 토큰 "I"를 따라 두 가지 분기로 이어질 수 있는 \\(f_{I}\\)에 의해서만 결정될 수 없다.\n' +
+      '\n' +
+      '그림 5: 특징 및 특징&쉬프트-토큰 기반 초안 모델의 정확도 및 속도 향상 비율. 특징 및 변환 토큰 접근법은 불확실성을 효과적으로 해결한다. 모델은 Vicuna 7B를 목표 LLM으로 사용하여 MT-벤치에서 테스트되었다.\n' +
+      '\n' +
+      '그림 3: 토큰 및 기능에 기반한 초안 모델의 정확도 및 속도 향상 비율, Vicuna 7B를 목표 LLM으로 하는 MT-벤치에서 테스트됨.\n' +
+      '\n' +
+      '형태(bs, seq_len, 2\\(\\times\\)hidden_dim)의 융합된 시퀀스를 형성한다. FC 계층과 디코더 계층으로 구성되는 자동 회귀 헤드. FC 계층은 융합된 시퀀스의 차원을 (bs, seq_len, hidden_dim)으로 줄이고 디코더 계층을 사용하여 다음 특징을 예측한다. LM 헤드는 다음 토큰을 샘플링한 피쳐를 기준으로 분포를 계산합니다. 마지막으로, 예측된 특징과 샘플링된 토큰이 입력에 연결되어 자동 회귀 프로세스의 지속을 용이하게 한다. EAGLE는 트리 구조 초안을 생성한다. 효율성을 높이기 위해 트리 어텐션을 구현하여 \\(m\\) 순방향 패스를 통해 \\(m\\) 깊이의 드래프트 트리를 생성할 수 있도록 하여 \\(m\\) 토큰 이상을 포함한다. 도 7에 예시된 예에서, EAGLE는 3개의 순방향 패스를 통해 10개의 토큰들의 트리를 드래프트한다.\n' +
+      '\n' +
+      '초안모델의###훈련\n' +
+      '\n' +
+      '다음 특징을 예측하는 것은 회귀 태스크를 구성하며, 이를 위해 스무드 L1 손실을 사용한다(도 6 EAGLE 참조):\n' +
+      '\n' +
+      '\\[E_{2:i+1}=\\text{Token Embedding}(T_{2:i+1}),\\] \\[\\hat{f}_{i+1}=\\text{Auto-regression Head}(E_{2:i+1},F_{1:i}),\\] \\[L_{reg}=\\text{Smooth L1}(f_{i+1},\\hat{f}_{i+1}})\\text{Auto-regression Head}(E_{2:i+1}),\\] \\[L_{reg}=\\text{Smooth L1}(f_{i+1}),\\hat{f}_{i+1}}).\n' +
+      '\n' +
+      '특징을 예측하는 것은 초안 모델의 중간 목적이며, 궁극적인 목표는 토큰의 시퀀스를 생성하기 위한 토큰의 예측이다. 결과적으로, 우리는 또한 이 최종 목표를 향해 직접 최적화하기 위해 분류 손실을 사용한다:\n' +
+      '\n' +
+      '\\[p_{i+2}=\\text{Softmax}(\\text{LM Head}(f_{i+1})),\\]\\[\\hat{p}_{i+2}=\\text{Softmax}(\\text{LM Head}(\\hat{f}_{i+1})),\\]\\[L_{cls}=\\text{Cross Entropy}(p_{i+2},\\hat{p}_{i+2}})\n' +
+      '\n' +
+      '회귀 손실과 분류 손실을 통합하여 다음과 같은 결합 손실 함수를 사용하여 자동 회귀 헤드를 훈련한다.\n' +
+      '\n' +
+      '\\[L=L_{reg}+w_{cls}L_{cls}.\\]\n' +
+      '\n' +
+      '일반적으로 분류 손실은 수치적 측면에서 회귀 손실보다 크기가 더 크다. 결과적으로 우리는 \\(w_{cls}\\)을 0.1로 설정했다.\n' +
+      '\n' +
+      '자동 회귀 헤드를 트레이닝하기 위한 최적의 접근법은 타겟 LLM을 사용하여 자동 회귀적으로 텍스트를 생성하는 것을 포함한다. 그러나, 이러한 데이터 생성은 비용이 많이 든다. 다행히도 EAGLE는 훈련 데이터에 대한 민감도가 낮다.\n' +
+      '\n' +
+      '도 6: 네 번째 및 다섯 번째 토큰의 드래프팅 방법의 비교, \\(t_{4}\\) 및 \\(t_{5}\\), 여기서 \\((t_{1},t_{2})\\)이 프롬프트이다. \\(t_{4}\\) 및 \\(t_{5}\\) (t\\)(파란색 블록으로 표시됨)은 토큰을 나타내고 \\(f\\)(주황색 블록)은 특징을 나타내며 아래 첨자는 시퀀스 내 위치를 나타낸다. 빨간색 테두리는 초안 모델의 예측을 나타냅니다. 간략화를 위해 도면에서와 같이 Lookahead에 대한 \\(n\\)-gram의 \\(n\\)을 2로 설정하였다.\n' +
+      '\n' +
+      '도 7: EAGLE의 파이프라인. 상단 섹션은 계산 프로세스를 설명하는 반면, 하단 섹션은 각 단계에 대한 해당 생성 결과를 표시합니다. 상단 섹션에서 녹색 블록은 토큰 임베딩을 나타내고, 주황색 블록은 LLM의 두 번째 상위 레이어의 기능을 나타내고, 빨간색 상자는 자동 회귀 헤드에 의해 예측된 기능을 나타내며, 눈송이 아이콘이 있는 파란색 모듈은 훈련 대상이 아닌 원래 LLM 매개변수의 사용을 나타낸다.\n' +
+      '\n' +
+      '5.3.3절에서 공부하다. 목표 LLM에 의해 생성된 텍스트를 사용하는 대신 고정 데이터 세트를 사용하여 오버헤드를 상당히 줄입니다. 제도 단계에서 EAGLE는 기능을 자동 회귀적으로 처리합니다. 기능이 잘못되면 오류가 누적될 수 있습니다. 이 문제를 완화하기 위해, 훈련 동안 목표 LLM의 두 번째 최상위 계층 특징 벡터에 균일 분포 \\(\\mathcal{U}(-0.1,0.1)\\)에서 샘플링된 랜덤 노이즈를 추가하여 데이터 증강을 사용한다(Jain et al., 2023).\n' +
+      '\n' +
+      '### Verification phase\n' +
+      '\n' +
+      '트리 어텐션을 사용하여, 타겟 LLM은 단일 순방향 패스를 통해 트리 구조 초안의 각 토큰의 확률을 계산한다. 드래프트 트리의 모든 레벨에서, 우리는 SpecInfer(Miao et al., 2023) 및 SpecTr(Sun et al., 2023)과 일치하는 분포를 샘플링하거나 조정하기 위해 추측 샘플링 알고리즘을 재귀적으로 적용하여 출력 텍스트의 분포가 원래 LLM의 분포와 일치하도록 한다. 동시에, 우리는 후속 드래프트 단계에서 자동 회귀 특징 외삽의 시작점이 되는 수락된 토큰 및 해당 특징을 기록한다.\n' +
+      '\n' +
+      '## 5 Experiments\n' +
+      '\n' +
+      '**모델 및 태스크.** 우리는 Vicuna 모델(7B, 13B, 33B 크기), LLaMA2-채팅 모델(7B, 13B, 70B) 및 Mixtral 8x7B Instruct-v0.1에 대해 실험을 수행했으며, 이는 현재 주류 대형 언어 모델(LLM)의 공통 크기를 포함한다. 우리의 평가는 대화와 수학적 추론 과제에 걸쳐 있다. 대화 작업을 위해 다중 회전 대화에서 모델의 능력과 지침 준수를 테스트하기 위해 설계된 매우 현실적인 상황 질문으로 구성된 MT-벤치를 사용했다. 수학적 추론 과제는 인간 문제 작성자가 만든 수준 높은 초등학교 수학 문제로 구성된 GSM8K(Cobbe et al., 2021) 데이터셋을 사용하였다. 투기 샘플링(Leviathan et al., 2023)은 배치 크기가 1인 실험을 수행했으며, 이 설정은 이후 DistillSpec(Zhou et al., 2023) 및 BiLD(Kim et al., 2023)와 같은 다른 작업에 의해 채택되었다. 유사하게, 우리의 대부분의 실험도 이 설정을 채택했다. 배치 크기가 1보다 큰 실험은 섹션 5.4에 나와 있다.\n' +
+      '\n' +
+      '**Metrics.** 추측 샘플링을 기반으로 하는 다른 방법과 유사하게 EAGLE는 처리량보다는 대기 시간에 주로 초점을 맞춘다. DistillSpec의 방법론에 따라 다음 메트릭을 사용하여 가속 효과를 평가한다.\n' +
+      '\n' +
+      '* 월타임 스피드업 비율: 바닐라 자동-회귀 디코딩에 대한 실제 테스트 스피드업 비율.\n' +
+      '* 평균 수락 길이 \\(\\tau\\): 원래 LLM의 순방향 패스당 수락된 토큰의 평균 수.\n' +
+      '* 수용률 \\(\\alpha\\): 드래프트 단계에서 생성된 토큰 수에 대한 수용 토큰 수의 비율. 수용률 메트릭은 초안의 정확성을 측정합니다. 트리 드래프트의 경우, 다수의 토큰이 동일한 위치에서 샘플링될 수 있지만, 오직 하나의 토큰만이 수용되어, 수용률 메트릭이 이러한 맥락에서 평가에 부적합하게 된다. 따라서 수용률에 대해 이 논문에서 보고된 실험의 경우 추측 샘플링 및 DistillSpec과 유사한 트리 드래프트를 사용하지 않고 연쇄 드래프트를 사용한다. EAGLE의 초안 모델은 특징 시퀀스와 토큰 시퀀스를 입력으로 한다. 드래프트 단계에서 피쳐의 자동 회귀 처리는 오류 전파로 이어질 수 있다. 입력에 오차를 포함할 수 있는 초안 모델에 의해 예측된 \\(n\\) 특징이 포함된 경우의 수용률을 \\(n\\)-\\(\\알파\\)로 정의한다.\n' +
+      '\n' +
+      'EAGLE의 가속은 이론적으로 원래의 LLMs의 출력 분포의 보존을 보장한다. 결과적으로, EAGLE의 생성된 결과의 품질을 평가하는 것은 불필요하고 무의미하다.\n' +
+      '\n' +
+      '훈련이요 목표 LLMs를 고쳤어요 EAGLE는 ShareGPT 플랫폼에서 3e-5로 설정된 68,000번의 대화 반복을 사용하여 훈련되었으며, 베타 값 \\((\\beta_{1},\\beta_{2})\\)을 (0.9, 0.95)로 설정한 AdamW 최적화기를 사용하여 0.5의 기울기 클리핑을 구현하였으며, 7B, 13B, 33B, 70B 모델에 해당하는 EAGLE의 훈련 가능한 파라미터는 각각 0.24B, 0.37B, 0.56B, 0.99B이다. MoE 모델 Mixtral 8x7B에 대한 EAGLE의 훈련 가능한 매개변수는 0.28B이다. EAGLE는 70B 모델의 경우 A100 40G 서버에서 1-2일 이내에 자동 회귀 헤드를 훈련할 수 있는 낮은 훈련 비용이 특징이다.\n' +
+      '\n' +
+      '그림 8: 다양한 작업에 걸친 EAGLE의 속도 향상 비율.\n' +
+      '\n' +
+      '### Effectiveness\n' +
+      '\n' +
+      '그림 1은 MT-벤치에서 EAGLE, Medusa 및 Lookahead의 속도 증가 비율을 나타내며 온도=0이다. Vicuna 13B 및 LLaMA2-Chat 13B, 70B 모델에서 EAGLE는 바닐라 자동 회귀 디코딩보다 3배, Lookahead보다 2배, Medusa보다 1.6배 빠른 속도를 달성한다. 그림 2와 표 2는 다양한 설정 하에서 EAGLE의 가속 비율을 보여준다. 그림 8은 다양한 작업에 걸친 EAGLE의 속도 향상 비율을 보여준다. 상당한 수의 고정된 템플릿을 포함하는 코딩 작업은 가장 중요한 속도 향상 효과를 나타낸다. EAGLE는 다른 과제에서도 주목할 만한 효과를 보여준다. 표 1은 EAGLE의 평균 합격 길이 및 합격률을 나타낸다. 원래의 LLM은 포워드 패스 당 거의 4개의 토큰을 생성하는데, 이는 패스 당 하나의 토큰을 생성하는 바닐라 오토-레그레시브 디코딩에 비해 상당한 효율 개선이다. 완전한 정확한 특징 시퀀스인 \\(0\\)-\\(\\alpha\\)를 갖는 수용률은 하나의 잘못된 특징인 \\(1\\)-\\(\\alpha\\)을 갖는 수용률보다 현저하게 높으며, 이는 특징의 오류가 EAGLE의 성능에 영향을 미칠 수 있음을 나타낸다. 그러나, \\(1\\)-\\(\\alpha\\), \\(2\\)-\\(\\alpha\\), \\(3\\)-\\(\\alpha\\) 및 \\(4\\)-\\(\\alpha\\) 사이의 최소 차이는 특징 오차에 대한 EAGLE의 강인성과 이러한 오차의 축적을 효과적으로 관리할 수 있는 능력을 보여준다.\n' +
+      '\n' +
+      '표 3에 도시된 바와 같이, Mixtral 8x7B Instruct-v0.1 모델의 경우, EAGLE는 1.5배 가속을 달성하였다. LLaMA와 같은 모델과 달리 상대적으로 가속도가 낮은 것은 부분적으로 평균 수용 길이가 낮고 부분적으로 추측 샘플링 기반 방법을 사용하는 MOE(Mixture of Experts) 모델을 가속화하는 데 내재된 어려움에 기인할 수 있다. MoE 모델은 토큰 단위로 전문가를 선택합니다. 바닐라 자동 회귀 디코딩 동안, 단일 토큰을 포워딩하는 것은 단지 두 전문가의 가중치를 읽는 것을 수반한다. 대조적으로, 다수의 토큰을 포워딩하는 것을 포함하는 추측 샘플링 기반 방법의 검증 단계는 2개 이상의 또는 심지어 모든 전문가의 가중치를 판독해야 할 수 있다. 반대로, 표준 디코더 전용 모델은 하나 또는 다수의 토큰이 포워딩되는지 여부에 관계없이 모든 가중치를 판독할 필요가 있다.\n' +
+      '\n' +
+      '### 사례연구 : EAGLE + gpt-fast\n' +
+      '\n' +
+      'EAGLE는 다른 가속 기술과 호환됩니다. 우리는 가속을 위해 양자화 및 컴파일링을 사용하는 EAGLE와 gpt-fast를 결합한 실험을 수행했다. 그림 4와 같이 EAGLE와 gpt-fast를 통합하여 Huggingface의 구현을 사용한 24.5 토큰/s에 비해 단일 RTX 3090에서 LLaMA2-Chat 7B의 생성 속도를 160.4 토큰/s로 증가시켰다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c c c c c} \\hline \\hline  & Model & \\(\\tau\\) & 0-\\(\\alpha\\) & 1-\\(\\alpha\\) & 2-\\(\\alpha\\) & 3-\\(\\alpha\\) & 4-\\(\\alpha\\) \\\\ \\hline \\multirow{6}{*}{T=0} & V 7B & 3.94 & 0.79 & 0.74 & 0.72 & 0.73 & 0.67 \\\\  & V 13B & 3.98 & 0.79 & 0.74 & 0.72 & 0.74 & 0.70 \\\\  & V 33B & 3.68 & 0.74 & 0.69 & 0.67 & 0.67 & 0.66 \\\\  & LC 7B & 3.62 & 0.76 & 0.69 & 0.67 & 0.68 & 0.68 \\\\  & LC 13B & 3.90 & 0.77 & 0.69 & 0.69 & 0.70 & 0.71 \\\\  & LC 70B & 3.81 & 0.75 & 0.69 & 0.65 & 0.64 & 0.64 \\\\ \\hline \\multirow{6}{*}{T=1} & V 7B & 3.17 & 0.71 & 0.68 & 0.66 & 0.66 & 0.65 \\\\  & V 13B & 3.20 & 0.73 & 0.68 & 0.68 & 0.67 & 0.69 \\\\  & V 33B & 3.22 & 0.71 & 0.67 & 0.64 & 0.64 & 0.64 \\\\ \\cline{1-1}  & LC 7B & 3.30 & 0.71 & 0.66 & 0.66 & 0.66 & 0.64 \\\\ \\cline{1-1}  & LC 13B & 3.45 & 0.73 & 0.69 & 0.66 & 0.67 & 0.67 \\\\ \\cline{1-1}  & LC 70B & 3.46 & 0.73 & 0.67 & 0.64 & 0.66 & 0.65 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 1: MT-벤치에 대한 평균 수용길이 \\(\\tau\\)와 수용률 \\(\\alpha\\) T는 온도를 나타내고, V는 Vicuna를 나타내며, LC는 LLaMA2-Chat를 나타낸다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c} \\hline \\hline Precision & FP16 & int4 \\\\ \\hline Vanilla (Huggingface) & 24.5 tokens/s & N/A \\\\ gpt-fast & 55.1 tokens/s & 106.9 tokens/s \\\\ EAGLE + gpt-fast & 100.2 tokens/s & 160.4 tokens/s \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 4: EAGLE와 gpt-fast를 결합하는 생성 속도. 평가 데이터 세트는 MT-벤치이고, 타겟 LLM은 LLaMA2-Chat 13B이며, 온도는 0으로 설정된다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c c c c c} \\hline \\hline  & Model & \\(\\tau\\) & 0-\\(\\alpha\\) & 1-\\(\\alpha\\) & 2-\\(\\alpha\\) & 3-\\(\\alpha\\) & 4-\\(\\alpha\\) \\\\ \\hline \\multirow{6}{*}{T=0} & V 7B & 3.94 & 0.79 & 0.74 & 0.72 & 0.73 & 0.67 \\\\  & V 13B & 3.98 & 0.79 & 0.74 & 0.72 & 0.74 & 0.70 \\\\  & V 33B & 3.68 & 0.74 & 0.69 & 0.67 & 0.67 & 0.66 \\\\  & LC 7B & 3.62 & 0.76 & 0.69 & 0.67 & 0.68 & 0.68 \\\\  & LC 13B & 3.90 & 0.77 & 0.69 & 0.69 & 0.70 & 0.71 \\\\  & LC 70B & 3.81 & 0.75 & 0.69 & 0.65 & 0.64 & 0.64 \\\\ \\hline \\multirow{6}{*}{T=1} & V 7B & 3.17 & 0.71 & 0.68 & 0.66 & 0.66 & 0.65 \\\\  & V 13B & 3.20 & 0.73 & 0.68 & 0.68 & 0.67 & 0.69 \\\\  & V 33B & 3.22 & 0.71 & 0.67 & 0.64 & 0.64 & 0.64 \\\\  & LC 7B & 3.30 & 0.71 & 0.66 & 0.66 & 0.66 & 0.64 \\\\  & LC 13B & 3.45 & 0.73 & 0.69 & 0.66 & 0.67 & 0.67 \\\\  & LC 70B & 3.46 & 0.73 & 0.67 & 0.64 & 0.66 & 0.65 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 2: GSM8K 상의 속도 증가율, 평균 수용 길이 \\(\\tau\\) 및 수용률 \\(\\alpha\\) T는 온도를 나타내고, V는 Vicuna를 나타내며, LC는 LLaMA2-Chat를 나타낸다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c c c c c} \\hline \\hline Speedup & \\(\\tau\\) & 0-\\(\\alpha\\) & 1-\\(\\alpha\\) & 2-\\(\\alpha\\) & 3-\\(\\alpha\\) & 4-\\(\\alpha\\) \\\\ \\hline \\multirow{6}{*}{T=0} & V 7B & 3.94 & 0.79 & 0.74 & 0.72 & 0.73 & 0.67 \\\\  & V 13B & 3.98 & 0.79 & 0.74 & 0.72 & 0.74 & 0.70 \\\\  & V 33B & 3.68 & 0.74 & 0.69 & 0.67 & 0.67 & 0.66 \\\\  & LC 7B & 3.62 & 0.76 & 0.69 & 0.67 & 0.68 & 0.68 \\\\  & LC 13B & 3.90 & 0.77 & 0.69 & 0.69 & 0.70 & 0.71 \\\\  & LC 70B & 3.81 & 0.75 & 0.69 & 0.65 & 0.64 & 0.64 \\\\ \\hline \\multirow{6}{*}{T=1} & V 7B & 3.17 & 0.71 & 0.68 & 0.66 & 0.66 & 0.65 \\\\  & V 13B & 3.20 & 0.73 & 0.68 & 0.68 & 0.67 & 0.69 \\\\ \\cline{1-1}  & V 33B & 3.22 & 0.71 & 0.67 & 0.64 & 0.64 & 0.64 \\\\ \\cline{1-1}  & LC 7B & 3.30 & 0.71 & 0.66 & 0.66 & 0.66 & 0.64 \\\\ \\cline{1-1}  & LC 13B & 3.45 & 0.73 & 0.69 & 0.66 & 0.67 & 0.67 \\\\ \\cline{1-1}  & LC 70B & 3.46 & 0.73 & 0.67 & 0.64 & 0.66 & 0.65 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 3: 온도=0에서 MT-벤치에 대한 스피드업 비율, 평균 수용 길이 \\(\\tau\\) 및 수용률 \\(\\alpha\\)이다. 타겟 LLM은 Mixtral 8x7B Instruct-v0.1이다.\n' +
+      '\n' +
+      '[MISSING_PAGE_EMPTY:8]\n' +
+      '\n' +
+      '배치 크기가 증가하면 GPU의 사용 가능한 계산 용량이 감소하여 가속 효과가 감소한다. 이 섹션에서는 배치 크기가 1을 초과하는 시나리오에 대한 실험 결과를 제시하며, 표 7에서 설명한 바와 같이 배치 크기가 증가함에 따라 속도 증가 비율이 감소한다. Vicuna 7B를 표적 LLM으로 사용하는 경우 bs=4에서 bs=3에서보다 속도 증가율이 더 높다. 이는 EAGLE의 검증 단계에서 표적 LLM이 단일 순방향 패스에서 여러 토큰을 처리하고 bs=4에서 처리가 bs=3에서보다 더 빠르다는 사실에 기인한다. 반면, 표적 LLM이 순방향 패스당 하나의 토큰을 처리하는 바닐라 자동 회귀 디코딩에서는 bs=3과 bs=4에서 속도가 거의 동일하기 때문이다.\n' +
+      '\n' +
+      '추측 샘플링 기반 방법은 주로 대기 시간에 초점을 맞추지만 LLM 시스템의 또 다른 핵심 메트릭인 배치 크기\\(>1\\)에 대한 EAGLE의 처리량도 조사했다. 바닐라 자동 회귀 디코딩과 비교하여, EAGLE는 대략 동일한 CUDA 메모리를 필요로 한다. 24G의 CUDA 메모리를 갖는 단일 RTX 3090의 메모리 제약 하에서 동작하는 Vicuna 7B의 경우, 바닐라 자동-회귀 디코딩 및 EAGLE에 대한 최대 배치 크기(bs)는 각각 8 및 7이다. 총 160G CUDA 메모리의 4 A100(40G) GPU에 의해 제약되는 LLAMA2-Chat 70B의 경우, 바닐라 자동-회귀 디코딩 및 EAGLE에 대한 최대 bs는 각각 5 및 4이다. 모든 평가는 FP16 정밀도에서 수행되었다. 우리는 서로 다른 bs에 대한 처리량을 계산하고 최대값을 선택했다. 바닐라 자동 회귀 디코딩 및 EAGLE 둘 다 각각의 최대 bs에서 최대 처리량을 달성한다. 트리 주의는 더 많은 계산 자원을 소비한다. bs=7의 배치에서 계산 리소스는 덜 풍부하여 트리 주의를 사용하지 않는 것이 더 유리하다. 표 7에 예시된 바와 같이, EAGLE는 처리량의 2배 증가를 달성한다.\n' +
+      '\n' +
+      '##6 관련 업무\n' +
+      '\n' +
+      '증류(Hinton et al., 2015), 양자화(Hubara et al., 2018) 등의 기술을 포함하는 가속 언어 모델에 대한 상당한 연구가 있었다. 이러한 방법들은 순방향 패스당 레이턴시를 감소시키는 것을 목표로 한다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c} \\hline \\hline Training data & Speedup & \\(\\tau\\) \\\\ \\hline Fixed dataset & 2.78x & 3.62 \\\\ Data generated by target LLM & 2.88x & 3.75 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 6: MT-벤치 상에서 평가된 상이한 트레이닝 데이터 세트를 사용하는 속도 향상 비율 및 평균 수용 길이 \\(\\tau\\)이며, 타겟 LLM은 LLAMA2-Chat 7B이고 온도는 0으로 설정된다. "고정 데이터세트"는 ShareGPT 데이터세트로부터 유래된 질문 및 답변 모두를 지칭한다. "타겟 LLM에 의해 생성된 데이터"는 질문들이 ShareGPT 데이터세트로부터 소싱되는 동안, 답변들은 타겟 LLM에 의해 생성되는 것을 나타낸다.\n' +
+      '\n' +
+      '그림 10: 다양한 입력을 가진 초안 모델의 성능. 대상 LLM은 Vicuna 7B이고, 테스트 데이터 세트는 MT-벤치이다. 속도는 월타임 속도 향상 비율을 의미하고, \\(\\tau\\)은 평균 합격 길이, \\(0\\)-\\(\\alpha\\)은 완전히 정확한 입력에서 합격률을 나타내며, 1-\\(\\alpha\\)은 입력에서 하나의 부정확한 특징을 포함할 때 합격률을 나타내며, \\(T\\)은 온도를 나타낸다.\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:10]\n' +
+      '\n' +
+      '* Hubara et al. (2018) Hubara, I., Courbariaux, M., Soudry, D., El-Yaniv, R., and Bengio, Y. 양자화된 신경망: 낮은 정밀도의 가중치 및 활성화를 갖는 신경망을 훈련시킨다. _ Journal of machine learning research_, 18(187):1-30, 2018.\n' +
+      '* Jain et al. (2023) Jain, N., Chiang, P.-y., Wen, Y., Kirchenbauer, J., Chu, H.-M., Somepalli, G., Bartoldson, B. R., Kailkhura, B., Schwarzschild, A., Saha, A., et al. NEFTune:Noisy embeddings improve instruction finetuning. _ arXiv preprint arXiv:2310.05914_, 2023.\n' +
+      '* Jiang et al. (2024) Jiang, A. Q., Sablayrolles, A., Roux, A., Mensch, A., Savary, B., Bamford, C., Chaplot, D. S., Casas, D. d. l., Hanna, E. B., Bressand, F., et al. Mixtral of experts. _ arXiv preprint arXiv:2401.04088_, 2024.\n' +
+      '* Kim et al. (2023) Kim, S., Mangalam, K., Moon, S., Malik, J., Mahoney, M. W., Gholami, A., and Keutzer, K. 빅 리틀 디코더를 사용한 추측 디코딩. 30-7차 신경 정보 처리 시스템 회의에서_, 2023.\n' +
+      '* Leviathan et al. (2023) Leviathan, Y., Kalman, M., and Matias, Y. 추측 디코딩을 통한 변압기로부터의 빠른 추론. In _International Conference on Machine Learning_, pp. 19274-19286. PMLR, 2023.\n' +
+      '* Liu et al. (2023) Liu, X., Hu, L., Bailis, P., Stoica, I., Deng, Z., Cheung, A., and Zhang, H. Online speculative decoding. _ arXiv preprint arXiv:2310.07177_, 2023.\n' +
+      '* Miao et al. (2023) Miao, X., Oliaro, G., Zhang, Z., Cheng, X., Wang, Z., Wong, R. Y. Y., Chen, Z., Arfeen, D., Abhyankar, R., and Jia, Z. SpecInfer: 추측 추론 및 토큰 트리 검증과 함께 서빙하는 생성 LLM을 가속화한다. _ arXiv preprint arXiv:2305.09781_, 2023.\n' +
+      '* Patterson(2004) Patterson, D. A. Latency lags bandwith. _ ACM_, 47(10):71-75, 2004의 통신.\n' +
+      '* Santilli et al.(2023) Santilli, A., Severino, S., Postolache, E., Maiorca, V., Mancusi, M., Marin, R., and Rodola, E. Accelerating transformer inference for translation via parallel decoding. 로저스, A., Boyd-Graber, J., and Okazaki, N. (eds.), _Proceedings of the 61st Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)_, pp. 12336-12355, Toronto, July 2023. Association for Computational Linguistics. doi: 10.18653/v1/2023.acl-long.689. URL[https://aclanthology.org/2023.acl-long.689](https://aclanthology.org/2023.acl-long.689).\n' +
+      '* Shazeer(2019) Shazeer, N. 고속 트랜스포머 디코딩: 쓰기 헤드 하나만 있으면 됩니다. _ ArXiv preprint arXiv:1911.02150_, 2019.\n' +
+      '* Spector & Re(2023) Spector, B. and Re, C. Accelerating LLM inference with stage speculative decoding. _ arXiv preprint arXiv:2308.04623_, 2023.\n' +
+      '* Stern et al. (2018) Stern, M., Shazeer, N., and Uszkoreit, J. Blockwise parallel decoding for deep autoregressive models. _ 신경 정보 처리 시스템_, 31, 2018의 발전.\n' +
+      '* Sun et al. (2021) Sun, X., Ge, T., Wei, F., and Wang, H. instantaneous grammatical error correction with shallow aggressive decoding. _ arXiv preprint arXiv:2106.04970_, 2021.\n' +
+      '* Sun et al. (2023) Sun, Z., Suresh, A. T., Ro, J. H., Beirami, A., Jain, H., and Yu, F. Spectr: Fast speculative decoding via optimal transport. _ arXiv preprint arXiv:2310.15141_, 2023.\n' +
+      '* Touvron et al. (2023) Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., et al. LIAMA 2: Open foundation and fine-tuned chat models. _ arXiv preprint arXiv:2307.09288_, 2023.\n' +
+      '* Xia et al.(2023) Xia, H., Ge, T., Wang, P., Chen, S. -Q., Wei, F., and Sui, Z. 추측 디코딩: seq2seq 생성을 가속화하기 위한 추측 실행을 이용하고 있다. In _Findings of the Association for Computational Linguistics: EMNLP 2023_, pp. 3909-3925, 2023.\n' +
+      '* Yang et al. (2023a) Yang, N., Ge, T., Wang, L., Jiao, B., Jiang, D., Yang, L., Majumder, R., and Wei, F. Inference with reference: Lossless acceleration of large language models. _ arXiv preprint arXiv:2304.04487_, 2023a.\n' +
+      '* Yang et al. (2023b) Yang, S., Lee, G., Cho, J., Papailiopoulos, D., and Lee, K. 예측 파이프라인 디코딩: 정확한 llm 디코딩을 위한 컴퓨트-레이턴시 트레이드 오프 _ arXiv preprint arXiv:2307.05908_, 2023b.\n' +
+      '* Zhang et al. (2023) Zhang, J., Wang, J., Li, H., Shou, L., Chen, K., Chen, G., and Mehrotra, S. Draft & verify: self-speculative decoding을 통한 Lossless large language model acceleration. _ arXiv preprint arXiv:2309.08168_, 2023.\n' +
+      '* Zhang et al. (2024) Zhang, P., Zeng, G., Wang, T., and Lu, W. TinyLlama: 오픈소스 소형 언어 모델 _ arXiv preprint arXiv:2401.02385_, 2024.\n' +
+      '* Zheng et al. (2023) Zheng, L., Chiang, W. L., Sheng, Y., Zhu, S., Wu, Z., Zhu, Y., Lin, Z., Li, Z., Li, Z., Li, D., Xing, E., et al., Judging llm-as-a-judge with mt-bench and chatbot arena. _ arXiv preprint arXiv:2306.05685_, 2023.\n' +
+      '* Zhou et al. (2023) Zhou, Y., Lyu, K., Rawat, A. S., Menon, A. K., Rostamizadeh, A., Kumar, S., Kagg, J.-F., and Agarwal, R. DistillSpec: 지식증류를 통한 투기적 디코딩 개선 arXiv preprint arXiv:2310.08461_, 2023.\n' +
       '\n';
   </script>
   <style>
