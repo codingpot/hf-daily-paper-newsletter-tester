@@ -1,0 +1,13 @@
+date: "2024-01-29"
+author: Yuhui Li
+title: 'EAGLE: Speculative Sampling Requires Rethinking Feature Uncertainty'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/dYbXUEAvwAyyAxJ-51e9M.png
+link: https://huggingface.co/papers/2401.15077
+summary: The paper proposes a new method called EAGLE for accelerating Large Language Model decoding. By predicting features at the second-top layer and including tokens from the next layer, EAGLE addresses the sampling uncertainty issues in next-feature prediction. This method is faster than existing frameworks like Lookahead and Medusa and provides lossless acceleration, which means the generated text has the same distribution as vanilla auto-regressive decoding....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Natural Language Processing
+    - Deep Learning
+    - Optimization and Learning Algorithms
+    - Explainable AI and Interpretability

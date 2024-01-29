@@ -1,0 +1,14 @@
+date: "2024-01-29"
+author: Xiaojun Wu
+title: 'Taiyi-Diffusion-XL: Advancing Bilingual Text-to-Image Generation with Large Vision-Language Model Support'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Jqw4MUhTG3s_cCkSPrYL5.png
+link: https://huggingface.co/papers/2401.14688
+summary: This paper presents Taiyi-Diffusion-XL, a new Chinese and English bilingual text-to-image model that is an extension of CLIP and Stable-Diffusion-XL through continuous pre-training. This model is capable of generating better image captions and possess higher visual quality with the use of large vision-language model. Taiyi-Diffusion-XL surpasses previous models in bilingual image generation capabilities and open-sourced for Chinese language applications....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Unsupervised Learning
+    - Deep Learning
+    - Natural Language Processing
+    - Computer Vision
+    - Emerging Applications of Machine Learning
