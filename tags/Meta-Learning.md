@@ -1,0 +1,1 @@
+- [Learning Universal Predictors](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/12/2024-01-29+Learning+Universal+Predictors.yaml) / 2024-01-29
