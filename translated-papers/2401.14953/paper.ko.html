@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true"><head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script>
+    const text = '' +
+      '# 학습 유니버설 예측기\n' +
+      '\n' +
+      'Jordi Grau-Moya\n' +
+      '\n' +
+      'jordigrau@google.com Equivalent contributions., 1\n' +
+      '\n' +
+      'Tim Genewein\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Marcus Hutter\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Laurent Orseau\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Gregoire Deletang\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Elliot Catt\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Anian Ruoss\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      '이케빈원량\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Christopher Mattern\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Matthew Aitchison\n' +
+      '\n' +
+      '1\n' +
+      '\n' +
+      'Joel Veness\n' +
+      '\n' +
+      '1 등 기여도, 1\n' +
+      '\n' +
+      '영국 런던 구글 딥마인드\n' +
+      '\n' +
+      '###### Abstract\n' +
+      '\n' +
+      '메타 학습은 제한된 데이터로부터 새로운 작업을 빠르게 학습하기 위해 신경망을 훈련시키는 강력한 접근법으로 부상했다. 다양한 작업에 광범위하게 노출되면 일반적인 문제 해결을 가능하게 하는 다양한 표현으로 이어진다. 그러나 메타 학습의 한계는 무엇입니까? 본 연구에서는 가장 강력한 범용 예측 변수인 솔로모노프 유도(Solomonoff Induction, SI)를 메타 학습을 한계값으로 활용하여 신경망에 상각할 수 있는 가능성을 탐색한다. 우리는 범용 튜링 머신(UTM)을 사용하여 네트워크를 광범위한 패턴에 노출시키는 데 사용되는 학습 데이터를 생성한다. 우리는 UTM 데이터 생성 프로세스와 메타 트레이닝 프로토콜에 대한 이론적 분석을 제공한다. 우리는 다양한 복잡성과 보편성을 가진 신경망 아키텍처(예: LSTM, 트랜스포머) 및 알고리즘 데이터 생성기를 사용하여 포괄적인 실험을 수행한다. 우리의 결과는 UTM 데이터가 메타 학습에 유용한 자원이며 범용 예측 전략을 학습할 수 있는 신경망을 훈련하는 데 사용할 수 있음을 시사한다.\n' +
+      '\n' +
+      ' Kolmogorov-complexity, universal prediction, incontext learning\n' +
+      '\n' +
+      '메타학습은 AI 시스템이 제한된 데이터로부터 새로운 작업을 빠르게 학습할 수 있도록 하는 강력한 접근법으로 등장하였다(Hospedales et al., 2021). 다양한 작업 세트에 대한 모델을 훈련함으로써 메타 학습은 새로운 보이지 않는 작업으로 일반화하는 표상과 학습 전략의 발견을 장려한다. 흥미롭게도 최근 연구에 따르면 특정 데이터 체제에 노출되면 메타 학습을 통해 신경망이 베이지안 추론을 수행할 수 있다(Genewein et al., 2023; Mikulik et al., 2020; Ortega et al., 2019). 메타 학습의 핵심 과제는 충분히 광범위한 작업 분포를 설계하여 모델을 다양한 구조와 패턴에 노출시키는 것이다. 이러한 광범위한 노출은 "보편적" 표현으로 이어질 수 있어 시스템이 광범위한 문제를 해결하고 인공 일반 지능(AGI)의 목표에 더 가까워지게 할 수 있다.\n' +
+      '\n' +
+      '솔로모노프 유도 1(SI)은 이러한 이상적인 보편적인 예측 시스템(Solomonoff, 1964a,b) 2를 구성하기 위한 설득력 있는 이론적 기초를 제공한다. 그 핵심에서, SI는 세 가지 기본 원리를 우아하게 통합한다(도 1 참조). _ 모든 계산 가능한 가설들에 대한 고려:_ 전통적인 접근법들과는 달리, SI는 계산 가능한 가설들의 전체 공간을 탐색한다(즉, a\n' +
+      '\n' +
+      '그림 1: 우리의 메타 학습 방법론의 요약.\n' +
+      '\n' +
+      'computer program) as potential explanations for observed data. _ Occam\'s Razor_: SI는 더 짧은 설명과 함께 더 간단한 가설에 더 높은 사전 확률을 할당한다. _ 베이지안 업데이트_: 새로운 데이터로 SI는 각 가설에 대한 믿음을 구체화하기 위해 베이즈의 규칙을 사용한다. SI의 이론적 강도는 계산 가능한 경우 실제 데이터 생성 프로세스에 빠르게 수렴하는 능력에 있다(Hutter, 2004; Li and Vitanyi, 1992; Li et al., 2019; Sunehag and Hutter, 2013). 그러나 중요한 장벽은 실용적인 계산 능력이다. 알고리즘 가설에 대한 철저한 탐구는 엄청난 계산 자원을 요구한다. 이를 해결하기 위해 스피드 프라이어(Filan et al., 2016; Schmidhuber, 2002)와 Context Tree Weighting 알고리즘(Veness et al., 2012; Willems, 1998; Willems et al., 1995)과 같은 SI의 근사치를 개발하였다.\n' +
+      '\n' +
+      'SI의 힘을 이해하기 위해 무한한 데이터 스트림을 생성하는 프로그램, 예를 들어 유체 역학 시뮬레이션 또는 AI 영화 생성기를 상상해 보세요. 이 프로그램의 가능한 가장 짧은 버전(즉, 그것의 Kolmogorov 복잡도(Li et al., 2019))의 길이는 \\(N\\) 비트 길이이며, 여기서 모든 불필요한 요소가 제거되었고 우리는 크기를 더 줄이기 위해 압축을 사용했다. 이제 데이터 스트림을 SI에 공급하고 각 비트를 예측하면 놀라운 일이 발생한다. \\(N\\)의 예측 오차를 줄이면 SI는 미래의 데이터를 완벽하게 예측할 수 있다! 이는 SI가 데이터 생성 프로그램의 기본 규칙을 효과적으로 학습하기 때문에 발생한다. 각 잘못된 예측으로 가능한 설명 범위를 제거하여 데이터 뒤에 있는 올바른 프로그램을 빠르게 찾을 수 있습니다.\n' +
+      '\n' +
+      '본 논문에서는 Solomonoff 유도를 메타 학습을 통해 신경망으로 상각할 수 있는 가능성을 탐색한다(그림 1 참조). 핵심 과제는 한계에서 SI를 학습하도록 네트워크를 안내하는 신경 아키텍처 및 훈련 데이터 분포를 찾는 것이다. 신경망은 이론적으로 보편적인 계산이 가능하지만(Chen et al., 2017; Mali et al., 2023; Stogin et al., 2020), 실용적인 훈련 방법(예를 들어, 확률적 경사 하강법)은 이러한 능력을 제한할 수 있다(Deletang et al., 2022). 여기서는 트랜스포머 및 LSTM과 같은 기성 아키텍처를 사용하는 동시에 적절한 데이터 교육 프로토콜을 설계하는 데 중점을 둡니다. 이를 해결하기 위해 범용 컴퓨터인 UTM(Universal Turing Machine)에서 데이터를 생성한다. 이 "보편적인 데이터"에 대한 훈련은 네트워크를 보편적인 귀납 전략을 학습하는 쪽으로 네트워크를 안내하는 광범위한 계산 가능한 패턴의 공간에 노출시킨다.\n' +
+      '\n' +
+      '**우리의 주요 기여는:**_1) UTM 데이터:_ 처음으로 UTM 데이터를 메타-트레인 신경망에 사용한다. _ 2) 이론적 분석:_ 한계에서 SI에 수렴하는 UTM 데이터 생성 과정 및 훈련 프로토콜에 대한 이론적 분석을 제공한다. _ 3) Extensive Experiments:_ 우리는 다양한 복잡성과 보편성을 갖는 다양한 신경망 아키텍처(예를 들어, LSTM, 트랜스포머) 및 알고리즘 데이터 생성기로 포괄적인 실험을 수행한다. [https://github.com/google-deepmind/neural_networks_solomonoff_induction](https://github.com/google-deepmind/neural_networks_solomonoff_induction)에서 발전기를 오픈소싱하였다.\n' +
+      '\n' +
+      '우리의 결과는 모델 크기가 증가하면 성능이 향상된다는 것을 보여주며, 모델 스케일링이 점점 더 보편적인 예측 전략을 학습하는 데 도움이 된다는 것을 보여준다. UTM 데이터로 학습된 대형 트랜스포머는 재사용 가능한 범용 패턴을 획득했음을 암시하는 다른 작업으로 성공적으로 학습을 옮기고, 가변차 마르코프 소스에서 대형 LSTM과 트랜스포머는 최적의 성능을 달성하여 SI에 필요한 프로그램을 통해 베이지안 혼합물을 모델링하는 능력을 강조한다.\n' +
+      '\n' +
+      '## 1 Background\n' +
+      '\n' +
+      '**노트.** 알파벳\\(\\mathcal{X}\\)은 유한하고 비어 있지 않은 기호 집합이다. 길이 \\(n\\)의 문자열 \\(x_{1:n}x_{2}\\ldots x_{n}\\in\\mathcal{X}^{n}\\)은 \\(x_{1:n}\\)으로 표시된다. \\(x_{1:n}\\), \\(j\\leq n\\)의 접두사 \\(x_{1:j}\\)은 \\(x_{\\leq j}\\) 또는 \\(x_{<j+1}\\)으로 표시되며, 빈 문자열은 \\(\\epsilon\\)으로 표시된다. 우리의 표기법은 스트링 \\(x_{1:n}\\)과 정수 \\(m>)이 주어졌을 때 out-of-bounds 인덱스로 일반화된다. n\\), \\(x_{1:m}:=x_{1:n}\\) 및 \\(x_{n:m}:=\\epsilon\\)을 정의한다. 두 문자열의 연접은 \\(s\\)과 \\(r\\)으로 표시된다. 표현식 \\([\\])! [A]\\!]\\)는 \\(A\\)이 참이면 \\(1\\)이고 그렇지 않으면 \\(0\\)이다.\n' +
+      '\n' +
+      '\'반항\' 반측정은 임의의 유한수열(\\{0,1\\}\\)로 가정된 일부 유한알파벳(\\(\\mathcal{X}\\)에 대한 무한수열과 유한수열(\\mathcal{X}^{\\infty}\\cup\\mathcal{X}^{*}\\)에 대한 확률측도(P\\)이다. (in)finite sequence _starts_ with \\(x\\)가 될 확률을 \\(\\mu(x)\\)라 하자. 적절한 분포는 \\(\\sum_{a\\in\\mathcal{X}}\\mu(xa)=\\mu(x)\\을 만족하지만, semimeasures는 _probability gap_를 나타내고 \\(\\sum_{a\\in\\mathcal{X}}\\mu(xa)\\leq\\mu(x)\\을 만족한다.\n' +
+      '\n' +
+      '**튜링 머신.** 튜링 머신(TM)은 기호의 문자열을 입력으로 하고, 기호의 문자열을 출력한다. ( \\(z\\)을 읽고 멈춘 후), 즉 \\(T(z)=x\\). 이를 위해 계산 단계에서의 출력 문자열을 빈 문자열인 \\(\\epsilon\\)인 \\(T^{s}(z)=x\\으로 정의한다. 우리는 유니버설 튜링 머신(Universal Turing Machines \\(U\\))에 대해 유사한 표기법을 채택한다. 모노톤 TMs(아래 정의 1 참조)는 입력 프로그램을 점진적으로 읽으면서 출력 문자열을 점진적으로 구축할 수 있는 특수 TMs로, 실험에서 사용하는 편리한 실용적인 속성이다.\n' +
+      '\n' +
+      '**Definition 1**(Monotonicity): _A universal machine \\(U\\)은 \\(U(p)=y\\)과 \\(U(q)=x\\)이 있는 모든 \\(p,q,x,y\\)에 대하여 \\(\\ell(x)\\geq\\ell(y)\\)과 \\(p\\sqsubseteqq\\)이 \\(y\\sqsubseteq x\\을 의미한다면, \\(p\\sqsubseteqq\\)은 \\(q\\)의 접두사 문자열임을 의미한다. 보다 자세한 설명은 부록 C 참조._\n' +
+      '\n' +
+      '*Solomonoff Induction (SI).** 관측된 수열 \\(x_{1:n}\\)이 주어졌을 때 다음 심볼 \\(x_{n+1}\\)에 대한 최적의 예측은 \\(\\mu(x_{n+1}|x_{1:n})=\\mu(x_{1:n+1})/\\mu(x_{1:n})\\)이며, \\(\\mu\\)이 수열에 대한 참(그러나 알려지지 않은) 계산 가능한 확률 분포라고 가정한다. 반면, SI는 Solomonoff Universal Prior로 널리 알려진 단일 범용 Semimeasure \\(M\\)을 사용하여 다음 심볼 \\(x_{n+1}\\)을 예측한다(아래 정의를 참조).\n' +
+      '\n' +
+      '**Definition 2**((Monotone) Solomonoff Prior).: _Let \\(U\\)을 범용 모노톤 기계로 하고, 그 다음 솔로몬오프 이전을 \\(M(x)\\:=\\\\sum_{p:U(p)=x*}2^{-\\ell(p)}\\)로 정의하며, 합은 모든 \\(p\\in\\{0,1\\}^{*}\\)에 걸쳐 있으며, 여기서 출력 \\(x*\\)은 \\(x\\)으로 시작하는 문자열이고 전체 프로그램 \\(p\\)은 \\(U\\)에 의해 판독되었다.\n' +
+      '\n' +
+      '우리는 \\(M\\)을 사용하여 사후 예측 분포 \\(M(x_{n+1}|x_{1:n})=\\frac{M(x_{1:n}x_{n+1})}{M(x_{1:n})}\\)을 구성할 수 있다(도 1 참조). 이는 프로그램 공간 \\(M(x_{n+1}|x_{1:n})=\\sum_{p}P(p|x_{1:n})]에 대한 베이지안 추론을 수행하는 것과 같다. [U(p)=x_{1:n}x_{n+1}*]\\!]\\)(접두사가 없는 프로그램 및 시퀀스의 임의의 연속 \\(*\\)의 경우, 여기서 \\(P(p|x_{1:n})\\)는 사전 \\(P(p)=2^{-\\ell(p)}\\) 및 제로-원 우도 \\(P(x|p)=[\\!) [U(p)=x*]\\!]\\.\n' +
+      '\n' +
+      '솔로모노프 (1964a)는 _any_ 계산 가능한 확률 분포 \\(\\mu\\): \\(\\sum_{t=1}^{\\infty}\\sum_{x_{<t}}\\mu(x_{<t})\\sum_{x\\in\\mathcal{X}}(M(x|x_{<t})- \\mu(x|x_{<t}))^{2}\\leq K(\\mu)\\ln 2<\\infty\\), 여기서 \\(K(\\mu):=\\min_{p\\{\\ell(p):U(p)=\\mu\\\\)는 생성기의 Kolmogorov 복잡도 (Li et al., 2019)를 비트 스트링으로 나타낸다. 이것은 부등식의 왼쪽에는 무한합이 있고 오른쪽에는 상수가 있다는 것을 알아차릴 때 알 수 있다. 솔로모노프 이전은 참조 UTM의 선택을 고려할 때 본질적으로 최상의 범용 예측 변수이다.\n' +
+      '\n' +
+      '반측정이 아니라 적절한 척도, 즉 적절하게 정규화된 솔로모노프 이전(다른 것들(Wood et al., 2013))의 정규화된 버전이 존재한다(아래 정의 3 참조). 그것은 \\(x\\)가 계산이 불가능한 서브 시퀀스(Lattimore et al., 2011)를 포함할 때 더 좋은 특성을 가지며, 표준 Solomonoff의 수렴 특성을 이전에 유지한다. 이 버전의 SI는 신경 모델에 의해 학습되는 데 적합하고(또한 적절하게 정규화됨), 반측정(확률 갭 없음)보다 더 효율적인 샘플링을 나타내기 때문에 우리에게 흥미롭다.\n' +
+      '\n' +
+      '**Definition 3** (Normalized Solomonoff Prior).: _For \\(a\\in\\mathcal{X}\\), Solomonoff 정규화는 \\(M^{norm}(\\epsilon):=1\\), \\(M^{norm}(a|x)\\:=\\\\frac{M(xa)}{\\sum_{x\\in\\mathcal{X}M(xa)}\\ =\\\\frac{M^{norm}(xa)}{M^{norm}(x)}{M^{norm}(x)\\)으로 정의된다.\n' +
+      '\n' +
+      '**알고리즘 데이터 생성 소스 및 촘스키 계층.** 알고리즘 데이터 생성 소스\\(\\mu\\)는 단순히 랜덤 입력이 공급되는 TM\\(T\\)에 의해 계산 가능한 데이터 소스이다. 컴스키 계층(CH)(Chomsky, 1956)으로 알려진 메모리 구조를 기반으로 하는 기계에 대한 자연스러운 계층 구조가 있으며, 이는 시퀀스 예측 문제 및 이를 해결하는 관련 오토마타 모델을 복잡성을 증가시켜 분류한다. CH에는 정규, 컨텍스트 프리, 컨텍스트 민감성 및 재귀적으로 열거 가능한 4가지 수준이 있다. 각 레벨에서 문제를 해결하려면 유한 상태, 스택, 유한 테이프 및 무한 테이프와 같은 서로 다른 메모리 구조가 필요하다. SI에 대한 합리적인 근사치는 계층 구조의 상단에 앉아야 한다는 점에 유의해야 한다.\n' +
+      '\n' +
+      '*Meta-Learning.** 파라메트릭 모델 \\(\\pi_{\\theta}\\)은 다음 단계를 반복함으로써 메타 학습될 수 있다. (그림 1 참조): 1) 작업 분포에서 작업 \\(\\tau\\)(우리의 경우 프로그램)을 샘플링하고, 2) 작업 분포에서 출력 시퀀스 \\(x_{1:n}\\)을 샘플링하고, 3) 로그 손실 - \\(\\sum_{t=1}^{n}\\log\\pi_{\\theta}(x_{t}|x_{ct})으로 모델 \\(\\pi_{\\theta}\\)을 트레이닝한다. Ortega et al. (2019)는 완전 훈련된 \\(\\pi_{\\theta})(\\pi_{\\theta}(x_{t}|x_{ct})\\approx\\sum_{\\tau}p(\\tau|x_{ct})p(x_{t}|x_{ct},\\tau)\\)에서 \\(p(x_{t}|x_{ct},\\tau)\\)가 예측 분포이고, \\(p(\\tau|x_{ct})\\)이 사후 예측 인자임을 보였다 (Ortega et al., 2019). 더 형식적으로, \\(\\mu\\)이 적절한 척도이고 \\(\\hat{\\theta}(x)=\\frac{1}{J}\\sum_y\\in D}[[y=x]]\\에서 샘플링된 길이\\(n\\)의 시퀀스라면, \\(\\pi_{\\theta}(x)=\\hat{\\theta}(x)\\)에 대해 log-loss\\(\\text{Loss}(\\theta):=-\\frac{1}{J}\\sum_{x\\in D}\\sum_{x\\log\\pi_{\\theta}(x)=\\hat{\\theta}(x)\\hat{\\theta\\)가 최소화될 수 있다.\n' +
+      '\n' +
+      'Solomonoff 유도에 대한 근사치로##2 메타학습\n' +
+      '\n' +
+      '다음으로 우리는 다음 질문에 대한 답을 제공하는 것을 목표로 한다. 첫째, _SI를 근사화할 수 있는 메타 학습 데이터를 어떻게 생성합니까?_ 둘째, 대부분의 아키텍처가 제한된 시퀀스 길이로 훈련된다는 점을 감안할 때, 이것이 신경 모델의 메타 훈련 프로토콜에 어떻게 영향을 미치는가?_ 셋째, 보편성을 잃지 않고 서로 다른 프로그램 분포(흥미로운 프로그램을 더 많이 만들 수 있음)를 사용할 수 있습니까?_\n' +
+      '\n' +
+      '### 올바른 데이터세트: 솔로모노프 샘플로부터 솔로모노프를 추정하는 것\n' +
+      '\n' +
+      '여기서 우리의 목표는 모델 \\(\\pi_{\\theta}\\)을 훈련시킬 때 \\(M\\)(그림 1 참조)에 대한 근사치를 얻을 수 있도록 데이터 생성 프로세스를 정의하는 것이다. 우리는 계산이 가능하고 계산이 가능한 경우를 고려합니다. 모든 증명은 부록 A에서 찾을 수 있다.\n' +
+      '\n' +
+      '** 솔로모노프 데이터 생성기(계산 불가능).** 단일 톤 UTM의 (읽기 전용) 입력 테이프에 균일한 랜덤 비트 \\(p\\)를 넣으면 출력 테이프에 (무한 문자열 \\(x\\)의 일정한 분포 \\(M\\)이 생성된다. 이것은 정확히 Solomonoff의 이전 \\(M\\)과 반측정이다.(섹션 1 참조) \\(M\\)에서 샘플링하는 것은 사소한 일이다; 우리는 프로그램이 작업에 해당하는 표준 메타 학습 설정과 정확히 어떻게 일치하는지 설명했다. \\ (M\\)은 보다 형식적인 정의 2와 같다. 다음의 명제는 일관성을 보인다.\n' +
+      '\n' +
+      '**명제 4**.: _Let \\(D:=(x^{1},...,x^{J})\\)는 semimeasure \\(\\mu\\)(예: \\(M\\))으로부터 샘플링된 \\(J\\)(in)finite 시퀀스이다. \\(\\mu\\)은 다음과 같다. \\(\\hat{\\mu}{D}(x)\\:=\\\\frac{1}{|D|}\\sum_{y\\in D}[\\ell(y)\\geq\\ell(x)\\\\wedge\\y_{1:\\ell(x)}=x]\\stackrel{{w.p.1}}{\\longrightarrow}}\\mu(x)\\\\(|D|\\to\\infty\\)에 대한 \\(\\hat{\\mu}{D}(x)\\:=\\frac{1}{|D|}\\sum_{y\\in D}[\\ell(y)\\geq\\ell(x)\\wedge\\y_{1:\\ell(x)}=x]\\stackrel{{w.p.1}}{\\longrightarrow}}\\mu(x)\\\n' +
+      '\n' +
+      '불행히도 우리가 위의 \\(M\\)을 사용하는 것을 막는 세 개의 무한대가 있다. 무한히 많은 프로그램들이 있고, 프로그램들은 영원히 루프할 수 있으며, 출력 스트링들은 무한한 길이를 가질 수 있다. 따라서 우리는 이전에 솔로모노프의 다음 계산 가능한 버전을 정의한다.\n' +
+      '\n' +
+      '**Definition 5**(Computable Solomonoff Prior).: _프로그램을 \\(\\leq L\\)의 길이로 하고 \\(s\\) 단계( \\(U^{s}\\)로 표시) 후에 \\(U\\)을 중지한다. 또는 출력이 \\(n\\)에 도달하면. 그리고,_\n' +
+      '\n' +
+      '[M_{s,L,n}(x)\\:=\\\\sum_{p\\in\\{0,1\\}^{s+\\{p\\}}(p)\\simeq x*}2^{-\\ell(p)\\text{if}\\\\ell(x)\\leq n\\\\text{and}\\\\0\\text{otherwise}\\]는 솔로몬프 이전의 계산 가능한 버전이고 반측정이다.\n' +
+      '\n' +
+      '우리는 \\(D^{J}:=(x^{1},...,x^{J})\\)에 대해 위에서 설명한 것과 동일한 사소한 방법으로 \\(M_{s,L,n}\\)으로부터 \\(D^{J}:=(x^{1},...,x^{J})\\)을 샘플링할 수 있지만, 이제 관련된 계산은 유한하다. 샘플링된 모든 스트링은 \\(\\leq n\\)을 갖는데, 이는 \\(\\ell(x)>n\\)에 대해 \\(M_{s,L,n}(x):=0\\이기 때문이다. 다음으로 메타 학습 데이터의 일관성을 보여준다.\n' +
+      '\n' +
+      '**명제 6**. : _Let \\(D^{J}:=(x^{1},...,x^{J})\\)을 측도 \\(M_{s,L,n}\\)의 샘플로 하자. 그리고 나서 \\(\\hat{M}_{D^{J}}(x)=\\frac{1}{J}\\sum_{y\\in D^{J}}[\\!] [\\ell(y)\\geq\\ell(x)\\\\wedge\\y_{1:\\ell(x)}=x]\\!]\\\\longrightarrow\\\\M_{s,L,n}(x)\\\\\\text{ for }\\\\J\\to\\infty\\._\\\n' +
+      '\n' +
+      '\\(M(x)=\\lim_{s,L,n\\to\\infty}M_{s,L,n}(x)=\\sup_{s,L,n}M_{s,L,n}(x)\\이므로, 특히 \\(s,L,n,J\\to\\infty\\에 대한 \\(\\hat{M}_{D^{J}}\\toM\\)을 갖는다. \\(D^{J}\\)은 \\(s,L,n\\)에 따라 달라지지만, 이것은 \\(s(j),L(j),n(j)\\)을 무한대로 가는 임의의 함수로 선택하고 \\(M_{s(j),L(j),n(j)}(x)\\(j=1,2,3,...\\)에 대한 \\(M_{s(j),L(j),n(j)}(x)\\에서 \\(x^{j}\\)을 샘플링함으로써 쉽게 피할 수 있다.\n' +
+      '\n' +
+      '**Remark 7**.: _\\(M_{s,L,n}\\)는 계산가능하지만, 여전히 두 가지 불편을 겪는다. 첫째, 표본 추출은 반측도이며 확률 격차를 나타내기 때문에 비효율적이다. 둘째, 프로그램이 중단되거나 무한한 비인쇄 루프에 끝나는지(훈련할 때 확률 격차를 "흡수" 토큰으로 채우기) 구별해야 한다. 우리는 정의 3과 5를 결합하기 전에 정규화되고 계산 가능한 솔로모노프를 추정함으로써 이러한 불편함을 우회할 수 있다.\n' +
+      '\n' +
+      '우리는 다음과 같이 (계산 가능한) 정규화된 Solomonoff, \\(M^{norm}_{s,L,n}(x)\\)을 추정할 수 있다.\n' +
+      '\n' +
+      '**Proposition 8**: _Proposition 6의 정의를 사용하여 우리는 그_\n' +
+      '\n' +
+      '\\[\\hat{M}^{norm}_{s,L,n}(x_{t}|x_{<t})\\ =\\\\frac{\\sum_{y\\in D^{J}}[\\\\! [\\ell(y)\\geq t\\\\wedge\\ y_{1:t}=x_{1:t}]\\!}{\\sum_{y\\in D^{J}[\\\\!] [\\ell(y)\\geq t\\wedge\\y_{<t}=x_{<t}]\\!]}\\\\stackrel{{J\\to\\infty}{{\\longrightarrow}}\\\\\\M^{norm}_{s,L,n}(x_{t}|x_{<t})\\]\n' +
+      '\n' +
+      '그리고 나서, 우리는 \\(t=1,...,n\\)보다 \\(\\hat{M}^{norm}_{s,L,n}(x)\\to M^{norm}_{s,L,n}(x)\\to M^{norm}(x)\\to M^{norm}(x)\\to M^{norm}(x)\\to M^{norm}(x)\\hat{M}^{norm}_{s,L,n}(x)을 얻을 수 있다.\n' +
+      '\n' +
+      '**요약.** 명제 4, 6 및 8은 솔로몬프 데이터 생성기에 의해 생성된 데이터와 각각의 변형(계산가능 및 정규화된 계산가능)이 통계적으로 일관되며, 이 데이터에 대한 메타-트레이닝은 추정기가 각각의 솔로몬프 버전(실현가능 및 학습가능 가정 하에)으로 수렴하도록 할 것임을 명시한다.\n' +
+      '\n' +
+      '고정 시퀀스 길이를 이용한 솔로몬프 데이터의### 학습 모델\n' +
+      '\n' +
+      '대부분의 신경망 모델(특히 트랜스포머)은 고정된 길이\\(n\\)의 훈련 시퀀스를 필요로 한다. 이 때문에 SI에 대한 수렴을 유지하기 위해 n\\(n\\)보다 짧은 시퀀스에 대한 손실 함수에 약간의 수정이 필요하다. 우리는 유한한 값뿐만 아니라 무한한 값을 갖기 때문에 \\(M^{\\cdots}_{s,L,n}\\)에서 \\(s,L,n\\)을 떨어뜨린다. 본 논문에서는 정규화된 Solomonoff 버전인 \\(M^{norm}\\)에 수렴하는 훈련 프로토콜을 기술하는데 중점을 둔다. 우리는 표준 비정규화 버전(\\(M\\))에 관심이 있는 독자들을 부록 B에 추천한다.\n' +
+      '\n' +
+      '신경회로망을 이용한 정규화된 Solomonoff \\(M^{norm}\\)에 수렴하기 위해 \\(M^{norm}\\)으로 수렴하기 위해 \\(D^{J}\\)에 \\(\\mathcal{X}\\)의 임의의 기호로 \\(n\\)의 길이로 \\(x^{j}\\)을 패딩하고 \\(\\ell(x^{j})\\에서 log-loss short를 절단한다. 그렇게 할 때 로그 손실은 형태를 취한다(명제 8을 사용하는 도출을 위해 부록 B.1 참조):\n' +
+      '\n' +
+      '(\\theta)\\=\\-\\sum_{t=1}^{n}\\sum_{x_{<t}}\\Big{(}\\sum_{x_{t}}\\hat{M}_{D^{J}}(x_{1:t})\\Big{)}\\Big{(}\\sum_{x_{t}}\\hat{M}^{norm}(x_{t}|x_{<t})\\log\\pi_{\\theta}(x_{t}|x_{<t})\\Big{}}\\tag{1}\\t}\n' +
+      '\n' +
+      '이 형태에서는 원하는 대로 \\(\\pi_{\\theta}(x_{t}|x_{<t})=\\hat{M}^{norm}(x_{t}|x_{<t})에 대해 마지막 브라켓이 어떻게 손실되는지를 쉽게 볼 수 있다. 이는 신경망 모델\\(\\pi_{\\theta}(x)\\)이 \\(\\hat{M}^{norm}(x)\\)으로 수렴함을 의미한다. \\(\\text{Loss}(\\theta)\\)는 _not_는 \\(x^{j}\\)의 패딩에 의존하므로, 임의의 패딩은 동일한 구배 및 동일한 해로 이어진다.\n' +
+      '\n' +
+      '신경모델이 \\(\\hat{M}^{\\cdots}\\)을 나타낼 수 있다는 (비현실적인) 가정 하에서, 학습 알고리즘은 \\(\\pi_{\\theta}\\)이 \\(\\hat{\\mu}=\\hat{M}^{\\cdots}\\)으로 수렴한다는 것을 의미한다. 마찬가지로, \\(M^{\\cdots}_{s(j),L(j),n}(x)\\에서 \\(j=1,2,3,...\\)으로 샘플링된 \\(x^{j}\\)에 대해 신경망 모델을 학습하면, (M^{\\cdots}_{\\infty,\\infty,n}\\)으로 수렴한다. 시간이 지남에 따라 문맥 길이\\(n\\)가 증가하는 신경 모델의 경우, \\(\\hat{M}^{\\cdots}\\to M^{\\cdots}_{\\infty,\\infty,\\infty}\\)까지도 가능하다. 이론적으로는 가능하지만, 이를 달성하기 위해 극복해야 하는 많은 실용적인 과제가 있으며, 그 중 하나는 프로그램을 효율적으로 샘플링하는 방법이다.\n' +
+      '\n' +
+      '비균일 시료의#### 솔로몬프\n' +
+      '\n' +
+      '실용적인 목적을 위해, 프로그램들에 대한 비균일(가능하게는 학습된) 분포로부터의 샘플링은 효율성에 유리할 수 있다. BrainPhoque 언어(나중에 실험에서 사용하는)의 경우 \'흥미로운\' 프로그램의 수율을 137배 증가시킨다(부록 표 3 참조). 아래에서는 보편성을 잃는 것에 대한 우려 없이 이것이 이루어질 수 있음을 보여준다.\n' +
+      '\n' +
+      '\\(Q\\)을 \\(X^{\\infty}\\), \\(Q(q):=Q(\\Gamma_{q})\\), 수열이 \\(q\\)으로 시작하는 \\(Q\\)-확률로 하자. 여기서 \\(\\Gamma_{q}:=\\{\\omega\\in X^{\\infty}:q\\sqsubseteq\\omega\\}=qX^{\\infty}\\). 우리는 _generalized Solomonoff semimeasure_를 다음과 같이 정의한다.\n' +
+      '\n' +
+      '=\\sum_{q:T(q)=x\\ast}Q(q)\\\\text{with special case}\\\\\\M_{U}(x)\\:=\\sum_{q:U(q)=x\\ast}2^{-\\ell(q)}\\]\n' +
+      '\n' +
+      'universal TM\\(T=U\\) and unbiased coin flips \\(Q(q)=2^{-\\ell(q)}\\). \\ (M_{U}\\)는 그것이 모든 하위 반-계산 가능한 반측정들에 걸쳐 베이지안 혼합물이라는 점에서 강하게 보편적이다(Wood et al., 2011). 다음으로, 매우 온화한 조건에서 \\(Q\\), \\(M_{U}^{Q}\\)도 보편적이라는 것을 보여준다. 이 발견은 (Sterkenburg, 2017)과 유사하지만 독립적으로 발견된 증거는 더 짧고 더 자급자족한다.\n' +
+      '\n' +
+      '**정리 9** (Universality of generalized Solomonoff semimeasures): \\(M_{U}^{Q}(x)\\)_는 매우 보편적이다. \\(Q\\)이 계산가능한 측정치이고 \\(Q(q)>0\\\\forall q\\in X^{\\ast}\\) 및 \\(n\\to\\infty\\)에 대한 \\(Q(q_{1:n})\\to0\\). 더 정확하게는, 위의 성질을 가진 모든 유니버설 모노톤 TM\\(U\\)과 모든 \\(Q\\)에 대해, (증명 s.th. \\(M_{U}^{Q}(x)=M_{V}(x)\\\\forall x\\)의 유니버설 MTM\\(V\\)이 존재한다. 부록 C._의 증명\n' +
+      '\n' +
+      '**위의 가정에 유의.** 우리는 실제로 얻기 어렵고 신경 모델의 귀납적 편향의 관련성을 감소시키는 무한한 수의 데이터 포인트와 근사자의 보편성(및 학습성)을 가정했다. 그러나 유한 데이터의 경우 유도 편향은 강력한 일반화를 위해 중요하다. 우리는 신경 모델의 귀납적 편향과 보편성의 영향에 대한 이론적 작업을 논문의 범위에서 제외하고 다음 섹션에서 신경망 성능에 대한 실험적 증거를 제공한다.\n' +
+      '\n' +
+      '##3 실험방법\n' +
+      '\n' +
+      '우리는 비교 및 분석을 위해 UTM에 훈련된 다양한 신경망 아키텍처 및 크기와 다른 두 가지 유형의 알고리즘으로 생성된 데이터를 평가하는 것을 목표로 한다.\n' +
+      '\n' +
+      '**VOMS.** A\\(k\\)-Markov 모델은 임의의 단계 \\(t\\)에서 마지막 \\(k\\) 문자만을 사용하여 다음 문자 확률을 출력하는 것에 의해 문자 스트링에 확률을 할당한다. VOMS는 마르코프 모델로서 \\(k\\)의 값이 가변적이며 불균일한 깊이의 트리를 사용하여 얻어진다. 여기서 트리는 데이터를 생성하는 프로그램과 같다. 생성된 데이터에 대해 트리와 메타 트레인(meta-train)을 샘플링한다. 우리는 베이즈-최적 예측자가 존재하는 _binary_VOMS를 고려한다: Context Tree Weighting (CTW) 예측자(Willems et al., 1997, 1995)는 우리의 모델을 비교한다. CTW는 범용 w.r.t.\\(n\\)-마코프 소스일 뿐이며, SI와 같은 모든 계산 가능한 함수는 아니다. VOMS에 대한 더 많은 직관과 데이터를 생성하는 방법 및 CTW 베이즈 최적 예측 변수를 계산하는 방법은 부록 D.2를 참조하십시오.\n' +
+      '\n' +
+      '**Chomsky Hierarchy(CH) Task.** Chomsky 계층구조의 상이한 레벨에 놓여 있는 Deletang et al.(2022)로부터 15개의 알고리즘 작업(예를 들어, 산술, 반전 문자열)을 취한다(모든 작업의 설명은 부록 D.3 참조). 이러한 작업은 비교 및 모델의 알고리즘 성능을 평가하는 데 유용합니다. Deletang et al.(2022)과 달리, 그들은 _individual_ tasks에 대해 트레이닝을 하는 반면, 우리는 모든 task _simultaneously_에 대해 메타 트레이닝에 관심이 있다. 우리는 모든 태스크들이 동일한 알파벳 \\(\\mathcal{X}\\) (더 작은 알파벳으로 태스크들의 알파벳을 확장)을 사용하는지 확인한다. 우리는 Deletang et al. (2022)에서와 같이 변환을 고려하지 않고, 시퀀스 예측으로 추가 구분자 토큰 즉, \\(\\{(x_{i}\\in\\mathcal{X},y_{i}\\in\\mathcal{X})\\}_{i=1}^{I}\\)과 구분자 \'\'에 대한 입력 및 출력을 연결하여 \\(z:=(x_{1},y_{1};x_{2},y_{2};\\dots x_{n},y_{n};\\dots)\\)의 시퀀스를 구성한다. 우리는 출력 심볼에 대한 후회(및 정확성) _only_를 사용하여 모델을 평가하고, 입력들이 일반적으로 랜덤하고 태스크 수행에 대한 정보가 없기 때문에 입력들을 마스킹한다. 출력 시간-지수의 집합을 나타내는 \\(O_{z}\\)을 계산하면, 궤적 \\(z\\)에 대한 정확도를 \\(A(z):=\\frac{1}{|O_{z}|}\\sum_{t\\in O_{z}[\\arg\\max_{y}\\pi_{\\theta}(y|z_{<t})=z_{t}]\\으로 계산한다. 자세한 내용은 부록 D.3을 참조하십시오.\n' +
+      '\n' +
+      '**유니버설 튜링 머신 데이터.** 섹션 2.1 및 2.2에 따라 랜덤 프로그램(임의의 구조화된 시퀀스 생성 프로세스를 인코딩함)을 생성하고 UTM에서 실행하여 출력을 생성한다. 프로그램은 원칙적으로 소의 이미지, 체스 프로그램 또는 셰익스피어의 책을 생성할 수 있지만, 물론 이러한 프로그램은 샘플링될 가능성이 극히 낮다(예시적인 출력에 대해서는 부록의 도 6 참조). UTM의 선택으로, 우리는 주로 샘플링 프로세스를 돕고 샘플링된 모든 프로그램이 유효한지 확인하기 위해 BrainPhoque라고 부르는 BrainF*ck UTM(뮬러, 1993)의 변형을 구성했다. 출력 기호 알파벳 크기를 촘스키 태스크와 동일한 \\(|\\mathcal{X}|=17\\)으로 설정하여 태스크 전달 평가를 가능하게 하였다. BrainPhoque는 단일 작업 테이프와 쓰기 전용 출력 테이프를 가지고 있다. 작업 테이프 포인터(WTP)를 이동하고 WTP( _datum_) 아래의 값을 삭제/증가하고 점프를 수행하고 데이터를 출력에 추가하라는 7가지 명령이 있습니다. 우리는 모든 프로그램을 유효하게 만들기 위해 불균형한 괄호를 건너뛴다. 프로그램 배포를 약간 변경하지만\n' +
+      '\n' +
+      '그림 2: VOMS 데이터에 대한 \\(|\\) 평가. **왼쪽:** 트랜스포머-L(빨간색) 및 베이즈-최적 CTW 예측기(파란색)의 예제 시퀀스 및 고도로 중첩된 예측. 하단 패널은 지상 진실을 순간적이고 누적적으로 후회한다. **중간:** 6k 시퀀스(길이 256, 최대)에 대한 평균 누적 후회. 서로 다른 네트워크(3개의 종자) 및 크기(S, M, L)에 대한 CTW 트리 깊이 24, 분포 내). 더 큰 모델은 모든 아키텍처에 대해 더 나은 성능을 발휘하며 Transformer-L 및 LSTM-L은 최적의 CTW 예측 변수와 일치합니다. **Right:** 길이 일반화(1024단계) LSTM은 길이가 더 긴 것으로 일반화되는 반면 트랜스포머는 그렇지 않다.\n' +
+      '\n' +
+      '이것은 정리 9에 따른 문제가 아니다: 각각의 유효한 프로그램은 샘플링될 0이 아닌 확률을 갖는다. 프로그램은 섹션 2.1 및 2.2에 설명된 바와 같이 200개의 메모리 셀을 갖는 \\(s=1000\\) 단계에 대해 생성 및 동시에 실행되며 최대 출력 길이는 \\(n=256\\) 심볼이다. 이상적으로는 SI를 최적의 기준선 비교로 사용해야 하지만 계산이 불가능하고 다루기 어렵기 때문에 출력을 생성하는 단축 프로그램(불필요한 괄호 제거 또는 자체 취소 명령)의 사전 확률을 사용하여 로그 손실에 대한 상한(오히려 느슨하지만 사소한 것)을 계산한다. 브레인포크와 샘플링 절차에 대한 자세한 설명은 부록 E를 참조하십시오.\n' +
+      '\n' +
+      '**Neural Predictors.** 우리의 신경망 모델 \\(\\pi_{\\theta}\\)은 데이터 생성 소스로부터 심볼 \\(x_{<t}\\)을 순차적으로 관찰하고 다음 심볼 확률 \\(\\pi_{\\theta}(\\cdot|x_{<t})\\을 예측한다. 우리는 log-loss\\(\\text{Loss}(\\theta):=-\\frac{1}{n}\\sum_{t=1}^{n}\\log\\pi_{\\theta}(x_{t}|x_{<t})\\을 사용하여 모델을 훈련하므로 입력 시퀀스의 무손실 압축을 최대화한다(Deletang et al., 2023). 우리는 ADAM 최적화기(Kingma and Ba, 2014)와 함께 확률적 경사 하강을 사용한다. 우리는 배치 크기 128, 시퀀스 길이 256, 학습률 \\(10^{-4}\\)을 사용하여 500K 반복 훈련을 한다. UTM 데이터 소스에서 정규화된 SI 버전을 근사화하기 위해 로그 손실을 줄였다(섹션 2.2 참조). 본 논문에서는 RNN, LSTM, Stack-RNN, Tape-RNN, Transformers의 구조를 평가한다. Stack-RNNs(Joulin and Mikolov, 2015) 및 Tape-RNNs(Deletang et al., 2022)는 각각 스택 및 테이프 메모리로 증강된 RNNs로서, 심볼들을 저장하고 조작한다는 점에 주목한다. 이러한 외부 메모리는 Deletang et al.(2022)에서 보여지는 바와 같이 네트워크가 더 잘 예측하도록 도와야 한다. 폭과 깊이를 동시에 증가시켜 각 아키텍처에 대해 세 가지 모델 크기(S, M, L)를 고려한다. 우리는 모델 변화당 3개의 매개변수 초기화 시드를 훈련한다. 모든 아키텍처 세부사항은 부록 D.1을 참조하십시오.\n' +
+      '\n' +
+      '평가 절차.** 우리의 주요 평가 메트릭은 _expected instantaneous regret_, \\(R_{\\pi\\mu}(t):=\\mathbb{E}_{x_{\\pi}\\sim\\mu}\\left[\\log\\mu(x_{t}\\mid x_{<t})-\\log\\pi(x_{t}\\mid x_{<t})\\right]\\)(at time \\(t\\)), 및 _cumulative expected regret_, \\(R_{\\pi\\mu}^{T}:=\\sum_{t=1}^{T}R_{\\pi\\mu}(t)\\)이며, 여기서 \\(\\pi\\)는 모델이고 \\(\\mu\\)는 지상진리원이다. 후회가 적을수록 좋다. 우리는 길이 256의 6k 시퀀스에 대해 신경 모델을 평가하는데, 이는 _in-distribution_(훈련에 사용된 것과 동일한 길이)와 _out-of-distribution_로 지칭되는 길이 1024이다.\n' +
+      '\n' +
+      '## 4 Results\n' +
+      '\n' +
+      '**가변 차수 마르코프 소스(VOMS) 결과.** 도 2(왼쪽)에서 우리는 참 샘플(파란색 점), 그라운드 진리(회색), 트랜스포머-L(빨간색) 및 CTW(파란색) 예측과 함께 길이 256의 VOMS 데이터-소스로부터의 예시적인 궤적을 보여준다. 보시다시피 CTW 예측기와 Transformer-L의 예측이 중첩되어 Transformer가 베이지안을 구현하고 있음을 알 수 있다.\n' +
+      '\n' +
+      '도 3 | ** 촘스키 계층화 작업**(작업당 400개)으로부터의 6k 시퀀스에 대한 평가. 모델 크기가 증가함에 따라 누적 후회(**Left**) 및 정확도(**Middle**)는 모든 아키텍처에서 개선된다. 전체적으로 트랜스포머-L은 마진으로 최고의 성능을 달성합니다. **Right:** 길이 일반화(1024단계) 과제당 세부 결과는 부록의 그림 8과 같다.\n' +
+      '\n' +
+      'SI를 수행하는 데 필요한 CTW와 같은 프로그램/트리에서 혼합합니다. 두 번째와 세 번째 패널에서는 순간적 후회와 누적적 후회도 겹친다. 그림 2(중간)은 분포 내 평가된 모든 신경 예측 변수의 누적 후회를 보여준다. 먼저, 모델 크기가 증가함에 따라 누적 후회가 감소하는 것을 관찰한다(S, M, L). 가장 좋은 모델은 트랜스포머-L이 최적의 성능을 달성하는 반면, 가장 나쁜 모델은 RNN과 Tape-RNN이다. 후자의 모델은 외부 메모리를 성공적으로 활용할 수 없습니다. LSTM-L이 어떻게 최적 성능에 근접하게 달성하는지 주목하라. 오른쪽에서는 변압기가 길이 일반화에 실패하는 방법을 보여주는 아웃오브 분배 성능을 보여주지만 LSTM이 가장 잘 수행한다. 모델이 고전하는 위치를 더 잘 이해하기 위해 부록 F, 그림 6(c) 및 6(d)에서 다양한 CTW 트리 깊이와 컨텍스트 길이의 궤적에 걸쳐 평균화된 누적 후회를 보여준다. 모델은 모든 나무 깊이에 대해 균일하게 수행하고 중간 크기의 컨텍스트 길이에 대해 투쟁한다.\n' +
+      '\n' +
+      '**촘스키 계층 결과.** 도 3(왼쪽)에서는 누적 후회와 정확도에 의해 촘스키 계층 작업에 대해 훈련된 모든 모델의 배포 내 성능을 보여준다. 전체적으로 트랜스포머-L은 마진으로 최고의 성능을 달성합니다. 이는 특히 트랜스포머 모델이 알고리즘 추론 능력을 어느 정도 가지고 있음을 시사한다. 오른쪽에서 우리는 트랜스포머가 더 긴 길이로 일반화하는 데 실패하는 방법을 보여주는 모델의 길이 일반화 기능을 보여준다. 부록(그림 8)에서는 각 과제에 대한 결과를 개별적으로 보여주고 있다.\n' +
+      '\n' +
+      '**유니버설 튜링 머신 결과.** 도 4(왼쪽)는 (느슨한) 솔로모노프 어퍼 바운드(UB)를 자명하지 않은 베이스라인으로 하는 UTM 태스크에 대한 평균 누적 후회를 나타낸다(그 설명은 섹션 3 참조). 중간에 우리는 모든 모델들이 어떻게 상당히 좋은 정확도를 달성하는지 보여준다. 이것은 우리 모델이 데이터에 존재하는 광범위한 패턴 세트를 학습할 수 있는 방법을 보여준다(부록 그림 6의 UTM 궤적 예 참조). 일반적으로, 더 큰 아키텍처는 더 낮은 누적 후회를 달성하고 모든 모델은 솔로모노프 상한을 능가한다. 바운드보다 더 잘 수행하는 것은 상위 바운드가 출력을 생성한 기본 프로그램을 사용하여 계산되는 반면 신경 모델에는 이러한 정보가 없기 때문에 사소한 것이 아니다. 그림 9(부록)에서 우리는 프로그램 길이에 대한 누적 후회를 보여주고 예상대로 시퀀스의 기본 프로그램이 길수록 모델의 누적 후회가 더 높다는 것을 관찰하여 프로그램 길이와 예측 어려움 사이에 강한 상관 관계가 있음을 시사한다. 놀랍게도, 그림 5에서 UTM 데이터로 훈련된 트랜스포머 네트워크가 촘스키 작업으로 가장 많이 전달되고 LSTM이 VOMS 작업으로 가장 많이 전달된다는 것을 알 수 있다. VOMS의 경우, 비교가 가능하도록 BrainPhoque UTM으로 알파벳 크기를 2로 설정하여 LSTM과 Transformer 모델을 재훈련하였다. 모든 전송 결과는 UTM 데이터가 이러한 작업에 대해 충분한 전송 가능한 패턴을 포함하고 있음을 시사한다.\n' +
+      '\n' +
+      '##5 토론 및 결론\n' +
+      '\n' +
+      '**LLMs(Large Language Models) 및 Solomonoff Induction.** 지난 몇 년 동안 ML 커뮤니티는 방대한 양의 다양한 데이터에 대한 거대한 모델의 훈련을 목격했다(Hoffmann et al., 2022; Kenton and Toutanova, 2019). 이러한 경향은 우리의 논문의 전제와 일맥상통하며, 즉 점점 더 보편적인 모델을 달성하기 위해서는 많은 아키텍처와 많은 양의 다양한 데이터가 필요하다. LLM은 인상적인 맥락 내 학습 능력을 갖는 것으로 나타났다(Chowdhery et al., 2022; Kenton and Toutanova, 2019). 장거리 일관성 문서에 사전 훈련된 LLM은 공유 잠재 개념을 추론함으로써 몇 가지 예시로부터 새로운 작업을 학습할 수 있다(Wang et al., 2023; Xie et al., 2022). 컨텍스트 내 학습은 (우리의 CTW 실험에 따라) 암시적 베이지안 추론을 수행하고 세계 표현 및 알고리즘을 구축(Li 등, 2023, 2023)(SI를 수행하는데 필요한)하기 때문에 그렇게 할 수 있다. 사실, LLM의 인상적인 맥락 내 일반화 능력은 솔로모노프 귀납법의 대략적인 근사치의 표시라고 주장할 수 있다. 우리의 방법(보편적 데이터에 대한 훈련)에 비해 미리 훈련된 LLM의 장점은 LLM 데이터(책, 코드, 온라인 대화 등)가 인간에 의해 생성되므로 우리가 해결하려는 작업(인간)과 매우 잘 정렬되는 반면, 우리의 UTM은 반드시 인간 작업에 높은 확률을 할당하지 않는다는 것이다.\n' +
+      '\n' +
+      '**UTM 학습.** 본 논문의 정리 9(및 (Sterkenburg, 2017))는 보편성을 유지하면서 UTM의 프로그램 분포를 수정/학습할 수 있는 경로를 열어준다. 이것은 인간 작업과 관련된 프로그램에 높은 확률을 할당하는 분포를 선호하기 때문에 실제로 중요하다. 유사하게, 수네하그와 허터(2014)의 목적은 관심 문제에 정렬된 UTM을 직접 학습하는 것이다. 좋은 UTM 또는 프로그램 배포는 모델을 개선하는 데 사용되는 더 나은 합성 데이터 생성에 기여할 것이다. 이는 머신 러닝 분야에서 매우 성공적으로 사용되는 데이터-증강 기술과 동일할 것이다(Kataoka et al., 2020; Lemley et al., 2017; Perez and Wang, 2017). 정리 9를 갖춘 향후 작업에서는 UTM의 샘플링 프로세스에 대한 최적화를 연구하여 더 많은 인간 정렬 출력을 생성할 계획이다.\n' +
+      '\n' +
+      '**점차 유니버설 아키텍처.** UTM \\(U^{s}(p)\\)(프로그램 \\(p\\))의 출력은 최대 \\(s\\) 계산 단계를 필요로 한다. 근사적인 \\(M_{s,L,n}\\)은 \\(s\\)-깊이 및 문맥 길이 \\(n\\)의 넓은 네트워크(많은 프로그램을 병렬로 표현)를 순전히 필요로 할 것이다. 따라서 더 큰 네트워크는 더 강한 SI 근사치에 더 잘 근사할 것이다. 계산 패턴을 재사용할 수 있는 경우 깊이가\n' +
+      '\n' +
+      '도 4: 6k 시퀀스를 갖는 **UTM 데이터 생성기**에 대한 평가. **왼쪽:** 건축물이 클수록 누적 후회는 줄어든다. 우리는 자명하지 않은 기준선 솔로모노프 상한(UB)보다 더 나은 성능을 보인다. **중간:** UTM 데이터에 대한 평균 정확도는 모델이 UTM 패턴을 빠르게 학습할 수 있음을 보여준다. **Right:** 길이 일반화(1024단계) 프로그램 길이당 자세한 결과는 그림 9와 같다.\n' +
+      '\n' +
+      '그림 5: 3k 궤적에 대해 _UTM-훈련된 모델로부터 **전송 학습**. UTM 데이터에 대해 훈련된 신경 모델의 평균 누적 후회(**Left**) 및 정확도(**Middle-Left**)는 Chosmky 계층 구조의 작업에 대해 평가되었다. 우리는 트랜스포머 모델로부터 정확도가 약간 증가하는 것을 관찰한다. CTW로의 이동은 **중간-오른쪽:** 평균 누적 후회, **오른쪽:** 평균 정확도, \'나이브\'는 무작위 균일 예측 변수입니다.\n' +
+      '\n' +
+      '는 \\(s\\)보다 작다. Transformers는 \\(O(\\log T)\\)-depth에서 길이 \\(T\\)의 모든 오토마타를 나타내는 재사용 가능한 "shortcuts"를 보이는 것으로 보인다 (Liu et al., 2023). 직렬 계산의 양을 증가시키는 대안적인 방법은 이론적인 결과들에 대해 체인-of-thought (Wei et al., 2022) (Hahn and Goyal (2023) 참조)로 이루어진다. 데이터가 제한적일 때 귀납적 편향은 일반화에 중요하다. 다행히 신경망은 유한 데이터 체제에서 SI를 근사화하려고 할 때 매우 편리한 Kolmogorov 복잡성과 호환되는 초기화 시 단순 함수에 대한 암시적 귀납적 편향을 갖는 것으로 보인다(Dingle et al., 2018; Mingard et al., 2023; Valle-Perez et al., 2018).\n' +
+      '\n' +
+      '**제한.** 결과의 경험적 특성을 감안할 때 신경망이 SI의 보편성을 모방한다는 것을 보장할 수 없다. 솔로몬프 유도는 계산이 불가능하거나 결정할 수 없으며 한도에서 정확히 일치하려면 무한한 시간이 필요하다. 그러나, 우리의 이론적 결과는 좋은 근사치가 원칙적으로 메타 훈련을 통해 얻어질 수 있음을 입증하는 반면, 우리의 경험적 결과는 메타 학습을 위한 효율적인 관련 범용 데이터 세트를 구성하는 방법 및 쉽게 훈련할 수 있는 범용 아키텍처를 얻는 방법과 같은 많은 질문이 여전히 열려 있지만 그 방향으로 실질적인 진전을 이룰 수 있음을 보여준다.\n' +
+      '\n' +
+      '**결론.** 우리는 솔로모노프 유도를 근사화하기 위한 원동력으로 메타 학습을 사용하는 것을 목표로 했다. 이를 위해 데이터 생성 과정과 학습 손실을 신중하게 명시하여 수렴(다양한 버전의 SI)이 한계에 도달하도록 해야 했다. 세 가지 다른 알고리즘 데이터 소스에 대한 우리의 실험은 신경망 모델이 알고리즘과 베이지안 혼합물을 구현할 수 있고 더 큰 모델이 향상된 성능을 달성한다는 것을 보여준다. 놀랍게도, UTM 데이터에 대해 훈련된 네트워크는 광범위한 전달 가능한 패턴 세트를 학습했음을 시사하는 다른 도메인으로의 전달을 나타낸다. 우리는 UTM 데이터를 사용하여 접근 방식을 확장하고 기존 대용량 데이터 세트와 혼합함으로써 향후 시퀀스 모델을 개선할 수 있다고 믿는다.\n' +
+      '\n' +
+      '**재현성 진술** 이론 측면에서 우리는 부록에 모든 증명을 썼다. 데이터 생성을 위해 부록에서 가변 차수 마르코프 소스를 충분히 설명하였으며, Chomsky 태스크를 위해 오픈 소스 저장소[https://github.com/google-deepmind/neural_networks_chomsky_hierarchy](https://github.com/google-deepmind/neural_networks_chomsky_hierarchy)를 사용하고 부록에서 UTM을 완전히 설명했다. 우리는 부록에 기술된 수정과 함께 Deletang et al.(2022)(동일한 오픈 소스 리포지토리에서 찾을 수 있음)과 동일한 아키텍처를 사용했다. 모델 학습을 위해 JAX[https://github.com/google/jax](https://github.com/google/jax]를 사용하였다.\n' +
+      '\n' +
+      '## References\n' +
+      '\n' +
+      '* 봄(1964) C. 봄. 튜링 머신 계열과 관련 프로그래밍 언어에 대해. _ ICC bulletin_, 3:185-194, 1964.\n' +
+      '* Catt et al. (2024) E. Catt, D. Quarel, and M. 허터 유니버설 인공지능에 대한 소개 채프먼 & 홀/CRC 인공지능 및 로봇 시리즈. Taylor and Francis, 2024. ISBN 9781032607153. URL[http://www.hutter1.net/ai/uaibook2.htm](http://www.hutter1.net/ai/uaibook2.htm). 400개 이상의 페이지, [http://www.hutter1.net/ai/uaibook2.htm](http://www.hutter1.net/ai/uaibook2.htm).\n' +
+      '* Chen et al.(2017) Y. 천성호 길로이, A. 말레티, J. 메이, K. 나이트 가중 언어 인식기로서 순환 신경망들 _ arXiv preprint arXiv:1711.05408_, 2017.\n' +
+      '* 촘스키(1956) N. 촘스키 언어 설명을 위한 세 가지 모델. _ IRE Transactions on information theory_, 2(3):113-124, 1956.\n' +
+      '* Chowdhery et al.(2022) A. Chowdhery, S. 나랑, J 데블린, M. Bosma, G. Mishra, A. Roberts, P. Barham, H. W. Chung, C. Sutton, S. Gehrmann, et al. Palm: Scaling language modeling with pathways. _ ArXiv:2204.02311_, 2022.\n' +
+      '* Deletang et al. (2022) G. Deletang, A. Ruoss, J. Grau-Moya, T. Genewein, L. K. Wenliang, E. Catt, C. Cundy, M. 허터 Legg, J. Veness, et al. Neural Networks and the chomsky hierarchy. _The Eleventh International Conference on Learning Representations_, 2022.\n' +
+      '* Deletang et al. (2023) G. Deletang, A. Ruoss, P.-A. 듀켄, E. 캐트, T. Genewein, C. Mattern, J. Grau-Moya, L. K. Wonliang, M. 애치슨, L. 오르소 허터, J. 베니스 언어 모델링은 압축이야, 2023년\n' +
+      '* Dingle et al.(2018) K. Dingle, C. Q. Camargo and A. A. Louis. 입력-출력 맵은 단순 출력에 강하게 편향되어 있다. _ Nature communications_, 9(1):761, 2018.\n' +
+      '* Elman(1990) J. L. Elman. 시간 안에 구조를 찾아내는 것 코냑 Sci._ 1990년\n' +
+      '* Filan et al.(2016) D. Filan, J. Leike, and M. 허터 속도 전과에 대한 손실 한계 및 시간 복잡성. _Artificial Intelligence and Statistics_에서, 페이지 1394-1402. PMLR, 2016.\n' +
+      '* Genewein et al.(2023) T. Genewein, G. Deletang, A. Ruoss, L. K. Wenliang, E. Catt, V. 두토르와르, J. 그라우-모야, L. 오르소 허터, J. 베니스 비정상 분포에 대한 메모리 기반 메타 학습. _ IMT2000 3GPP - 머신러닝 국제회의, 2023\n' +
+      '* 한과 고얄(2023) M. 한과 N. 충성 암묵적 구조 유도로서의 창발적 상황 학습 이론 arXiv preprint arXiv:2303.07971_, 2023.\n' +
+      '* Hochreiter and Schmidhuber (1997) S. 호크라이터와 J. 슈미트후버 장단기 기억력 Neural Comput._ 1997년\n' +
+      '* Hoffmann et al. (2022) J. Hoffmann, S. Borgeaud, A. Mensch, E. Buchatskaya, T. Cai, E. Rutherford, D. d. L. Casas, L. A. Hendricks, J. Welbl, A. Clark, et al training compute-optimal large language models. _ arXiv preprint arXiv:2203.15556_, 2022.\n' +
+      '\n' +
+      '* Hospedales et al. (2021) T. Hospedales, A. Antoniou, P. Micaelli, A. Storkey. 신경망에서의 메타학습: 설문조사 IEEE transaction on pattern analysis and machine intelligence_, 44(9):5149-5169, 2021.\n' +
+      '* Hutter(2004) M. 허터 범용 인공 지능: 알고리즘 확률_에 기초한 순차적 결정. 2004년 스프링거 사이언스 & 비즈니스 미디어.\n' +
+      '* Hutter(2006) M. 허터 Human knowledge compression prize, 2006/2020. open end, [http://prize.hutter1.net/](http://prize.hutter1.net/).\n' +
+      '* 허터(2007) M. 허터 범용 예측과 베이지안 확인에 대해서요 이론적 컴퓨터 과학_, 384(1):33-48, 2007. ISSN 0304-3975. doi: 10.1016/j.tcs.2007.05.016. URL[http://arxiv.org/abs/0709.1516](http://arxiv.org/abs/0709.1516).\n' +
+      '* 허터(2017) M. 허터 보편적 학습 이론 C. Sammut and G. Webb, editors, _Encyclopedia of Machine Learning and Data Mining_, pages 1295-1304. Springer, 2nd edition, 2017. ISBN 978-1-4899-7686-4. doi: 10.1007/978-1-4899-7687-1_867. URL[http://arxiv.org/abs/1102.2467](http://arxiv.org/abs/1102.2467).\n' +
+      '* Hutter et al.(2007) M. 허터 레그, P. M. B. 비타니 알고리즘 확률. _ Scholarpedia_, 2(8):2572, 2007. ISSN 1941-6016. doi: 10.4249/scholarpedia.2572.\n' +
+      '* Joulin and Mikolov (2015) A. Joulin and T. 미콜로프 스택 증강 반복 그물로 알고리즘 패턴을 추론합니다. In _Advances in Neural Information Processing Systems 28_, 2015.\n' +
+      '* Kataoka et al. (2020) H. Kataoka, K. Okayasu, A. Matsumoto, E. Yamagata, R. 야마다 Inoue, A. Nakamura, Y. 사토 자연스러운 이미지 없이 사전 훈련. In _Proceedings of the Asian Conference on Computer Vision_, 2020.\n' +
+      '* Kenton and Toutanova (2019) J. D. M.-W. C. Kenton and L. K. Toutanova. Bert: 언어 이해를 위한 딥 양방향 변압기의 사전 훈련. NAACL-HLT_의 _Proceedings, pages 4171-4186, 2019.\n' +
+      '* Kingma and Ba(2014) D. P. Kingma and J. Ba. 아담: 확률적 최적화를 위한 방법. _ arXiv preprint arXiv:1412.6980_, 2014.\n' +
+      '* Lattimore et al.(2011) T. 라티모어 허터와 V 개번 선택된 비트들의 범용 예측. _Algorithmic Learning Theory: 22nd International Conference, ALT 2011, Espoo, Finland, October 5-7, 2011. Proceedings 22_, pages 262-276. Springer, 2011.\n' +
+      '* Lemley et al. (2017) J. Lemley, S. 바즈라프칸, P. 코코란 최적의 데이터 증강 전략을 학습하는 스마트 증강. _ Ieee Access_, 5:5858-5869, 2017.\n' +
+      '* Li 등 (2023a) K. Li, A. K. Hopkins, D. Bau, F. Viegas, H. Pfister, 및 M. 와텐버그 신흥 세계 표현: 합성 작업에 대해 훈련된 시퀀스 모델을 탐색합니다. _The Eleventh International Conference on Learning Representations_, 2023a. URL[https://openreview.net/forum?id=DeG07_TcZvT](https://openreview.net/forum?id=DeG07_TcZvT)\n' +
+      '* Li and Vitanyi (1992) M. 리와 P. M. 비타니 귀납적 추론과 kolmogorov 복잡성 Journal of Computer and System Sciences_, 44(2):343-384, 1992.\n' +
+      '* Li 등 (2019) M. Li, P. Vitanyi, et al. _An introduction to Kolmogorov complexity and its applications_. 스프링거, 2019년 4판\n' +
+      '*Li 등(2023b) Y. Lee, M. E. Illiz, D. Papailiopoulos, S. 오이막 알고리즘으로서의 트랜스포머: In-context learning에서 Generalization and implicit model selection. _ arXiv preprint arXiv:2301.07067_, 2023b.\n' +
+      '* Liu et al.(2023) B. Liu, J. T. Ash, S. Goel, A. Krishnamurthy and C. Zhang. 트랜스포머는 오토마타에 대한 바로 가기를 배웁니다. _The Eleventh International Conference on Learning Representations_, 2023. URL[https://openreview.net/forum?id=De4FYqjFueZ](https://openreview.net/forum?id=De4FYqjFueZ).\n' +
+      '\n' +
+      '* Mali et al. (2023) A. Mali, A. Ororbia, D. Kifer, and L. 가일스 2차 순환 신경망의 계산 복잡도와 형식적 계층 구조에 대해. _ arXiv preprint arXiv:2309.14691_, 2023.\n' +
+      '* Mikulik et al.(2020) V. 미쿨릭, 지델레탕, 티 맥그래스, T 진와인 마틱 레그, P. 오르테가 메타 훈련된 에이전트는 베이즈 최적화 에이전트를 구현합니다. _ 신경 정보 처리 시스템_, 33:18691-18703, 2020에서의 발전.\n' +
+      '* Mingard et al. (2023) C. Mingard, H. Rees, G. Valle-Perez, and A. A. Louis. 심층 신경망에 오캄 면도기가 내장되어 있습니까? _ arXiv preprint arXiv:2304.06670_, 2023.\n' +
+      '* 뮬러(1993) U. 뮬러 Brainf*ck. [https://esolangs.org/wiki/Brainfuck] (https://esolangs.org/wiki/Brainfuck), 1993. [Online; access 21-Sept-2023].\n' +
+      '* Ortega et al. (2019) P. A. Ortega, J. X. Wang, M. 롤랜드, T. 진와인, 지 R. 커스 넬슨 N. 파스카누 Heess, J. Veness, A. Pritzel, P. Sprechmann, et al. Meta-learning of sequential strategies. _ ArXiv preprint arXiv:1905.03030_, 2019.\n' +
+      '* Perez and Wang(2017) L. 페레즈와 J. 왕 딥러닝을 이용한 이미지 분류에서 데이터 증강의 효과 ArXiv preprint arXiv:1712.04621_, 2017.\n' +
+      '* Rathmanner and Hutter(2011) S. 라스매너와 M. 허터 보편적 귀납법에 대한 철학적 연구 Entropy_, 13(6):1076-1136, 2011.\n' +
+      '* Schmidhuber (2002) J. Schmidhuber. 이전 속도: 최적에 가까운 계산 가능한 예측을 산출하는 새로운 단순성 측정입니다. Proc에서. 제15 Conf. on Computational Learning Theory (COLT\'02)_, volume 2375 of _LNAI_, pages 216-228, Sydney, Australia, 2002. Springer.\n' +
+      '* Sipser(2012) M. 십자군 계산 이론 소개. Course Technology Cengage Learning, Boston, MA, 3rd ed edition, 2012. ISBN 978-1-133-18779-0.\n' +
+      '* Solomonoff(1964a) R. J. Solomonoff. 귀납적 추론의 형식론. part i. _Information and control_, 7(1):1-22, 1964a.\n' +
+      '* Solomonoff(1964b) R. J. Solomonoff. 귀납적 추론의 형식론. part ii. _ Information and control_, 7(2):224-254, 1964b.\n' +
+      '* Sterkenburg (2017) T. F. Sterkenburg. 알고리즘 확률의 일반화 특성 Theory of Computing Systems_, 61:1337-1352, 2017.\n' +
+      '* Stogin et al. (2020) J. Stogin, A. Mali, and C. L. Giles. 믿을 수 있을 정도로 안정적인 신경망 튜링 머신 arXiv preprint arXiv:2006.03651_, 2020.\n' +
+      '* Sunehag and Hutter (2013) P. Sunehag and M. 허터 솔로모노프 유도 및 aixi의 원리. 알고리즘 확률 및 친구에서. 베이지안 예측 및 인공지능: Ray Solomonoff 85th Memorial Conference, Melbourne, VIC, Australia, November 30-12월 2일, 2011_, pages 386-398. Springer, 2013.\n' +
+      '* Sunehag and Hutter (2014) P. Sunehag and M. 허터 인텔리전스는 추론을 하거나 오컴을 세상에 몰아넣는다. Proc에서. 제7 Conf. The Artificial General Intelligence (AGI\'14)_, volume 8598 of _LNAI_, pages 186-195, Quebec City, Canada, 2014. Springer. ISBN 978-3-319-09273-7. doi: 10.1007/978-3-319-09274-4_18.\n' +
+      '* Suzgun et al.(2019) M. 수건 게르만 벨린코프와 S. M. 시버 메모리-증강 순환 신경망은 일반화된 dyck 언어를 학습할 수 있다. _ CoRR_, 2019.\n' +
+      '* Valle-Perez et al. (2018) G. Valle-Perez, C. Q. Camargo, and A. A. Louis. 딥러닝은 파라미터-함수 맵이 단순함수에 치우쳐 있기 때문에 일반화한다. _ arXiv preprint arXiv:1805.08522_, 2018.\n' +
+      '\n' +
+      'N. 바스와니 N. 쉐이저 파마르, J. 우즈코리트, L. 존스, A. N. 고메즈, L. 카이저, 나 폴로수킨 주목만 해주시면 됩니다. 2017년, Neural Information Processing Systems 30_의 _Advances에서.\n' +
+      '* Veness et al. [2012] J. Veness, P. Sunehag, and M. Hutter. On ensemble techniques for aixi approximation. In _International Conference on Artificial General Intelligence_, pages 341-351. Springer, 2012.\n' +
+      '* Wang et al. [2023] X. Wang, W. Zhu, and W. Y. Wang. Large language models are implicitly topic models: Explaining and finding good demonstrations for in-context learning. _arXiv preprint arXiv:2301.11916_, 2023.\n' +
+      '* Wei et al. [2022] J. Wei, X. Wang, D. Schuurmans, M. Bosma, F. Xia, E. Chi, Q. V. Le, D. Zhou, et al. Chain-of-thought prompting elicits reasoning in large language models. _Advances in Neural Information Processing Systems_, 35:24824-24837, 2022.\n' +
+      '* Willems et al. [1997] F. Willems, Y. Shtarkov, and T. Tjalkens. Reflections on "the context tree weighting method: Basic properties". _Newsletter of the IEEE Information Theory Society_, 47(1), 1997.\n' +
+      '* Willems[1998] F. M. Willems. 컨텍스트-트리 가중치 부여 방법: 확장. _ IEEE Transactions on Information Theory_, 44(2):792-798, 1998.\n' +
+      '* Willems et al. [1995] F. M. Willems, Y. M. Shtarkov, and T. J. Tjalkens. The context-tree weighting method: Basic properties. _IEEE transactions on information theory_, 41(3):653-664, 1995.\n' +
+      '* Wood et al. [2011] I. Wood, P. Sunehag, and M. Hutter. (Non-)equivalence of universal priors. In _Proc. Solomonoff 85th Memorial Conference_, volume 7070 of _LNAI_, pages 417-425, Melbourne, Australia, 2011. Springer. ISBN 978-3-642-44957-4. doi: 10.1007/978-3-642-44958-1_33. URL [http://arxiv.org/abs/1111.3854](http://arxiv.org/abs/1111.3854).\n' +
+      '* Wood et al. [2013] I. Wood, P. Sunehag, and M. Hutter. (non-) equivalence of universal priors. In _Algorithmic Probability and Friends. Bayesian Prediction and Artificial Intelligence: Papers from the Ray Solomonoff 85th Memorial Conference, Melbourne, VIC, Australia, November 30-December 2, 2011_, pages 417-425. Springer, 2013.\n' +
+      '* Xie et al. [2022] S. M. Xie, A. Raghunathan, P. Liang, and T. Ma. An explanation of in-context learning as implicit bayesian inference. In _International Conference on Learning Representations_, 2022. URL [https://openreview.net/forum?id=RdJVFRHjUMI](https://openreview.net/forum?id=RdJVFRHjUMI).\n' +
+      '\n' +
+      '## 6 Appendix\n' +
+      '\n' +
+      '### Solomonoff samples\n' +
+      '\n' +
+      'Sampling from semimeasure.We can sampling from a semimeasure \\(\\mu\\): start with the empty string \\(x=\\epsilon\\)\n' +
+      '\n' +
+      '확률\\(\\mu(a|x):=\\mu(xa)/\\mu(x)\\)는 \\(a\\in\\mathcal{X}\\)에 대한 \\(x\\gets xa\\)을 확장한다. 반복한다\n' +
+      '\n' +
+      '확률\\(1-\\sum_{a\\in\\mathcal{X}}\\mu(a|x)\\) return \\(x\\)을 갖는다.\n' +
+      '\n' +
+      '(D:=(x^{1},...,x^{\\prime})\\)을 \\(\\mu\\)에서 샘플링된 \\(J\\)(in) 유한 시퀀스라고 하자. 이 샘플만 있으면 다음과 같이 \\(\\mu\\)을 추정할 수 있다.\n' +
+      '\n' +
+      '[\\hat{\\mu}{D}(x)\\:=\\frac{1}{|D|}\\sum_{y\\in D}[[\\ell(y)\\geq\\ell(x)\\\\wedge\\y_{1:\\ell(x)}=x]\\quad\\stackrel{{w.p.1}}{longrightarrow}\\quad\\mu(x)\\\\mbox{for}\\\\\\|D|\\to\\infty\\tag{2}\\\\wedge\\wedge\\y_{1:\\ell(x)}=x]\\stackrel{{w.p.1}}\\longrightarrow}\\quad\\mu(x)\\\\mbox{for}\\\\\\|D|\\to\\infty\\tag{2}\\\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\wedge\\\n' +
+      '\n' +
+      '_Proof:_ Let \\(D_{x}:=(y\\in D:\\ell(y)\\geq\\ell(x)\\\\wedge\\y_{1:\\ell(y)}=x)\\)으로 시작하는 \\(D\\)의 원소이다. \\(x^{j}\\)는 \\(\\mu\\)에서 \\(|D_{x}|/|D|\\to\\mu(x)\\)로 샘플링되므로 큰 수의 법칙은 \\(J\\to\\infty\\)에 대해 \\(|D_{x}|/|D|\\to\\mu(x)\\)을 의미한다. \\ (\\Box\\)\n' +
+      '\n' +
+      '제한 정규화.단순 정규화 방법은\n' +
+      '\n' +
+      '\\\\frac{\\sum_{x_{i+1:n}(x_{1:x})\\frac{\\sum_{x_{i+1:n}}M_{s,L,n}(x_{1:n}}M_{s,L,n}(x_{1:n}}M_{s,L,n}(x_{1:n}}M_{s,L,n}(x_{1:n}}\\\\\\mbox{for}\\\\t\\leqn\\\\\\mbox{and}\\\\\\\\\\\\mbox{else}\\\\\\\\\\\\\\\\\\\\\\\\mbox{else}\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\n' +
+      '\n' +
+      '이것은 길이\\(n\\)까지의 서열에 대한 적절한 측정이다. 샘플링은 \\(M_{s,L,n}\\)에서 샘플링하는 것과 동일하지만 \\(n\\)보다 짧은 모든 시퀀스를 폐기한다. \\(\\widetilde{D}:=(x^{j}\\in D^{J}:\\ell(x^{j})\\geq n)\\을 갖도록 한다. 그러면.\n' +
+      '\n' +
+      '\\\\frac{1}{|\\widetilde{D}}(x)\\\\frac{1}{|\\widetilde{D}}\\sum_{y\\in \\widetilde{D}}[[y_{1:\\ell(x)}=x]\\quad\\longrightarrow\\\\\\M(x)\\\\mbox{for}\\\\\\s,L,n,J\\to\\infty\\\n' +
+      '\n' +
+      '첫째, \\(|\\widetilde{D}|/|D|\\)는 길이\\(n\\)을 갖는 수열의 상대분율이고, \\(\\sum_{x_{1:n}}M_{s,L,n}(x_{1:n})\\)는 길이\\(n\\)을 갖는 수열의 확률이므로, \\(J\\to\\infty\\)에 대해서는 전자가 후자로 수렴한다. 둘째,\n' +
+      '\n' +
+      '∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑∑\n' +
+      '\n' +
+      '셋째, 양쪽의 합 \\(\\sum_{x_{i+1:n}}\\)을 취하고, 마지막으로 극한 \\(s,L,n\\to\\infty\\)을 취하고 \\(x=x_{1:x}\\)을 설정한다. \\ (\\Box\\)\n' +
+      '\n' +
+      '이 정규화 기법의 단점은 수열의 확률\\(x\\)은 \\(\\ell(x)<n\\일지라도 \\(n\\)에 의존하는 반면, 아래의 \\(M_{s,L,n}(x)\\)과 \\(M_{\\cdots}^{norm}(x)\\)은 본질적으로 \\(n\\)과 무관하다는 것이다.\n' +
+      '\n' +
+      '**명제 4**.: _Let \\(D:=(x^{1},...,x^{J})\\)는 semimeasure \\(\\mu\\)(예: \\(M\\))으로부터 샘플링된 \\(J\\)(in)finite 시퀀스이다. \\(\\mu\\)은 다음과 같다. \\(\\hat{\\mu}{D}(x)\\:=\\frac{1}{|\\widetilde{D}|}\\sum_{y\\in D}[[\\ell(y)\\geq\\ell(x)\\wedge\\y_{1:\\ell(y)}=x]\\quad\\stackrel{w.p.1}{longrightarrow}\\mu(x)\\mbox{for}\\\\|D|\\to\\infty\\).\n' +
+      '\n' +
+      '_Proof:_ Let \\(D_{x}:=(y\\in D:\\ell(y)\\geq\\ell(x)\\\\wedge\\y_{1:\\ell(y)}=x)\\)으로 시작하는 \\(D\\)의 원소이다. \\(x^{j}\\)는 \\(\\mu\\)에서 \\(|D_{x}|/|D|\\to\\mu(x)\\)로 샘플링되므로 큰 수의 법칙은 \\(J\\to\\infty\\)에 대해 \\(|D_{x}|/|D|\\to\\mu(x)\\)을 의미한다. \\ (\\Box\\)\n' +
+      '\n' +
+      '**명제 6**. : _Let \\(D^{J}:=(x^{1},...,x^{J})\\)을 측도 \\(M_{s,L,n}\\)의 샘플로 하자. 그런 다음 \\(\\hat{M}_{D^{J}(x)=\\frac{1}{J}\\sum_{y\\in D^{J}}[[\\ell(y)\\geq\\ell(x)\\\\wedge\\y_{1:\\ell(x)}=x]\\quad\\longrightarrow\\\\M_{s,L,n}(x)\\\\mbox{for}\\\\J\\to\\infty\\).\n' +
+      '\n' +
+      '_Proof:_ Proposition 4로부터 직접 따른다.\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:17]\n' +
+      '\n' +
+      '(x\\in\\mathcal{X}^{*}\\). 이전에 표준(계산 가능한) 솔로모노프 한계에 수렴하는 신경 모델을 훈련하는 것이 가능하지만, 우리는 Remark 7로 인해 정규화된 버전에 초점을 맞춘다.\n' +
+      '\n' +
+      '_Training variation:_\\(M\\)에 대해, 트랜스포머는 \\(\\ell(x)<n\\)일 경우 \\(x\\bot\\)을 예측하도록 훈련된다. 만약 \\(\\ell(x)<n\\)이 \\(U^{s}\\의 시간제한 \\(s\\)에 기인한다면, \\(x\\) 이후에 \\(\\bot\\)을 예측하기 위해 트랜스포머를_not_트레인하는 것이 바람직하다. \\(s\\to\\infty\\)의 경우, \\(\\mathcal{X}\\)으로부터 적절한 기호로 \\(x\\)이 확장될 수 있기 때문이다. 이를 달성하기 위한 한 가지 방법은 아래의 \\(M^{norm}\\)과 유사한 \\(t=\\ell(x)\\)에서 이 경우 로그 손실(만)을 절단하여 \\(\\bot\\)을 예측하기 위한 변압기에 보상하지 않는 것이다.\n' +
+      '\n' +
+      '정규화된 솔로모노프 손실\n' +
+      '\n' +
+      '여기 손실의 유도입니다.\n' +
+      '\n' +
+      '(\\theta) :=\\-\\frac{1}{J}\\sum_{x\\in D^{\\prime}}\\frac{1}\\sum_{x\\in D^{\\prime}(x_{t}}\\hat{M}\\sum_{n}\\sum_{t}\\sum_{n}\\sum_{n}\\sum_{t}\\hat{M}\\hat{M}\\hat{m}\\hat{(x_{t}|x_{<t})\\Big{(=\\-\\frac{t=1}\\sum_{n}\\sum_{t}\\sum_{n}\\sum_{m}\\het}(x_{t}|x_{<t})\\Big{\n' +
+      '\n' +
+      '여기서 마지막 평등은 (3)부터 이어진다.\n' +
+      '\n' +
+      '## 부록 C Generalized Solomonoff Semiasure\n' +
+      '\n' +
+      '스트리밍 함수.스트리밍 함수\\(\\varphi\\)는 입력 시퀀스가 증가하고 출력 시퀀스가 증가한다. 일반적으로 입력과 출력은 무한히 커지거나 유한하게 유지될 수 있다. 형식적으로는 \\(\\varphi:\\mathcal{X}^{\\#}\\to\\mathcal{X}^{\\#}\\), 여기서 \\(\\mathcal{X}^{\\#}:=\\mathcal{X}^{\\infty}\\cup\\mathcal{X}^{*}\\). 원론적으로 입력과 출력 알파벳은 다를 수 있지만, 단순화를 위해 우리는 모든 시퀀스가 이진수, 즉 \\(\\mathcal{X}=\\{0,1\\}\\)라고 가정한다. \\(\\varphi\\)를 스트리밍 함수로 정의하기 위해서는 입력만 확장하고 출력을 수정하지 않도록 해야 한다. 형식적으로 우리는\n' +
+      '\n' +
+      '\\[\\varphi\\text{ is monotone}\\quad\\text{ iff}\\quad[\\forall q\\sqsubseteq p:\\varphi(q)] \\sqsubseteq\\varphi(p)]\\]\n' +
+      '\n' +
+      '여기서 \\(q\\sqsubseteq p\\)는 \\(p\\) 즉 \\(exists r\\in\\mathcal{X}^{\\#}:qr=p\\)의 접두사임을 의미하고, \\(\\sqsubseteq\\)은 엄밀한 접두사 \\(r\\neq\\epsilon\\)을 의미한다. \\ (p\\)는 \\(\\varphi\\)에서 \\(\\existence r:\\phi(p)=xr\\)와 \\(\\forall r\\sqsubseteq p:\\phi(q)\\neq xr\\일 때 \\(x\\)에 대해 \\(\\varphi\\)-최소이다. 우리는 이것을 \\(\\varphi(p)=x*\\)로 나타낼 것이다. \\ (p\\)는 \\(x\\)으로 시작하는 문자열을 출력하는 가장 짧은 프로그램이다.\n' +
+      '\n' +
+      '모노톤 튜링 머신(MTM: Monotone Turing Machine)은 좌-우 읽기 전용 입력 테이프, 좌-우 쓰기 전용 출력 테이프 및 일부 양방향 작업 테이프가 있는 튜링 머신이다. 함수 \\(\\varphi_{T}\\)는 다음과 같이 정의된다. 출력 심볼을 기입한 후 출력 헤드를 이동하기 전과 입력 헤드를 이동시킨 후 새로운 셀 컨텐츠를 읽기 전에, \\(p\\)이 현재 입력 테이프 헤드의 왼쪽 내용이고 \\(x\\)이 현재 출력 테이프 헤드까지의 출력 테이프의 내용이라면 \\(\\varphi_{T}(p):=x\\). \\(\\varphi_{T}\\)는 모노톤임을 쉽게 알 수 있다. 우리는 \\(T(p)=\\varphi_{T}(p)\\을 축약한다. [\\(U(i^{\\prime}q)=T_{i}(q)\\), 여기서 \\(T_{1},T_{2},...\\)을 통해 임의의 다른 MTM을 에뮬레이션할 수 있는 (최적) 범용 MTM\\(U\\)이 존재한다. 은 모든 MTM의 유효 열거이고 \\(i^{\\prime}\\) \\(i\\)(Hutter, 2004; Li 등, 2019)의 프리픽스 인코딩이다.\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:19]\n' +
+      '\n' +
+      '(T_{i}(q)=T(i^{\\prime}q)\\\\forall q\\가 되도록, \\(i\\) \\(\\dot{k}:=\\ell(i^{\\prime})+1\\)과 \\(\\dot{\\ell}:=\\ell(p^{i})+1\\)과 \\(q_{<k}:=i^{\\prime}\\)이므로 \\(p_{<\\ell}=p^{i}\\)이 된다. 이제 \\(V(p_{1:\\infty})=U(q_{1:\\infty})는\n' +
+      '\n' +
+      '[V(p^{i}p_{\\dot{\\ell}:\\infty})\\ =\\ U(i^{\\prime}q_{\\dot{k}:\\infty})\\ =\\ T_{i}(q_{\\dot{k}:\\infty})\\ =\\ T(i^{\\prime}q_{\\dot{k}:\\infty})\\ =\\ U_{0}(F(i^{\\prime}q_{\\dot{k}:\\infty})\\ =\\ U_{0}(p_{\\dot{\\ell}:\\infty})\\ =\\ U_{0}(p_{\\dot{\\ell}:\\infty})\\\n' +
+      '\n' +
+      '그 증명을 결론짓는 것은 \\(V\\)이 보편적이다.\n' +
+      '\n' +
+      '실용적인 유니버설 스트리밍 기능.튜링 머신은 비실용적이며 유니버설 스트리밍 기능을 위한 프로그램을 작성하는 것은 피하는 것이 가장 좋은 인디렉션의 또 다른 계층이다. 프로그래밍 언어는 이미 보편적인 기계입니다. 우리는 실제 프로그램의 변환을 이진 문자열에서 이진 문자열로 정의하고 입력 스트림으로 준비할 수 있다. 입력 스트림을 샘플링할 때 \\(q_{1:\\infty}\\) 시작은 원하는 프로그래밍 언어의 프로그램으로 변환하고 꼬리를 입력 스트림으로 공급한다.\n' +
+      '\n' +
+      '## 부록 D 실험 세부사항\n' +
+      '\n' +
+      '### Architecture details\n' +
+      '\n' +
+      'Rnn. 표 1에 기재된 바와 같이 RNN 층 전후에 숨겨진 크기 및 다층 퍼셉트론(MLP)을 갖는 바닐라 다층 RNN(Elman, 1990).\n' +
+      '\n' +
+      'Stack-RNN. 미분 가능한 스택에 대한 액세스를 갖는 표 1 및 표 1 상의 LSTM에 대한 액세스를 갖는 표 1에 따른 숨겨진 크기를 갖는 다층 RNN 제어기(Joulin and Mikolov, 2015). 컨트롤러는 RNN 출력의 선형 판독에 걸쳐 소프트맥스에 의해 주어진 액션 가중치들과 함께 표 1에 따른 크기의 스택 상에서 푸시, 팝 및 노-옵의 임의의 선형 조합을 수행할 수 있다. 스택의 각 셀은 치수 6의 실수 벡터를 포함하고 스택 크기는 모든 (S, M 및 L) 크기에 대해 64이다.\n' +
+      '\n' +
+      'Tape-RNN. Baby-NTM 아키텍처(Suzgun et al., 2019)에서 영감을 받은, 미분 가능한 테이프에 대한 액세스를 갖는 표 1에 따른 숨겨진 크기를 갖는 다층 RNN 제어기. 컨트롤러는 소프트맥스(softmax)에 의해 주어지는 액션 가중치들과 함께 테이프 상에서 기록-우, 기록-좌, 기록-스테이, 점프-좌, 및 점프-우 중 임의의 선형 조합을 수행할 수 있다. 동작은 현재 위치에서 쓰기 및 우측으로 이동(쓰기-우), 현재 위치에서 쓰기 및 좌측으로 이동(쓰기-좌), 현재 위치에서 쓰기(쓰기-스테이), 쓰기 없이 우측으로 점프(\\(\\ell\\) 단계(점프-우), 입력 길이 \\(\\ell\\)는 쓰기 없이 좌측으로 점프(\\ell\\) 단계(점프-좌)에 해당한다. Stack-RNN에서와 같이, 테이프의 각 셀은 치수 6의 실수 벡터를 포함하고 테이프 크기는 모든 (S, M 및 L) 크기에 대해 64이다.\n' +
+      '\n' +
+      '표 1에 따라 숨겨진 크기의 Lstm.A 다층 LSTM(Hochreiter and Schmidhuber, 1997)이다.\n' +
+      '\n' +
+      'Transformer decoder.A vanilla Transformer decoder (Vaswani et al., 2017). 각 모델 크기(S, M 및 L)에 대한 임베딩 치수, 헤드 수 및 레이어 수는 표 1을 참조하십시오. 각 레이어는 어텐션 레이어, 두 개의 조밀한 레이어, 레이어 정규화로 구성된다. 우리는 원래의 아키텍처에서와 같이 잔여 연결을 추가한다(Vaswani et al., 2017). 우리는 표준 sin/cos (Vaswani et al., 2017) 위치 인코딩을 고려한다.\n' +
+      '\n' +
+      '### Ctw\n' +
+      '\n' +
+      '아래는 CTW(Willems et al., 1997, 1995)에 대한 (샘플링으로부터의) 초-소형 도입이다. 더 많은 설명, 세부사항, 논의 및 도출은 (Catt et al., 2024, Chp.4)를 참조한다.\n' +
+      '\n' +
+      '변수차 마르코프 과정은 (이진) 수열에 대한 확률 분포이다 \\(x_{1},x_{2},x_{3},...\\) S\\(S\\subset\\{0,1\\}^{*}\\)을 완전한 접미사 없는 문자열 집합(역접미사 없는 코드)으로 등가적으로 완전한 이진 트리로 볼 수 있다. 그리고 나서 \\(x_{t}=0|x_{<t};S,\\theta_{S}):=\\theta_{s}\\)의 (x_{t}\\)의 유일한 문맥이 \\(s=x_{t-\\ell(s):t-1}\\in S\\)이고, \\(\\theta_{S}:=(\\theta_{s}\\in[0;1]:s\\in S)\\)이면 \\(p(x_{t}=0|x_{<t};S,\\theta_{S}):=\\theta_{s}\\). 우리는 \\(t\\leq 0\\)에 대해 \\(x_{t}=0\\)을 임의로 정의한다.\n' +
+      '\n' +
+      '가변 차수 마르코프 소스에 대한 직관은 트리 구조에서 생성된 데이터를 고려한다. 예를 들어, 이진 트리가 주어지면\n' +
+      '\n' +
+      'Root\n' +
+      '\n' +
+      '0/ \\(\\backslash\\)1\n' +
+      '\n' +
+      'Leaf_0 Node\n' +
+      '\n' +
+      '0/ \\(\\backslash\\)1\n' +
+      '\n' +
+      'Leaf_10 Leaf_11\n' +
+      '\n' +
+      '그리고 데이터 "011"(여기서 0은 첫 번째 관측 데이터이고 1은 마지막 데이터임)의 히스토리가 주어지면 다음 샘플은 Leaf\\({}_{11}\\)을 사용한다(왜냐하면 이력의 마지막 두 데이터 포인트가 11이었기 때문에) 매개변수 Leaf\\({}_{11}\\)이 있는 베타 분포에서 샘플을 사용하여 다음 데이터를 그리기 때문이다. 우리가 a0을 샘플링한다고 가정하면, 이력은 "0110"으로 변환되고 잎\\({}_{10}\\)은 다음 데이터를 샘플링하는데 사용될 것이다(왜냐하면 이제 잎에 부합하는 마지막 두 데이터포인트는 "10"이기 때문이다). 이러한 데이터 생성 방법은 매우 일반적이며 확률적 샘플을 가질 수 있는 01010101 이상의 복잡한 패턴과 같은 단순한 규칙 패턴에서 다양한 흥미로운 패턴을 생성할 수 있다. 더 큰 나무는 실제로 매우 복잡한 패턴을 인코딩할 수 있다.\n' +
+      '\n' +
+      'CTW.Context Tree Weighting(CTW)의 샘플링은 최대 차수(D\\in\\mathbb{N}_{0}\\)의 모든 가변 차수 마르코프 소스, 즉 최대 깊이(D\\)의 모든 트리(S\\)와 최대 차수(S\\inS\\)의 모든 트리(\\theta_{s}\\in[0;1]\\)에 대한 베이지안 혼합이다. CTW 분포는 빈 (동결되지 않은) \\(S=\\{\\epsilon\\}\\)으로 시작한다. 재귀적으로, 각 동결되지 않은 S\\(s\\in S\\)에 대해 \\(s\\ell(s)<D\\), \\(\\nicefrac{{1}}{{2}}\\)으로, \\(s\\frac{1}}{2}\\)을 동결하고, \\(s\\gets S\\setminus\\{s\\cup\\{0s,1s\\}\\)을 S\\(s\\in S\\)이 모두 동결되거나 \\(s\\ell(s)=D\\이 될 때까지 분할한다. 그리고 모든 \\(s\\in S\\)에 대해 \\(\\text{Beta}(\\sfrac{1}{2},\\sfrac{1}{2})\\)에서 \\(\\theta_{s}\\)을 샘플링한다. 마지막으로 \\(t=1,2,3,...\\)에 대하여 우리는 \\(p(x_{t}|x_{<t};S,\\Theta_{S})\\)에서 \\(x_{t}\\)을 샘플링한다.\n' +
+      '\n' +
+      'CTW를 계산한다. CTW 확률 \\(P_{text{CTW}}(x_{1:n})\\)은 다음과 같이 계산될 수 있다. \\(a_{s}:=|\\{t\\in\\{1,...,n\\}:x_{t}=0\\wedge x_{t-\\ell(s):t-1}=s\\}|\\)는 문맥 \\(s\\in\\{0,1\\}^{*}\\)이 바로 앞에 있는 \\(x_{t}=0\\wedge x_{t-\\ell(s):t-1}=s\\}|\\)의 수를 계산한다. (x_{1:n}^{s}\\in\\{0,1\\}^{a_{s}+b_{s}\\)을 문맥이 있는 \\(x_{t}\\)의 서브시퀀스로 하자. \\(s\\in S\\)에 대한 주어진 \\(\\theta_{s}\\)에 대해, \\(x_{1:n}^{s}\\)은 i.i.d. (Bernoulli\\((1-\\theta_{s}))이다. 따라서 \\(\\theta_{s}\\sim\\text{Beta}(\\sfrac{1}{2},\\sfrac{1}{2})\\), \\(P(x_{1:n}^{s}|s\\in S)=P_{\\text{KT}(a_{s},b_{s}):=\\int_{0}^{1}\\theta_{s}^{a_{s}(1-\\theta_{s}})^{b_{s}\\text{Beta}(\\sfrac{1}{2},\\sfrac{1}{2})(\\theta_{s})d\\theta_{s}\\text{Beta}(\\sfrac{1}{2})에 대해, \\(P(x_{1:n}^{s}|s\\in S)=P_{\\text{KT}(a_{s},b_{s}):=\\int_{0}^{1}\\theta_{s} 만약 \\(s\\notin S\\)이면, 우리는 \\(x_{1:n}^{s}\\)을 \\(x_{1:n}^{0s}\\)과 \\(x_{1:n}^{1s}\\)으로 나눈다. \\(S\\)의 구성에 의해, 가설적인 \\(s\\in S\\)은 \\(0s\\)과 \\(50\\%\\)의 확률로 \\(1s\\)으로 대체되며, 따라서 \\(P_{text{CTW}(x_{1:n}^{s})=\\frac{1}{2}P_{text{KT}(a_{s},b_{s})+\\frac{1}{2}P_{text{CTW}(x_{1:n}^{0s}))P_{text{CTW}(x_{1:n}^{1s})=P_{\\text{KT}(a_{s},b_{s})로 끝나는 \\(\\ell(s)=D\\일 때 \\(P_{CTW}(x_{1:n}^{s})=P_{KT}(a_{s},b_{s})으로 대체된다. 이것은 \\(P_{text{CTW}}(x_{1:n})\\equiv P_{text{CTW}}(x_{1:n}^{c})\\의 정의를 완성한다. (P_{\\text{CTW}}(x_{1:n})\\) (및 시간 \\(O(D)\\))에서 \\(n\\to n+1\\)을 갱신하는 효율적인 \\(O(nD)\\) 알고리즘과 비재귀적 정의는 Catt et al.(2024, Chp.4)에서 찾을 수 있다.\n' +
+      '\n' +
+      '나무의 분포.나무는 빈 나무일 경우 깊이\\(\\leq d\\)를 가지며, 두 서브트리 모두 깊이\\(<d\\)을 가진다. 따라서 깊이 \\(\\leq d\\)의 트리를 샘플링할 확률은 \\(F(d)=\\frac{1}{2}+\\frac{1}{2}F(d-1)^{2}\\), \\(F(0)=\\frac{1}{2}\\)이다. 따라서 깊이 \\(d\\)의 트리를 샘플링할 확률은 \\(d<D\\)과 \\(P(D)=1-F(D-1)\\에 대해 \\(P(d)=F(d)-F(d-1)\\이다. 이론 곡선(\\(P(0)=\\frac{1}{2}\\), \\(P(1)=\\frac{1}{8}\\), \\(P(2)=\\frac{9}{128}\\), …)을 그림으로 나타내었다. 도 6의 (a)와 경험적 분포를 함께 나타낸다. 더 의미 있는 것은 아마도 각 레벨에서 예상되는 리프 노드의 수이다. 레벨 \\(d\\)의 각 노드는 프로브로 대체되므로. \\ (\\frac{1}{2}\\) level \\(d+1\\)에서 두 개의 노드에서 예상 리프 노드 수 \\(E(d)\\)는 모든 level \\(d<D\\)에서 동일하다. 우리는 \\(E(0)=\\frac{1}{2}\\)이므로 모든 \\(d<D\\)과 \\(E(D)=1\\에 대해 \\(E(d)=\\frac{1}{2}\\)을 가지므로 총 예상 리프 노드 수는 \\(E_{+}=\\frac{1}{2}D+1\\)이다. 이것은 크게 들리지 않지만, \\(N=10^{\\prime}000\\) 샘플에 대해, 각 길이 \\(d<D\\)에 대한 \\(5^{\\prime}000\\) 컨텍스트를 균일하게 테스트하는 것을 보장한다. 우리는 \\(\\frac{1}{2}\\) 대신 \\(\\alpha_{d}\\in[0;1]\\) 확률로 \\(d\\) 수준에서 노드를 분할함으로써 나무의 분포에 대한 약간의 제어를 얻을 수 있다. 이 경우 \\(E(d)=2\\alpha_{0}\\cdot...\\ cdot 2\\alpha_{d-1}(1-\\alpha_{d})\\) for \\(d<D\\. So for \\(\\alpha_{d}) 우리는 \\(D\\) 및 (한계 내에서) 원하는 깊이 분포에서 크기 지수 트리를 생성할 수 있다.\n' +
+      '\n' +
+      '### Chomsky\n' +
+      '\n' +
+      '## 부록 EUTMs: Brainf*ck and BrainPhoque\n' +
+      '\n' +
+      '우리의 BrainPhoque(BP) UTM은 Brainf*ck(BF) 프로그램(Muller, 1993)과 동등한 프로그램 평가 흔적을 생성하지만(또한 \\(\\mathcal{P}^{\\prime\\prime}\\)(Bohm, 1964 참조)) 프로그램은 약간 다르게 작성된다: 그것들은 인간 판독이 더 적지만 프로그램 샘플링 시 더 나은 특성을 갖는다.\n' +
+      '\n' +
+      'BF 기계에 대한 간략한 개요를 제공하는 것으로 시작하여 약간 다른 기계가 필요한 이유와 구조를 설명합니다. 마지막으로 표본 프로그램을 단축하고 로그 손실에 대한 상한을 계산하는 방법을 설명한다.\n' +
+      '\n' +
+      '일부 샘플 프로그램 및 출력은 그림 6을 참조하십시오.\n' +
+      '\n' +
+      '### Brainf*ck\n' +
+      '\n' +
+      'BF는 가장 작고 간단한 튜링 완성형 프로그래밍 언어 중 하나이다. 읽기 전용 입력 테이프, 작업 테이프, 쓰기 전용 출력 테이프가 특징입니다. 이 테이프는 무한하다고 가정되지만 실용적인 목적을 위해 일반적으로 유한하고 일정한 길이로 고정되고 \\(0\\)으로 초기화된다.4 각 테이프 셀은 \'알파벳 크기\'만큼 크게 성장할 수 있는 음수가 아닌 정수를 포함할 수 있다. 숫자 위에서는 0으로 돌아갑니다. 논문에서 우리는 17의 알파벳 크기를 선택합니다.\n' +
+      '\n' +
+      '각 테이프에는 포인터가 있습니다. 단순화를 위해 작업 테이프의 포인터를 WTP라 하고, WTP에서의 값을 정수인 _datum_라 한다.\n' +
+      '\n' +
+      'BF는 8개의 명령어 <>+-[],를 사용한다. 는,\n' +
+      '\n' +
+      '* < 및 >는 WTP를 감소 및 증가시키고, 테이프의 길이를 모델링한다.\n' +
+      '*기준의 증분 및 감소, 알파벳 크기의 모듈로.\n' +
+      '*[는 조건부 점프: 기준이 0이면, 명령어 포인터는 해당(매칭)으로 점프한다].\n' +
+      '*]는 해당 [.5]로 무조건 점프하는 것이다\n' +
+      '*, 판독 테이프 포인터 아래의 숫자를 기준 셀에 복사하고, 판독 포인터를 증가시킨다.\n' +
+      '*인 것을 특징으로 하는 플라즈마 디스플레이 패널. 출력 포인터의 출력 테이프에 데이터를 복사하고 출력 포인터를 증가시킵니다.\n' +
+      '\n' +
+      '본 논문에서는 입력 테이프를 사용하지 않으므로 명령어를 사용하지 않는다.\n' +
+      '\n' +
+      '프로그램을 평가할 때, 명령어 포인터는 처음에 첫 번째 명령어 상에 있고, 출력 테이프는 비어 있고, 작업 테이프는 0으로 채워진다. 그리고, 상기 규칙에 따라 지시 포인터 아래의 지시가 평가되고, 지시 포인터가 우측으로 이동된다. 평가는 평가된 명령들의 수가 주어진 한계에 도달할 때, 또는 출력 심볼들의 수가 주어진 한계에 도달할 때 종료된다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l l l l} \\hline \\hline\n' +
+      '**Level** & **Name** & **Example Input** & **Example Output** \\\\ \\hline \\multirow{4}{*}{Regular (R)} & Even Pairs & _aabba_ & True \\\\  & Modular Arithmetic (Simple) & 1 + 2 - 4 & 4 \\\\  & Parity Check\\({}^{\\dagger}\\) & _aaabba_ & True \\\\  & Cycle Navigation\\({}^{\\dagger}\\) & 011210 & 2 \\\\ \\multirow{4}{*}{Deterministic context-free (DCF)} & Stack Manipulation & _abba_ pop push \\(a\\) pop _abba_ \\\\  & Reverse String & _aabba_ & _abba_ \\\\  & Modular Arithmetic & \\(-\\)(1 - 2) - (4 - 3 - (- 2)) & 0 \\\\  & Solve Equation\\({}^{\\circ}\\) & \\(-\\)(x - 2) - (4 - 3 - (-2)) & 1 \\\\ \\multirow{4}{*}{Context-sensitive (CS)} & Duplicate String & _abaab_ & _abaabbaabab_ \\\\  & Missing Duplicate & 10011021 & 0 \\\\  & Odds First & _aaabba_ & _aaaaba_ \\\\ \\multirow{4}{*}{Context-sensitive (CS)} & Binary Addition & 10010 + 101 & 10111 \\\\  & Binary Multiplication\\({}^{\\times}\\) & 10010 * 101 & 1001000 \\\\ \\multirow{4}{*}{Compute Sqrt} & Compute Sqrt & 100010 & 110 \\\\ \\cline{1-1}  & Bucket Sort\\({}^{\\dagger\\star}\\) & 421302214 & 011222344 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 2: (Deletang et al., 2022)로부터 취해진 표. 촘스키 계층 및 예제 입출력 쌍에서 수준이 있는 작업입니다. \\(\\dagger\\)은 순열 불변 태스크, \\(\\star\\)은 카운팅 태스크, \\(\\circ\\)은 비결정적 제어기를 필요로 하는 태스크, \\(\\times\\)은 입력 길이 측면에서 초선형 실행 시간을 필요로 하는 태스크를 나타낸다.\n' +
+      '\n' +
+      '명령어 \\(A[B]C\\)의 시퀀스에 대해, \\(A\\), \\(B\\) 및 \\(C\\)은 (균형 잡힌) 명령어의 시퀀스이다. 우리는 \\(B\\)을 블록의 _body_라고 부르고, \\(C\\)을 블록의 _continuation_라고 부른다.\n' +
+      '\n' +
+      '### BrainPhoque: 동시 생성 및 평가\n' +
+      '\n' +
+      '우리는 임의의 BF 프로그램을 샘플링하여 각각 \\(T\\) 단계에 대해 평가하고자 한다. 샘플링 및 실행 프로세스의 계산 효율성을 최대화하기 위해 불균형 괄호를 포함하는 프로그램은 특히 추가 생략을 통해 유효하게 만든다.\n' +
+      '\n' +
+      '우리는 _normalized_Solomonoff 유도 3을 근사화하고 싶기 때문에 몇 가지 단순화를 할 수 있다. 특히 프로그램은 명시적으로 중단할 필요가 없으며, 이는 중단 기호와 행동의 필요성을 제거한다.6 따라서 우리는 _all_ 프로그램이 무한하다고 생각하지만 최대 \\(T\\) 지시가 평가된다고 생각한다. BF 프로그램의 어려움은 평가된 명령들이 프로그램 테이프 상의 임의의 위치에 있을 수 있다는 것인데, 그 이유는 큰 블록[...]이 완전히 건너뛸 수 있기 때문에 샘플링 프로세스 및 둘 다를 복잡하게 할 수 있기 때문이다.\n' +
+      '\n' +
+      '각주 6: 정지행위는 \\(\\left\\lceil{}\\right\\rceil+\\left\\lceil{}\\right\\rceil\\)과 같은 특정한 무한루프를 갖는 프로그램(기준이 0이든 아니든 반복)을 종료함으로써 회복될 수 있고, 이 시퀀스를 평가할 때 (영원히 반복하지 않고) 평가를 종료한다.\n' +
+      '\n' +
+      '이것은 BF 프로그램들을 트리로서 생성함으로써 고정될 수 있는데, 여기서 개구 브래킷들 상에서 분기하는 [: 좌측 브랜치는 블록의 본체에 대응하고(및 a로 종료하는)] 반면, 우측 브랜치는 블록의 연속에 대응한다. 평가 중 개구 브래킷을 처음 만났을 때 다음 평가되는 브랜치는 기준에 따라 달라집니다. 따라서 두 가지를 모두 생성하지 않으려면 평가되고 있는 프로그램 _as를 생성해야 한다. 즉, a를 샘플링하고 평가할 때 [기준이 0이면 우리는 오른쪽 가지를 따르고 본체를 샘플링할 필요 없이 계속 샘플링을 시작하고(현재), 반대로 기준이 0이 아니면 왼쪽 가지를 따르고 계속 샘플링을 시작하고 평가를 시작한다. 동일한 개구 브래킷이 나중에 다른 기준 값으로 다시 평가되면, 다른 브랜치가 생성되어 평가될 수 있다.\n' +
+      '\n' +
+      'BrainPhoque에서 프로그램 생성 및 평가를 위한 구현은 프로그램을 위해 하나의 성장 어레이, 하나의 점프 테이블, 그리고 아직 일치하지 않는 오픈 브래킷을 위해 하나의 스택을 사용한다.\n' +
+      '\n' +
+      '명령어 포인터가 프로그램 끝에 있는 경우 +-\\(\\prec\\)[ 중 새로운 명령어가 나타납니다. 샘플링됩니다. [이고 기준값이 0이면 [으로 변경됩니다. 새로운 인스트럭션이 프로그램에 부가된 후, 평가된다. 새로운 지시가 [샘플될 다음 지시(및 프로그램에 추가됨)]이면 블록의 본문의 시작이지만, 대신에 새로운 지시가 [샘플될 다음 지시(및 프로그램에 추가됨)]이면 본문의 계속이다. 이 시점에서 점프 테이블은 아직 업데이트될 필요가 없는데, 평가해야 할 다음 명령 또한 위치의 다음 명령이기 때문이다. 점프 테이블은 연속체와 본체가 프로그램에서 어디에 있는지 추적하도록 업데이트된다. 상기 지시 포인터가 결국 개방 브래킷의 두 번째 시간 동안 돌아오면 [(resp. ]] 그리고 기준값은 이제 0(resp. 0이 아님)입니다. , 연속(신체) 블록은 이제 샘플링되어 프로그램에 추가되어야 하며, 이제 점프 테이블은 그에 따라 업데이트되어야 한다.\n' +
+      '\n' +
+      '일치하지 않는 브래킷의 스택은 블록의 본문이 생성될 때만 업데이트됩니다.\n' +
+      '\n' +
+      '브레인포크의 일부 특성:\n' +
+      '\n' +
+      '* 프로그램을 \\(t+k\\) 단계에 대해 실행하면 \\(k\\)의 모든 값에 대해 첫 \\(t\\) 단계에서 동일하게 행동한다.7 특히, 일치하지 않는 개구 브래킷은 일치 여부에 관계없이 동일하게 행동한다.\n' +
+      '* 프로그램 생성(샘플링)은 단일 성장 전용 어레이만을 필요로 한다. 트리 구조가 필요하지 않습니다. 이것이 추가 {명령어, 이를 분명히 하는 것 -- 일단 두 번째 평가 -- 본문 또는 연속이 이미 생성되었는지의 여부 -- 를 갖는 이유이다.\n' +
+      '* 지시 포인터가 셀\\(n\\)에 있는 경우, \\(n\\)의 좌측에 있는 모든 지시가 적어도 한번 평가되었다. 만약 이것이 세포\\(n\\)의 첫 번째 평가라면, \\(n\\)의 오른쪽에 대한 지침은 아직 평가되지 않았다.\n' +
+      '\n' +
+      '### 솔로모노프 로그 손실 상한 및 단축 프로그램\n' +
+      '\n' +
+      '그림 4에 대해 솔로모노프 유도의 손실에 대한 의미 있는 상한을 제공하려고 시도했지만 이는 쉽지 않다. 문맥은 섹션 3을 참조하십시오. 위에서 언급한 바와 같이, 보다 의미 있는 상한을 계산하기 위해, 우리는 모든 자체 취소 명령어 쌍(+-, +, >, >><)뿐만 아니라 타의 추종을 불허하는 불필요한 열린 괄호와 닫힌 괄호를 재귀적으로 제거함으로써 프로그램을 단축한다. 또한, 인쇄물의 마지막 평가 후에 처음으로 평가된 프로그램의 모든 지침을 제거한다. (그들이 산출물을 생산하는 데 참여하지 않기 때문에) 지시. 이 절차는 종종 프로그램을 3분의 1만큼 줄인다. 따라서, 아무것도 출력하지 않는 프로그램들은 빈 프로그램(확률 1)으로 감소된다.\n' +
+      '\n' +
+      '만약 \\(q\\)이 표본 프로그램이라면 \\(\\tilde{q}\\)은 해당 단축 프로그램이다. 샘플링된 프로그램 세트에서 U = BrainPhoque를 사용하여 솔로모노프 예측 변수의 손실에 대한 상한을 계산한다.\n' +
+      '\n' +
+      '도 6: 몇몇 브레인픽 프로그램들 및 그들의 대응하는 출력들(256 심볼들에서 절단됨) 가장 작은 막대(빨간색)는 값 0에 대응하고 가장 큰 막대(회색)는 값 16에 대응한다. 프로그램들은 불필요한 명령어들의 세트를 제거함으로써 평가 후에 감소되었다. 생성된 출력의 대부분은 규칙적이며, 샘플링된 프로그램 5000개 중 약 1개만이 비정규 패턴을 나타낸다. 그러나 이러한 수를 개선하고 더 흥미롭고 복잡한 서열을 생성하는 방법은 표 3을 참조하십시오.\n' +
+      '\n' +
+      '\\begin{tabular}{|c|c|c|c|c|c|c|c|} \\multicolumn{10}{c}{Markov chain order 0} \\\\ \\hline Ctx. & \\(<\\) & \\(>\\) & \\(+\\) & - & [ & ] & - & Freq. \\\\ \\hline \\multicolumn{10}{c}{1st} & \\(\\boldsymbol{41}\\) & \\(\\boldsymbol{41}\\) & \\(\\boldsymbol{35}\\) & \\(\\boldsymbol{08}\\) & \\(\\boldsymbol{08}\\) & \\(\\boldsymbol{42}\\) & \\(\\boldsymbol{1400}\\) \\\\ \\hline \\multicolumn{10}{c}{Markov chain order 2} \\\\ \\hline Ctx. & \\(<\\) & \\(>\\) & \\(+\\) & - & [ & ] & - & Freq. \\\\ \\hline \\multicolumn{10}{c}{-} & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{018}\\) \\\\ \\hline \\multicolumn{10}{c}{+} & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{07}\\) & \\(\\boldsymbol{141}\\) \\\\ \\hline \\multicolumn{10}{c}{-} & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{08}\\) & \\(\\boldsymbol{23}\\) & \\(\\boldsymbol{144}\\) \\\\ \\hline \\multicolumn{10}{c}{-} & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{07}\\) & \\(\\boldsymbol{09}\\) & \\(\\boldsymbol{22}\\) & \\(\\boldsymbol{22}\\) \\\\ \\hline \\multicolumn{10}{c}{+} & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{06}\\) & \\(\\boldsymbol{10}\\) & \\(\\boldsymbol{139}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(>\\)} & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{05}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{140}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{12}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{02}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{09}\\) & \\(\\boldsymbol{26}\\) & \\(\\boldsymbol{044}\\) \\\\ \\hline \\multicolumn{10}{c}{Markov chain order 2} \\\\ \\hline Ctx. & \\(<\\) & \\(>\\) & \\(+\\) & - & [ & ] & - & Freq. \\\\ \\hline \\multicolumn{10}{c}{1st} & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{23}\\) & \\(\\boldsymbol{018}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{22}\\) & \\(\\boldsymbol{24}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{4}\\) & \\(\\boldsymbol{004}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{27}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{21}\\) & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{004}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{22}\\) & \\(\\boldsymbol{21}\\) & \\(\\boldsymbol{27}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{23}\\) & \\(\\boldsymbol{004}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{23}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{23}\\) & \\(\\boldsymbol{20}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{004}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{25}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{27}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{23}\\) & \\(\\boldsymbol{004}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{08}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{039}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{05}\\) & \\(\\boldsymbol{09}\\) & \\(\\boldsymbol{025}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{06}\\) & \\(\\boldsymbol{09}\\) & \\(\\boldsymbol{22}\\) & \\(\\boldsymbol{224}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{12}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{2}\\) & \\(\\boldsymbol{020}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{12}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{006}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{019}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{019}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{17}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{01}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{019}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{04}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{026}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{21}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{00}\\) & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{13}\\) & \\(\\boldsymbol{06}\\) & \\(\\boldsymbol{02}\\) & \\(\\boldsymbol{025}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{14}\\) & \\(\\boldsymbol{15}\\) & \\(\\boldsymbol{03}\\) & \\(\\boldsymbol{11}\\) & \\(\\boldsymbol{02}\\) \\\\ \\hline \\multicolumn{10}{c}{\\(\\mid\\)} & \\(\\boldsymbol{18}\\) & \\(\\boldsymbol{16}\\) & \\(\\boldsymbol{19}\\) & \\(\\boldsymbol{19}\\\\(\\hat{Q}=(q^{1},\\ldots,q^{J})\\) and corresponding outputs (\\(U(q^{1})_{1:256},\\ldots,U(q^{J})_{1:256}\\)),\n' +
+      '\n' +
+      '\\text{Loss}(M_{U},\\hat{Q})=\\sum_{q\\in\\hat{Q}}-\\log\\sum_{p:U(p)_{1:256}=U(q)_{1:256}}7^{-\\ell(p)}\\leq\\sum_{q\\in\\hat{Q}}-\\log7^{-\\ell(\\bar{q}}=\\log(7)\\sum_{q\\in\\hat{Q}}\\ell(\\bar{q}) \\tag{4}\\tag{4}}\n' +
+      '\n' +
+      '프로그램 알파벳이 이진형이 아니라 7가지 지시사항이 있기 때문입니다. 불행히도, 감소 후에도 이 경계는 여전히 상당히 느슨하지만, 이 경계를 의미 있게 개선하려면 훨씬 더 많은 양의 계산이 필요할 것이다.\n' +
+      '\n' +
+      '## 부록 F 추가 결과 상세\n' +
+      '\n' +
+      '아래에서는 VOMS(그림 7), 촘스키 작업(그림 8) 및 UTM 소스(그림 9 및 10)에 대한 실험의 추가 결과를 보여준다. 마지막으로 그림 11에서 길이 일반화 분석에 대한 자세한 내용을 보여준다.\n' +
+      '\n' +
+      '도 7 | 도 2에서와 동일한 6k 시퀀스에 대한 상세한 결과. 상위 두 패널은 도 2에서의 평가를 위해 사용되는 트리 깊이(모든 궤적에 대해) 및 현재 컨텍스트 길이(모든 궤적의 모든 데이터 포인트에 걸쳐)에 걸친 히스토그램을 도시한다. 예상대로, 대부분의 생성된 트리는 깊이가 낮고 대부분의 데이터 포인트는 짧은 컨텍스트를 갖는다. 세 개의 하위 패널은 각각 트리 깊이당 평균 누적 후회 및 컨텍스트 길이당 평균 순간 후회를 보여준다. 얇은 선은 개별 모델에 해당하며(임의 초기화가 다른), 굵은 선은 모델 크기당 중앙값을 표시합니다. 구조 전반에 걸쳐 더 작은 모델은 매우 짧은 트리 깊이 또는 매우 짧은 컨텍스트 길이에 대해서만 잘 예측한다(최대 컨텍스트 길이는 트리 깊이에 의해 상한되지만, 많은 컨텍스트는 최대 트리 깊이보다 훨씬 짧다). Context lenghts\\(\\geq 11\\)은 드물기 때문에 이 체제에서 정량적 결과를 신뢰할 수 없다.\n' +
+      '\n' +
+      '도 7 | 도 2에서와 동일한 6k 시퀀스에 대한 상세한 결과. 상위 두 패널은 도 2에서의 평가를 위해 사용되는 트리 깊이(모든 궤적에 대해) 및 현재 컨텍스트 길이(모든 궤적의 모든 데이터 포인트에 걸쳐)에 걸친 히스토그램을 도시한다. 예상대로, 대부분의 생성된 트리는 깊이가 낮고 대부분의 데이터 포인트는 짧은 컨텍스트를 갖는다. 세 개의 하위 패널은 각각 트리 깊이당 평균 누적 후회 및 컨텍스트 길이당 평균 순간 후회를 보여준다. 얇은 선은 개별 모델에 해당하며(임의 초기화가 다른), 굵은 선은 모델 크기당 중앙값을 표시합니다. 구조 전반에 걸쳐 더 작은 모델은 매우 짧은 트리 깊이 또는 매우 짧은 컨텍스트 길이에 대해서만 잘 예측한다(최대 컨텍스트 길이는 트리 깊이에 의해 상한되지만, 많은 컨텍스트는 최대 트리 깊이보다 훨씬 짧다). Context lenghts\\(\\geq 11\\)은 드물기 때문에 이 체제에서 정량적 결과를 신뢰할 수 없다.\n' +
+      '\n' +
+      '도 8: 촘스키 태스크들에 대해 훈련되고 평가된 네트워크들의 상세한 성능(6k 시퀀스들, 태스크당 400 시퀀스들; 도 3에 도시된 주요 결과들) 얇은 선은 모델의 단일 무작위 초기화에 해당하며 볼트 선은 각각 중앙값을 나타낸다.\n' +
+      '\n' +
+      '도 9 \\(|\\) UTM 인-분포 평가에 대한 프로그램 길이당 결과(도 4에서와 동일한 데이터; 6k 시퀀스, 길이 256).\n' +
+      '\n' +
+      '그림 10 \\(|\\) UTM은 촘스키 작업으로 전달된다.\n' +
+      '\n' +
+      '도 11 | 시퀀스-길이 일반화 결과의 전체 상세. 모델은 각각의 작업에 대해 길이 256의 시퀀스에 대해 훈련되었고, 동일한 데이터 생성기 유형으로부터 길이 1024의 6k 시퀀스에 대해 평가된다. 얇은 선은 개별 모델을 나타내고 굵은 선은 동일한 모델의 무작위 초기화에 걸친 중앙값이다. 예상대로 모든 모델은 훈련된 시퀀스 길이까지 상당히 잘 수행되며, 이후 성능은 다소 급격히 악화된다. 특히, 변압기 모델의 예측 성능은 크기에 관계없이 256단계 이후 매우 빠르게 저하되며 다른 모델보다 10배 이상 떨어지는 경우가 많다. 모든 실험에서 LSTM은 더 긴 서열로 일반화하는 측면에서 가장 잘 수행한다.\n' +
+      '\n';
+  </script>
+  <style>
+    #content {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+  <script>
+    let script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/mathpix-markdown-it@1.0.40/es5/bundle.js";
+    document.head.append(script);
+
+    script.onload = function() {
+      const isLoaded = window.loadMathJax();
+      if (isLoaded) {
+        console.log('Styles loaded!')
+      }
+
+      const el = window.document.getElementById('content-text');
+      if (el) {
+        const options = {
+          htmlTags: true
+        };
+        const html = window.render(text, options);
+        el.outerHTML = html;
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="content"><div id="content-text"></div></div>
+</body>
+</html>
