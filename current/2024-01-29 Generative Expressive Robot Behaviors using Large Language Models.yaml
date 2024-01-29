@@ -1,11 +1,18 @@
-date: "2024-01-29"
 author: Karthik Mahadevan
-title: Generative Expressive Robot Behaviors using Large Language Models
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/WS00gHIo4OAvmheD8kGIN.png
+date: '2024-01-29'
 link: https://huggingface.co/papers/2401.14673
-summary: This paper explores using Large Language Models (LLMs) to generate robot behaviors that are adaptable and composable, building on each other. The approach utilizes few-shot chain-of-thought prompting to translate human language instructions into control code using the robot's learned skills and exhibits behaviors that users found to be competent and easy to understand....
 opinion: placeholder
+summary: This paper explores using Large Language Models (LLMs) to generate robot
+  behaviors that are adaptable and composable, building on each other. The approach
+  utilizes few-shot chain-of-thought prompting to translate human language instructions
+  into control code using the robot's learned skills and exhibits behaviors that users
+  found to be competent and easy to understand....
 tags:
-    - Deep Learning
-    - Robotics and Control
-    - Natural Language Processing
+- Deep Learning
+- Robotics and Control
+- Natural Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/WS00gHIo4OAvmheD8kGIN.png
+title: Generative Expressive Robot Behaviors using Large Language Models
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.14673/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.14673/paper.ko.html

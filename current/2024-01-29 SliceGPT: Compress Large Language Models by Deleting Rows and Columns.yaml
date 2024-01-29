@@ -1,10 +1,16 @@
-date: "2024-01-29"
 author: Saleh Ashkboos
-title: 'SliceGPT: Compress Large Language Models by Deleting Rows and Columns'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/X2ZXpHxYkhtCfKRwLZ0eP.png
+date: '2024-01-29'
 link: https://huggingface.co/papers/2401.15024
-summary: The paper presents SliceGPT, a new post-training sparsification scheme that replaces weight matrices with smaller dense matrices to reduce the embedding dimension and save memory and compute resources. SliceGPT maintains almost all task performance while reducing model parameters and requires fewer GPUs and faster run time....
 opinion: placeholder
+summary: The paper presents SliceGPT, a new post-training sparsification scheme that
+  replaces weight matrices with smaller dense matrices to reduce the embedding dimension
+  and save memory and compute resources. SliceGPT maintains almost all task performance
+  while reducing model parameters and requires fewer GPUs and faster run time....
 tags:
-    - Deep Learning
-    - Optimization and Learning Algorithms
+- Deep Learning
+- Optimization and Learning Algorithms
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/X2ZXpHxYkhtCfKRwLZ0eP.png
+title: 'SliceGPT: Compress Large Language Models by Deleting Rows and Columns'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15024/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15024/paper.ko.html

@@ -1,13 +1,23 @@
-date: "2024-01-29"
 author: Chaochao Lu
-title: 'From GPT-4 to Gemini and Beyond: Assessing the Landscape of MLLMs on Generalizability, Trustworthiness and Causality through Four Modalities'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/-OZna4DZ1W3AWNufdsqoC.png
+date: '2024-01-29'
 link: https://huggingface.co/papers/2401.15071
-summary: 'The paper analyzes the performance of proprietary and open-source Multi-modal Large Language Models (MLLMs) across four modalities: text, code, image, and video. It evaluates the models'' generalizability, trustworthiness, and causal reasoning capabilities, using 230 manually designed cases. The study finds 14 empirical findings that uncover the strengths and weaknesses of these models, ultimately aiming to improve the transparency of MLLMs and support the development of more reliable downstream ...'
 opinion: placeholder
+summary: 'The paper analyzes the performance of proprietary and open-source Multi-modal
+  Large Language Models (MLLMs) across four modalities: text, code, image, and video.
+  It evaluates the models'' generalizability, trustworthiness, and causal reasoning
+  capabilities, using 230 manually designed cases. The study finds 14 empirical findings
+  that uncover the strengths and weaknesses of these models, ultimately aiming to
+  improve the transparency of MLLMs and support the development of more reliable downstream
+  ...'
 tags:
-    - Natural Language Processing
-    - Computer Vision
-    - Deep Learning
-    - Bayesian Learning
-    - Explainable AI and Interpretability
+- Natural Language Processing
+- Computer Vision
+- Deep Learning
+- Bayesian Learning
+- Explainable AI and Interpretability
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/-OZna4DZ1W3AWNufdsqoC.png
+title: 'From GPT-4 to Gemini and Beyond: Assessing the Landscape of MLLMs on Generalizability,
+  Trustworthiness and Causality through Four Modalities'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15071/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15071/paper.ko.html

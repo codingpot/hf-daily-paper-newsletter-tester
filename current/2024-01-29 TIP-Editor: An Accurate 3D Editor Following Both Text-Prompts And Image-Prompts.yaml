@@ -1,10 +1,17 @@
-date: "2024-01-29"
 author: Jingyu Zhuang
-title: 'TIP-Editor: An Accurate 3D Editor Following Both Text-Prompts And Image-Prompts'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/ZpqNbxN8MUer8cEyyUJlq.png
+date: '2024-01-29'
 link: https://huggingface.co/papers/2401.14828
-summary: This paper introduces TIP-Editor, a 3D scene editing framework that allows users to editor content by providing both a text description and an image prompt, along with a 3D bounding box to specify the editing area. The framework uses a stepwise 2D personalization strategy and explicit 3D Gaussian splatting to facilitate accurate editing....
 opinion: placeholder
+summary: This paper introduces TIP-Editor, a 3D scene editing framework that allows
+  users to editor content by providing both a text description and an image prompt,
+  along with a 3D bounding box to specify the editing area. The framework uses a stepwise
+  2D personalization strategy and explicit 3D Gaussian splatting to facilitate accurate
+  editing....
 tags:
-    - Deep Learning
-    - Computer Vision
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/ZpqNbxN8MUer8cEyyUJlq.png
+title: 'TIP-Editor: An Accurate 3D Editor Following Both Text-Prompts And Image-Prompts'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.14828/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.14828/paper.ko.html

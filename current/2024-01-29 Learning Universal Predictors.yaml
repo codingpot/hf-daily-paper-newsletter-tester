@@ -1,12 +1,19 @@
-date: "2024-01-29"
 author: Jordi Grau-Moya
-title: Learning Universal Predictors
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/GfKbUTI-puokUCecuKfAI.png
+date: '2024-01-29'
 link: https://huggingface.co/papers/2401.14953
-summary: This paper explores the potential of using meta-learning to expose neural networks to a broad range of patterns using Universal Turing Machines (UTMs) to generate training data. The results suggest that UTM data is a valuable resource for meta-learning and can be used to train neural networks capable of learning universal prediction strategies....
 opinion: placeholder
+summary: This paper explores the potential of using meta-learning to expose neural
+  networks to a broad range of patterns using Universal Turing Machines (UTMs) to
+  generate training data. The results suggest that UTM data is a valuable resource
+  for meta-learning and can be used to train neural networks capable of learning universal
+  prediction strategies....
 tags:
-    - Supervised Learning
-    - Meta-Learning
-    - Deep Learning
-    - Natural Language Processing
+- Supervised Learning
+- Meta-Learning
+- Deep Learning
+- Natural Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/GfKbUTI-puokUCecuKfAI.png
+title: Learning Universal Predictors
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.14953/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.14953/paper.ko.html
