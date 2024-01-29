@@ -1,11 +1,11 @@
 name: translation-ko
 
 on:
-  workflow_run:
-    workflows: ["test"]
-    types:
-      - completed
-  # workflow_dispatch
+  # workflow_run:
+  #   workflows: ["test"]
+  #   types:
+  #     - completed
+  workflow_dispatch
 
 jobs:
   build:
@@ -71,6 +71,8 @@ jobs:
           python py/provision_translation_instance.py \
             --dstack-token="${{ secrets.DSTACK_TOKEN }}" \
             --github-token="${{ secrets.GH_TOKEN }}" \
+            --hf-token="${{ secrets.HF_TOKEN }}" \
+            --model-name="${{ secrets.MODEL_NAME }}" \
             --target-archive-github-repo="codingpot/hf-daily-paper-newsletter-tester" \
             --arxiv-ids $(cat ${{ steps.parameters.outputs.output_filename }})
 

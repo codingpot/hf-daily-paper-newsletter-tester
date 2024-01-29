@@ -2,19 +2,21 @@ author: Zhihong Chen
 date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12208
 opinion: placeholder
-summary: This paper presents CheXagent, an instruction-tuned foundation model capable
-  of interpreting chest x-rays. The model is built using CheXinstruct, a large-scale
-  instruction-tuning dataset and is evaluated on CheXbench, a novel benchmark for
-  CXR interpretation tasks. CheXagent outperforms previously-developed general- and
-  medical-domain FMs and is fair in terms of sex, race, and age. The project can be
-  found at https://stanford-aimi.github.io/chexagent.html....
+summary: CheXagent is a vision-language foundation model that can accurately interpret
+  chest X-rays and assist physicians with clinical decision-making. It was developed
+  using a large-scale instruction-tuning dataset called CheXinstruct and evaluated
+  on CheXbench, a novel benchmark for CXR interpretation. CheXagent outperforms previously-developed
+  models and is designed to be transparent with a fairness evaluation to address potential
+  performance disparities....
 tags:
 - Supervised Learning
 - Deep Learning
 - Computer Vision
 - Natural Language Processing
+- Explainable AI and Interpretability
+- Fairness, Bias, and Ethics
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/mkUrcgNzR_f4O7h7FOwnw.png
 title: 'CheXagent: Towards a Foundation Model for Chest X-Ray Interpretation'
 translated_paths:
-  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12208/paper.en.html
-  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12208/paper.ko.html
+  INT: https://raw.githack.com/deep-diver/hf-daily-paper-newsletter/main/translated-papers/2401.12208/paper.en.html
+  KR: https://raw.githack.com/deep-diver/hf-daily-paper-newsletter/main/translated-papers/2401.12208/paper.ko.html

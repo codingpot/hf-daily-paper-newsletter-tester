@@ -1,1 +1,0 @@
-- [SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/8/2024-01-23+SpatialVLM%3A+Endowing+Vision-Language+Models+with+Spatial+Reasoning+Capabilities.yaml) / 2024-01-23

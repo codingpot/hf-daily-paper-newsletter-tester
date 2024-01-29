@@ -1,1 +1,0 @@
-- [Spotting LLMs With Binoculars: Zero-Shot Detection of Machine-Generated Text](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/9/2024-01-23+Spotting+LLMs+With+Binoculars%3A+Zero-Shot+Detection+of+Machine-Generated+Text.yaml) / 2024-01-23

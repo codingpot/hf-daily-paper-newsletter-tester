@@ -1,2 +1,2 @@
-dstack
+dstack==0.14.0
 pyyaml

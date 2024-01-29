@@ -2,16 +2,20 @@ author: Boyi Li
 date: '2024-01-22'
 link: https://huggingface.co/papers/2401.10889
 opinion: placeholder
-summary: 'This paper introduces a diffusion model-based framework for animating people
-  from a single image, based on a target 3D motion sequence. The framework consists
-  of two components: learning priors about invisible parts of the human body and clothing,
-  and rendering novel body poses with proper clothing and texture. The authors use
-  an in-filling diffusion model to hallucinate unseen parts of a person, and train
-  it on texture map space for better efficiency. A diffusion-based rendering pipeline
-  is als...'
+summary: This paper proposes a diffusion model-based framework that animates people
+  from a single image given a target 3D motion sequence. It learns in-filling priors
+  for unseen parts of the human body and clothing, and develops a diffusion-based
+  rendering pipeline controlled by 3D human poses to produce realistic renderings
+  of novel poses. Their method generates faithful sequences of images that are visually
+  similar to the input and target motion, able to handle prolonged motions and complex
+  poses....
 tags:
 - Computer Vision
+- Deep Learning
+- Explainable AI and Interpretability
+- Optimization and Decision Making
+- Robotics and Control
 thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/U5nTq8nH2lRpYYR-dBknO.qt
 title: Synthesizing Moving People with 3D Control
 translated_paths:
-  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.10889/paper.ko.html
+  KR: https://raw.githack.com/deep-diver/hf-daily-paper-newsletter/main/translated-papers/2401.10889/paper.ko.html

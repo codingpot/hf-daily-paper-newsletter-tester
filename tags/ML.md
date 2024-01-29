@@ -1,1 +1,0 @@
-- [Fast Registration of Photorealistic Avatars for VR Facial Animation](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/9/2024-01-23+Fast+Registration+of+Photorealistic+Avatars+for+VR+Facial+Animation.yaml) / 2024-01-23
