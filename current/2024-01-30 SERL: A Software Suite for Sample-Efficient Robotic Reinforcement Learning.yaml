@@ -14,3 +14,6 @@ tags:
 - Robotics and Control
 thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.16013.gif?raw=true
 title: 'SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.16013/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.16013/paper.ko.html

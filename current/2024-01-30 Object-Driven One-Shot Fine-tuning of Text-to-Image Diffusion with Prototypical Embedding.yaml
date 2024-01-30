@@ -1,13 +1,21 @@
-date: "2024-01-30"
 author: Jianxiang Lu
-title: Object-Driven One-Shot Fine-tuning of Text-to-Image Diffusion with Prototypical Embedding
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/O9rAhpoGNtYTlmnkuivK9.png
+date: '2024-01-30'
 link: https://huggingface.co/papers/2401.15708
-summary: The paper introduces a new method for generating images from text prompts that can handle novel objects and improve generalization and fidelity. This is done by initializing a prototypical embedding based on the object's appearance and class, and proposing a class-characterizing regularization and object-specific loss. The method outperforms several existing works and the code will be released....
 opinion: placeholder
+summary: The paper introduces a new method for generating images from text prompts
+  that can handle novel objects and improve generalization and fidelity. This is done
+  by initializing a prototypical embedding based on the object's appearance and class,
+  and proposing a class-characterizing regularization and object-specific loss. The
+  method outperforms several existing works and the code will be released....
 tags:
-    - Supervised Learning
-    - Deep Learning
-    - Computer Vision
-    - Natural Language Processing
-    - Emerging Applications of Machine Learning
+- Supervised Learning
+- Deep Learning
+- Computer Vision
+- Natural Language Processing
+- Emerging Applications of Machine Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/O9rAhpoGNtYTlmnkuivK9.png
+title: Object-Driven One-Shot Fine-tuning of Text-to-Image Diffusion with Prototypical
+  Embedding
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15708/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15708/paper.ko.html

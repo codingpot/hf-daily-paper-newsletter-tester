@@ -1,11 +1,20 @@
-date: "2024-01-30"
 author: Qinghe Wang
-title: 'StableIdentity: Inserting Anybody into Anywhere at First Sight'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/SfUWrc0CWvO0fFkNSpK9m.png
+date: '2024-01-30'
 link: https://huggingface.co/papers/2401.15975
-summary: The paper presents StableIdentity, a method that allows for inserting a person's face into different images with consistent identity, using just one image of the face. It does this by encoding the face image with an identity prior and then transferring it to a space with an editable prior, which is built from celebrities' names. The method outperforms existing methods and can be combined with other modules, such as ControlNet. It can also be used for video and 3D generation without fine-tuning, ...
 opinion: placeholder
+summary: The paper presents StableIdentity, a method that allows for inserting a person's
+  face into different images with consistent identity, using just one image of the
+  face. It does this by encoding the face image with an identity prior and then transferring
+  it to a space with an editable prior, which is built from celebrities' names. The
+  method outperforms existing methods and can be combined with other modules, such
+  as ControlNet. It can also be used for video and 3D generation without fine-tuning,
+  ...
 tags:
-    - Deep Learning
-    - Computer Vision
-    - Emerging Applications of Machine Learning
+- Deep Learning
+- Computer Vision
+- Emerging Applications of Machine Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/SfUWrc0CWvO0fFkNSpK9m.png
+title: 'StableIdentity: Inserting Anybody into Anywhere at First Sight'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15975/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.15975/paper.ko.html

@@ -1,10 +1,17 @@
-date: "2024-01-30"
 author: Pratyush Maini
-title: 'Rephrasing the Web: A Recipe for Compute and Data-Efficient Language Modeling'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/WApmi8a7YcGCsMoVlFfXu.png
+date: '2024-01-30'
 link: https://huggingface.co/papers/2401.16380
-summary: This paper proposes a method called Web Rephrase Augmented Pre-training (WRAP) to improve the efficiency of training large language models by using off-the-shelf instruction-tuned models to rephrase documents in specific styles. This method speeds up training and improves performance on downstream tasks by incorporating style diversity and higher quality data....
 opinion: placeholder
+summary: This paper proposes a method called Web Rephrase Augmented Pre-training (WRAP)
+  to improve the efficiency of training large language models by using off-the-shelf
+  instruction-tuned models to rephrase documents in specific styles. This method speeds
+  up training and improves performance on downstream tasks by incorporating style
+  diversity and higher quality data....
 tags:
-    - Supervised Learning
-    - Natural Language Processing
+- Supervised Learning
+- Natural Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/WApmi8a7YcGCsMoVlFfXu.png
+title: 'Rephrasing the Web: A Recipe for Compute and Data-Efficient Language Modeling'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.16380/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.16380/paper.ko.html
