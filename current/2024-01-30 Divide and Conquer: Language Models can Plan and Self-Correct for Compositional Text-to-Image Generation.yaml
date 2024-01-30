@@ -1,11 +1,16 @@
-date: "2024-01-30"
 author: Zhenyu Wang
-title: 'Divide and Conquer: Language Models can Plan and Self-Correct for Compositional Text-to-Image Generation'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Vjh-Fdss7FTOfryl0Bx2t.mp4
+date: '2024-01-30'
 link: https://huggingface.co/papers/2401.15688
-summary: This paper presents a method called CompAgent that uses a large language model to create high-quality images from complex text prompts. The method breaks down the prompt into individual objects and attributes, then uses reasoning to compose the objects into a coherent image. It also includes a verification and feedback mechanism to correct attribute errors and refine the image....
 opinion: placeholder
+summary: This paper presents a method called CompAgent that uses a large language
+  model to create high-quality images from complex text prompts. The method breaks
+  down the prompt into individual objects and attributes, then uses reasoning to compose
+  the objects into a coherent image. It also includes a verification and feedback
+  mechanism to correct attribute errors and refine the image....
 tags:
-    - Natural Language Processing
-    - Computer Vision
-    - Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Deep Learning
+thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.15688.gif?raw=true
+title: 'Divide and Conquer: Language Models can Plan and Self-Correct for Compositional
+  Text-to-Image Generation'

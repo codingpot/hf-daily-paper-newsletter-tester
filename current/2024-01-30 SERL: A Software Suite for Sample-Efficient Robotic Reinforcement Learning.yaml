@@ -1,10 +1,16 @@
-date: "2024-01-30"
 author: Jianlan Luo
-title: 'SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/uxKWerYgEAvqMBKZLxE92.mp4
+date: '2024-01-30'
 link: https://huggingface.co/papers/2401.16013
-summary: The paper introduces a software suite called SERL that provides a carefully implemented library of sample efficient off-policy deep RL methods, rewards and reset methods, a high-quality controller for a commonly used robot, and challenging example tasks. The library can achieve very efficient learning, perfect success rates, and extreme robustness for tasks such as PCB board assembly, cable routing, and object relocation in less than an hour of training per policy. The code, documentation, and v...
 opinion: placeholder
+summary: The paper introduces a software suite called SERL that provides a carefully
+  implemented library of sample efficient off-policy deep RL methods, rewards and
+  reset methods, a high-quality controller for a commonly used robot, and challenging
+  example tasks. The library can achieve very efficient learning, perfect success
+  rates, and extreme robustness for tasks such as PCB board assembly, cable routing,
+  and object relocation in less than an hour of training per policy. The code, documentation,
+  and v...
 tags:
-    - Reinforcement Learning
-    - Robotics and Control
+- Reinforcement Learning
+- Robotics and Control
+thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.16013.gif?raw=true
+title: 'SERL: A Software Suite for Sample-Efficient Robotic Reinforcement Learning'

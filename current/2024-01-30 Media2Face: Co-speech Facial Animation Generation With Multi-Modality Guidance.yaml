@@ -1,11 +1,14 @@
-date: "2024-01-30"
 author: Qingcheng Zhao
-title: 'Media2Face: Co-speech Facial Animation Generation With Multi-Modality Guidance'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/6258561f4d4291e8e63d8ae6/bD020RRfSYX4URGMY68P9.mp4
+date: '2024-01-30'
 link: https://huggingface.co/papers/2401.15687
-summary: Media2Face is a diffusion model that can generate 3D facial animations with high realism, accept multi-modal guidance (audio, text, image), and broaden expressiveness and style adaptability, using a variational autoencoder called GNPFA, and a large, diverse data set called M2F-D....
 opinion: placeholder
+summary: Media2Face is a diffusion model that can generate 3D facial animations with
+  high realism, accept multi-modal guidance (audio, text, image), and broaden expressiveness
+  and style adaptability, using a variational autoencoder called GNPFA, and a large,
+  diverse data set called M2F-D....
 tags:
-    - Deep Learning
-    - Computer Vision
-    - Human-Computer Interaction (HCI) and User Interfaces
+- Deep Learning
+- Computer Vision
+- Human-Computer Interaction (HCI) and User Interfaces
+thumbnail: https://github.com/codingpot/hf-daily-paper-newsletter-tester/blob/main/assets/2401.15687.gif?raw=true
+title: 'Media2Face: Co-speech Facial Animation Generation With Multi-Modality Guidance'
