@@ -1,0 +1,12 @@
+date: "2024-01-30"
+author: Yuhang Zang
+title: Overcoming the Pitfalls of Vision-Language Model Finetuning for OOD Generalization
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/uX3fS402Lq94MfLNLJVWJ.png
+link: https://huggingface.co/papers/2401.15914
+summary: This paper proposes a novel approach, OGEN, to improve the out-of-distribution (OOD) generalization of finetuned vision-language models. The method uses a class-conditional feature generator to synthesize OOD features and an adaptive self-distillation mechanism for regularization during joint optimization. The results show that OGEN significantly enhances OOD generalization performance....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Computer Vision
+    - Natural Language Processing

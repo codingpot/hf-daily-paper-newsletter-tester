@@ -1,0 +1,12 @@
+date: "2024-01-30"
+author: Xiaoyi Dong
+title: 'InternLM-XComposer2: Mastering Free-form Text-Image Composition and Comprehension in Vision-Language Large Model'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/YtF3UCeotLE5b7BIHMrdw.mp4
+link: https://huggingface.co/papers/2401.16420
+summary: InternLM-XComposer2 is a cutting-edge vision-language model that can create and understand complex text-image compositions. It's able to create customizable content from diverse inputs, like outlines and detailed descriptions, without losing its language understanding abilities. Experiments show that it performs better than other models and even matches or surpasses more advanced models in some tests....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning
+    - Natural Language Processing
+    - Computer Vision

@@ -1,0 +1,10 @@
+date: "2024-01-30"
+author: Bin Lin
+title: 'MoE-LLaVA: Mixture of Experts for Large Vision-Language Models'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/3ta3Rnuv4Syt6mKIu_8BE.png
+link: https://huggingface.co/papers/2401.15947
+summary: The paper proposes a technique called MoE-tuning (Mix of Experts) that can create a large, sparse model that only uses a few parameters at a time, which reduces training and inference costs. They also present MoE-LLaVA, a framework based on this technique that can better understand images and reduce errors in predictions compared to other methods....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Deep Learning

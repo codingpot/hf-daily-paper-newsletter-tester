@@ -1,0 +1,11 @@
+date: "2024-01-30"
+author: Xiaoyu Shi
+title: 'Motion-I2V: Consistent and Controllable Image-to-Video Generation with Explicit Motion Modeling'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/DFR3GpMI4021qU9o36Vhk.png
+link: https://huggingface.co/papers/2401.15977
+summary: 'The paper proposes Motion-I2V, a framework for generating consistent and controllable videos by splitting the process into two stages: one for predicting motion, and another for enhancing video with this motion information. It offers more control over video generation than previous methods and can perform zero-shot video-to-video translation. ...'
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Deep Learning
+    - Explainable AI and Interpretability

@@ -1,0 +1,9 @@
+date: "2024-01-30"
+author: Junyang Wang
+title: 'Mobile-Agent: Autonomous Multi-Modal Mobile Device Agent with Visual Perception'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/ZZp9zr-4JeFSR234q6ucp.mp4
+link: https://huggingface.co/papers/2401.16158
+summary: This paper presents Mobile-Agent, an autonomous multi-modal mobile device agent that accurately identifies and locates visual and textual elements within app interfaces, plans and navigates complex operations, and achieves high accuracy and completion rates. Mobile-Agent eliminates the need for system-specific customizations and is evaluated using Mobile-Eval. Code and model are open-sourced....
+opinion: placeholder
+tags:
+    - Computer Vision
