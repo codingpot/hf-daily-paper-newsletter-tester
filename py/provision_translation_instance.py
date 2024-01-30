@@ -27,7 +27,7 @@ def parallel_job_split(i, client, arxiv_ids, args):
           'gh auth login --with-token < GH_TOKEN.txt',
   
           'echo "Installing requirements..."',
-          'pip install setuptools wheel nougat-ocr arxiv-dl python-mecab-kor kss parmap accelerate',
+          'pip install nougat-ocr arxiv-dl kss parmap accelerate',
   
           'echo "Creating temporary directory for holding the paper..."',
           f'for arxiv_id in {arxiv_ids_str}; do mkdir -p papers/$arxiv_id; done',
