@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true"><head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script>
+    const text = '' +
+      '#MoE-LLaVA: 대규모 비전 언어 모델을 위한 전문가 혼합\n' +
+      '\n' +
+      'Bin Lin\n' +
+      '\n' +
+      'Zhenyu Tang\n' +
+      '\n' +
+      'Yang Ye\n' +
+      '\n' +
+      'Jiaxi Cui\n' +
+      '\n' +
+      'Bin Zhu\n' +
+      '\n' +
+      'Peng Jin\n' +
+      '\n' +
+      'Junwu Zhang\n' +
+      '\n' +
+      'Munan Ning\n' +
+      '\n' +
+      'Li Yuan\n' +
+      '\n' +
+      '###### Abstract\n' +
+      '\n' +
+      'Large Vision-Language Models (LVLM)의 경우, 모델을 스케일링하는 것은 성능을 효과적으로 향상시킬 수 있다. 그러나 모델 파라미터를 확장하면 모든 모델 파라미터가 계산에서 각 토큰에 대해 활성화되기 때문에 학습 및 추론 비용이 크게 증가한다. 본 논문에서는 LVLM을 위한 새로운 훈련 전략인 **MoE-tuning**을 제안한다. 제안된 훈련 전략인 **MoE-tuning**은 터무니없는 수의 파라미터와 일정한 계산 비용으로 희소 모델을 구성할 수 있으며, 다중 모달 학습과 모델 희소성과 관련된 성능 저하를 효과적으로 해결할 수 있다. 또한, MoE 기반 희소 LVLM 아키텍처인 **MoE-LLaVA** 프레임워크를 제시한다. 이 프레임워크는 배포 중에 라우터를 통해 최상위 전문가만 고유하게 활성화하여 나머지 전문가를 비활성화 상태로 유지합니다. 우리의 광범위한 실험은 시각적 이해에서 MoE-LLaVA의 우수한 능력과 모델 출력에서 환각을 줄일 수 있는 가능성을 강조한다. 놀랍게도, 단지 30억 개의 희소하게 활성화된 파라미터들로, MoE-LLaVA는 다양한 시각적 이해 데이터 세트들에서 LLaVA-1.5-7B와 유사한 성능을 보여주며 심지어 객체 환각 벤치마크에서 LLaVA-1.5-13B를 능가한다. MoE-LLaVA를 통해 희소 LVLM의 기준선을 설정하고 보다 효율적이고 효과적인 다중 모드 학습 시스템을 개발하는 데 있어 향후 연구에 귀중한 통찰력을 제공하는 것을 목표로 한다. 코드는 [https://github.com/PKU-YuanGroup/MoE-LLaVA](https://github.com/PKU-YuanGroup/MoE-LLaVA)에서 해제된다.\n' +
+      '\n' +
+      '머신러닝, ICML, ICML\n' +
+      '\n' +
+      '## 1 Introduction\n' +
+      '\n' +
+      'LLVLM(Large Vision-Language Models)에서 LLaVA(Liu et al., 2023c) 및 MiniGPT-4(Zhu et al., 2023)는 LLM(Large Language Model)의 시각적 인식 능력을 향상시키기 위해 이미지 인코더 및 여러 시각적 투영 계층을 활용함으로써 유망한 결과를 보여주었다. 통상적으로, 모델 사이즈를 증가시키는 것(Zhang et al., 2023a; Bai et al., 2023b) 및 데이터세트 스케일(Zhang et al., 2023c; Zhao et al., 2023a; Chen et al., 2023d)은 모델 성능을 향상시킬 수 있다. InternVL(Chen et al., 2023e)과 같은 추가 발전은 이미지 인코더를 6B 파라미터로 확장했다. 일련의 작업들(Li et al., 2022; Dai et al., 2023; Liu et al., 2023b)은 LVLM의 백엔드를 13B 파라미터로 확장하고 다운스트림 작업들에서 최첨단 성능을 달성하였다. IDEFICS(Laurencon et al., 2023)는 심지어 80B 파라미터로 LVLM을 훈련시켰다. 이 접근법은 LLM이 일반적으로 34B(SUSTech-IDEA, 2023; 01-ai, 2023; FlagAI-Open, 2023) 또는 70B 파라미터(Touvron et al., 2023a;b; Bai et al., 2023a; DeepSee-AI, 2024; Zhang and Yang, 2023)에서 사전 훈련되고, 100B 파라미터를 능가하는 모델(Brown et al., 2020; Zeng et al., 2022; Zhang et al., 2022; Scao et al., 2022; Li et al., 2023c; falcony, 2023)에서도 우수한 성능을 입증했다.\n' +
+      '\n' +
+      '고품질 훈련 데이터를 사용한 실제 응용에서 모델 스케일링은 모델 성능을 향상시키는 데 중요하다(Lepikhin et al., 2020). 그러나 이러한 대형 모델의 학습 및 배포는 상당한 계산량을 요구한다.\n' +
+      '\n' +
+      '도 1: **객체 환각 벤치마크에 대한 MoE-LLaVA-1.8Bx4와 오픈 소스 모델 간의 비교.** POPE의 세 가지 하위 집합에 대한 평균 성능을 보고한다(Li et al., 2023d): 적대적, 랜덤 및 인기). 빨간색 점선은 MoE-LLaVA를 제외한 모든 모델의 데이터 포인트에 대한 선형 적합을 나타낸다.\n' +
+      '\n' +
+      '병렬 장치에서의 선택적 비용 및 효율적인 구현은 매우 비쌀 수 있다. 각 토큰에는 조밀한 모델이라고 하는 모든 모델 매개변수와 함께 계산이 필요하기 때문이다. 대조적으로, 전문가(MoE)(Jacobs et al., 1991; Eigen et al., 2013)는 NLP(Fedus et al., 2022; Zoph et al., 2022; Komatsuzaki et al., 2022) 분야에서 번창했던 데이터를 처리하기 위해 고정된 활성화된 파라미터를 사용함으로써 모델 용량을 효과적으로 스케일링한다. 최근 MoE 레이어를 장착한 Mistral LLM(Jiang et al., 2023)이 LLM에서 인기를 얻고 있다. Mistral-MoE-8x7B(Jiang et al., 2024)는 더 적은 계산 자원으로 LLaMA 2-70B에 필적하는 성능을 달성한다.\n' +
+      '\n' +
+      '그러나 희소 LVLM을 훈련하기 위해 MoE를 직접 적용하는 것은 어렵다. 우리는 LLM을 LVLM으로 동시에 변환하고 모델을 희박화하는 것이 상당한 성능 저하를 초래한다는 것을 관찰한다. 여러 번의 시도 끝에 LVLM의 희소화를 위해서는 적절한 초기화가 중요하다는 것을 발견하여 새로운 3단계 훈련 전략 **MoE-tuning**을 소개한다. 구체적으로, 그림 2와 같이 먼저 I단계에서 LLM에 시각적 토큰을 적응시키는 MLP를 학습시킨 후, II단계에서 LLM 전체 파라미터를 학습시켜 일반적인 멀티모달 이해 능력으로 LVLM을 사전 학습시킨다. 또한, III 단계에서 우리는 전문가에 대한 초기화 가중치로 FFN을 복제하고 MoE 계층만 훈련한다. 마지막으로, 희소 모델은 일반적인 LVLM 초기화에서 전문가의 희소 혼합으로 점진적으로 전환된다.\n' +
+      '\n' +
+      '이 작업에서 우리는 전문가와 학습 가능한 라우터의 혼합물을 포함하는 **MoE-LLaVA**라고 하는 전문가의 혼합으로 LVLM의 기준선을 탐색한다. MoE-LLaVA는 라우터를 통해 각 토큰이 서로 다른 전문가에게 발송되는 여러 희소 경로로 구성된다. 활성화된 전문가들은 토큰을 일괄적으로 처리하는 반면 비활성 경로는 침묵한다. MoE 인코더 층들을 반복적으로 적층함으로써, MoE-LLaVA는 더 크고 더 강력한 LVLM으로 향하는 희소 경로를 제공한다.\n' +
+      '\n' +
+      '그 결과, 그림 1에서 2.2B 희소 활성화 파라미터만을 갖는 MoE-LLaVA는 유사한 활성화 파라미터 및 LLaVA-1.5-13B를 갖는 모델보다 성능이 우수하여 POPE 객체 환각 벤치마크에서 큰 마진 차이로 능가한다. 또한 MoE-LLaVA는 활성화된 매개변수의 약 8배인 InternVL-Chat-19B와 동등하게 성능을 달성한다. 우리는 MoE-LLaVA를 3.6B 희소 활성화 매개변수로 더 확장했으며, 이는 사이언스QA, MMBench, LLaVA\\({}^{\\text{W}\\) 및 MM-Vet에서 각각 LLaVA-1.5-7B를 1.9%, 1.2%, 29.8% 및 0.6% 능가한다. 광범위한 실험은 MoE-LLaVA 아키텍처와 MoE 조정 전략의 합리성을 검증한다.\n' +
+      '\n' +
+      '우리는 우리의 주요 기여도를 다음과 같이 요약한다.\n' +
+      '\n' +
+      '* 우리는 MoE를 LVLM에 적응시키기 위한 새로운 3단계 훈련 전략인 _MoE-tuning_를 탐색하고 희소성으로 인한 모델 열화를 방지한다.\n' +
+      '* 우리는 계산 비용을 유지하면서 파라미터의 수를 상당히 확장하는 MoE 기반 희소 LVLM 프레임워크인 _MoE-LLaVA_를 제안한다.\n' +
+      '* 우리의 광범위한 실험은 _MoE-LLaVA_가 다중 모드 이해 및 환각 억제에 대한 큰 잠재력을 보여준다. 이 방법은 다중 시각 이해 데이터 세트에서 3B 희소 활성화 파라미터만을 갖는 최신 7B 모델과 유사한 성능을 달성하고, 2.2B 활성화 파라미터를 갖는 POPE 환각 벤치마크에서 LLaVA-1.5-13B보다 1.1% 더 우수한 성능을 달성한다.\n' +
+      '\n' +
+      '##2 관련 업무\n' +
+      '\n' +
+      '### 대형 시각언어 모델\n' +
+      '\n' +
+      '강력한 LLMs(OpenAI, 2023; Touvron et al., 2023; Wei et al., 2022; Touvron et al., 2023; Zheng et al., 2023; Team, 2023; Sun et al., 2023; Du et al., 2021; Bai et al., 2023; Yang et al., 2023; Penedo et al., 2023; Taori et al., 2023; Wei et al., 2023; Cui et al., 2023)가 강력한 명령어-추종 및 일반화 능력을 갖는 대규모 시각적 언어 모델(LVLMs)에 적용되었다. BLIP-2(Li et al., 2023) 및 FROMAGe(Koh et al., 2023)와 같은 초기 작업은 시각적 신호를 시각적 토큰의 시퀀스로 인코딩하여 여러 투영 레이어를 통해 LLM에 비전을 성공적으로 적응시켰다. 이어서, 최근 연구들은 명령어-튜닝 데이터세트를 확장하는 방법(Liu et al., 2023;c; Zhang et al., 2023; Zhao et al., 2023; Chen et al., 2023; Zhu et al., 2023), 트레이닝 전략을 최적화하는 방법(Bai et al., 2023; Chen et al., 2023), 이미지의 해상도를 증가시키는 방법(Liu et al., 2023);\n' +
+      '\n' +
+      '그림 2: **MoE-tuning의 그림.** MoE-tuning은 세 단계로 구성된다. 1단계에서는 MLP만 훈련된다. II 단계에서, 비전 인코더(VE)를 제외한 모든 파라미터들이 트레이닝된다. 단계 III에서는 FFN을 사용하여 MoE의 전문가를 초기화하고 MoE 레이어만 훈련한다. 각각의 MoE 계층에 대해, 각각의 토큰에 대해 단지 2명의 전문가만이 활성화되는 반면, 다른 전문가들은 침묵을 유지한다.\n' +
+      '\n' +
+      'Bai et al., 2023; Wang et al., 2023) enhance image encoders (Chen et al., 2023; Zhang et al., 2023; Bai et al., 2023), align the input (Lin et al., 2023) and projection layers (Cha et al., 2023; Alayrac et al., 2022; Bai et al., 2023; Dai et al., 2023; Ye et al., 2023; Zhao et al., 2023). 이러한 작업은 시각적 지시 미세 조정 데이터 세트 및 모델 척도를 확장함으로써 강력한 시각적 이해 능력을 가진 LVLM에 힘을 실어주었다.\n' +
+      '\n' +
+      '현재 일부 작업에서는 LVLM에 영역 이해(Chen et al., 2023; Zhao et al., 2023; Liu et al., 2023), 다중 영역 이해(Wang et al., 2023; Pi et al., 2023; Peng et al., 2023) 및 픽셀별 접지(Rasheed et al., 2023; Lai et al., 2023)와 같은 세밀한 이미지 이해 능력을 부여했다. 그러나, 조밀한 시각적 데이터 및 모델을 스케일링하는 비용은 부담하기 어렵다(Liu et al., 2022; Dosovitskiy et al., 2020). 이 작업에서는 전문가의 혼합을 활용하여 최첨단 LMM 연구에 더 쉽게 접근할 수 있도록 하는 것을 목표로 한다.\n' +
+      '\n' +
+      '멀티모달 학습에서### MoE\n' +
+      '\n' +
+      'Mixture of Experts(MoE)(Jacobs et al., 1991; Eigen et al., 2013)는 전문가로 알려진 다수의 서브모델로 구성된 하이브리드 모델로서, 이들은 함께 통합된다. MoE의 핵심 개념은 각 전문가가 다루는 토큰 세트를 결정하기 위해 라우터를 사용함으로써, 상이한 유형의 샘플들 간의 간섭을 감소시키는 것이다.\n' +
+      '\n' +
+      '**하드 라우터**하드 라우터 모드에서 각 전문가는 통상적으로 특정 패턴으로 미리 정의된다. 멀티 모달 데이터는 자연스럽게 갭을 나타내므로(Liang et al., 2022), 소프트 라우터가 서로 다른 전문가에게 토큰을 할당하기 위한 최적의 패턴을 학습하기 어렵기 때문이다. 일련의 작품들(Bao et al., 2022; Long et al., 2023; Satar et al., 2022; Wang et al., 2022; Shen et al., 2023)은 모달 카테고리에 기초하여 자연스럽게 전문가들을 분리하고 각각의 전문가를 미리 정의하여 특정 모달리티를 처리한다. 이러한 하드 기반 라우터의 중요한 특징은 라우터를 학습할 필요가 없다는 것이다. 이러한 모드는 태스크-특정 MoE(Li et al., 2023; Zhu et al., 2022; Ma et al., 2023; Kudugunta et al., 2021)에서도 널리 적용된다.\n' +
+      '\n' +
+      '**소프트 라우터** 자연어 처리에서는 일련의 작업(Shazeer et al., 2017; Lepikhin et al., 2020; Fedus et al., 2022; Zoph et al., 2022; Komatuszaki et al., 2022)이 소프트 라우터를 기반으로 MoE를 탐색하였다. 소프트 라우터는 서로 다른 전문가 간의 동적 데이터 할당을 가능하게 하여 각 전문가가 전문성에 집중하고 모델 희소성을 달성할 수 있게 한다. 따라서 우리의 주요 초점은 MoE에서 소프트 라우터를 활용하는 것입니다. 소프트 라우터를 이용하여 데이터의 융합을 시도하는 EVE(Chen et al., 2023) 및 LIMoE(Mustafa et al., 2022)와 같은 멀티모달 학습의 맥락에서 소프트 라우터를 기반으로 하는 소규모(백만-레벨) 모델도 탐색되었다. 우리와 가장 관련이 있는 작업은 MoCLE(Gou et al., 2023)이다. 그러나 MoCLE는 서로 다른 지침을 군집화하여 서로 다른 전문가에게 배포하여 전문가의 유연성과 자율성을 손상시킨다. 반대로 MoE-LLaVA는 지식이 풍부한 라우터에 의존하여 토큰을 서로 다른 경로로 분배한다.\n' +
+      '\n' +
+      '## 3 Method\n' +
+      '\n' +
+      '### Overview\n' +
+      '\n' +
+      '도 3에 도시된 바와 같이, MoE-LLaVA는 비전 인코더, 비주얼 프로젝션 레이어(MLP), 워드 임베딩 레이어, 다중 적층 LLM 블록, MoE 블록으로 구성된다. 먼저 3.2절에서 MoE-LLaVA의 모델 구조를 3단계로 소개하고, 3.3절에서는 MoE-LLaVA의 훈련 방법을 설명한다. 마지막으로 섹션 3.4에서 MoE-LLaVA의 훈련 목표에 대해 자세히 설명한다.\n' +
+      '\n' +
+      'MoE-LLaVA### 건축\n' +
+      '\n' +
+      '표 1에 나타낸 바와 같이, MoE-LLaVA의 상세한 구성을 제시하고, 부록 A.1에서 보다 상세한 것을 찾을 수 있다. RGB 이미지\\(\\mathbf{v}\\in\\mathbb{R}^{H\\times W\\times 3}\\)이 주어지면, \\(H\\) 및 \\(W\\)은 원점 분해능이다. 비젼 인코더는 입력 영상을 처리하여 비주얼 토큰 시퀀스 \\(\\mathcal{Z}=[z_{1},z_{2},\\cdots,z_{P}]\\in\\mathbb{R}^{P\\times C}\\)를 얻으며, 여기서 \\(P=\\frac{H\\times W}{14^{2}\\)은 비주얼 토큰의 시퀀스 길이를 나타낸다. 시각 투영 레이어 \\(f\\)은 \\(\\mathcal{Z}\\in\\mathbb{R}^{P\\times C}\\)을 \\(\\mathcal{V}\\in\\mathbb{R}^{P\\times D}\\)으로 매핑하는데 사용되며, 여기서 \\(D\\)은 LLM의 숨겨진 크기를 나타낸다. 유사하게, 텍스트는 워드 임베딩 층 \\(g\\)을 거쳐 시퀀스 토큰 \\(\\mathcal{T}=[t_{1},t_{2},\\cdots,t_{N}]\\in\\mathbb{R}^{N\\times D}\\)을 얻기 위해 투영되며, 여기서 \\(N\\)은 텍스트 토큰의 시퀀스 길이를 나타낸다.\n' +
+      '\n' +
+      '그 후 비주얼 토큰과 텍스트 토큰을 함께 연결하여 큰 언어 모델에 공급합니다. 대신, 우리는 시각적 투영 레이어를 단독으로 훈련합니다. 대형 언어 모델은 스택형 다중 헤드 자기 집중(multi-head self-attention, MSA)과 피드 포워드 신경망(feed-forward neural networks, FFN)으로 구성된다. 레이어 정규화(LN) 및 레지듀얼 연결들이 각 블록 내에서 적용된다(Wang et al., 2019; Baevski and Auli, 2018).\n' +
+      '\n' +
+      '\\[\\mathbf{x}_{0}=[v_{1},v_{2},\\cdots,v_{P},\\cdots,t_{1},t_{2},\\cdots,t_{N}] \\tag{1}\\]\n' +
+      '\n' +
+      '\\[\\mathbf{x}^{\\prime}_{\\ell}=\\mathrm{MSA}(\\mathrm{LN}(\\mathbf{x}_{\\ell-1}))+\\mathbf{x}_{\\ell-1},\\ell=1\\ldots L\\tag{2}\\.\n' +
+      '\n' +
+      '\\[\\mathbf{x}_{\\ell}=\\mathrm{MoE}(\\mathrm{LN}(\\mathbf{x}^{\\prime}_{\\ell}))+\\mathbf{x}^{\\prime}{}_{\\ell},\\ell=1\\ldots L\\tag{3}\\.\n' +
+      '\n' +
+      '\\[\\mathcal{Y}=\\mathrm{LN}(\\mathbf{x}_{L}) \\tag{4}\\]\n' +
+      '\n' +
+      '**MoE Forward** 통상적으로 MoE 레이어는 다수의 FFN들로 구성된다. 초기화 단계로 단계 1부터 FFN을 복제하여 전문가 \\(\\mathcal{E}=[e_{1},e_{2},\\cdots,e_{E}]\\)의 앙상블을 형성한다. 라우터는 각 토큰이 각 전문가에게 할당될 확률을 예측하는 선형 계층이다.\n' +
+      '\n' +
+      '\\[\\mathrm{GATE}(\\mathbf{x})=\\mathrm{softmax}\\left(\\mathbf{W}\\cdot\\mathbf{x}\\right)\\tag{5}\\] 여기서 \\(\\mathbf{W}\\in\\mathbb{R}^{D\\times E}\\)는 경량 트레이닝 파라미터를 나타내고 \\(E\\)은 전문가 수를 나타낸다. 각 토큰은 가장 높은 확률을 가진 상위 k명의 전문가에 의해 처리되며 가중 합은 확률의 소프트맥스 결과에 기초하여 계산된다.\n' +
+      '\n' +
+      '\\[\\mathrm{MoE}(\\mathbf{x})=\\sum_{i=1}^{k}\\mathrm{GATE}(\\mathbf{x})_{i}\\cdot\\mathcal{E}_{i}(\\mathbf{x}) \\tag{6}\\]\n' +
+      '\n' +
+      '### MoE-tuning\n' +
+      '\n' +
+      '**단계 I** 이해 훈련 단계에서 우리의 목표는 이미지 토큰을 LLM에 적응시켜 LLM이 이미지의 인스턴스를 이해할 수 있도록 하는 것이다. 이를 위해 MLP를 사용하여 이미지 토큰을 LLM의 입력 도메인에 투영하여 이미지 패치를 의사 텍스트 토큰으로 처리한다. 이 단계 동안, LLM은 이미지들을 기술하도록 트레이닝된다. MoE 레이어는 이 단계에서 LLM에 적용되지 않는다.\n' +
+      '\n' +
+      '**단계 II** 멀티모달 명령어 데이터를 이용한 튜닝은 대형 모델의 성능 및 제어성을 향상시키기 위한 핵심 기술이다(Zhang et al., 2023b). 이 단계에서 LLM은 멀티모달 이해를 가진 LVLM이 되도록 조정된다. 우리는 이미지 논리 추론 및 텍스트 인식과 같은 작업을 포함하여 더 복잡한 명령을 사용하며, 이는 모델이 더 강한 다중 모드 이해를 필요로 한다. 일반적으로 조밀한 모델의 경우 LVLM 훈련은 이 단계에서 완료된 것으로 간주된다. 그러나 우리는 LLM을 LVLM으로 동시에 변환하고 LVLM을 희박화하는 데 어려움을 겪는다. 따라서 MoE-LLaVA는 희소 모델의 학습 난이도를 완화하기 위해 두 번째 단계의 가중치를 세 번째 단계의 초기화로 활용한다.\n' +
+      '\n' +
+      '**단계 III** 초기화로 FFN을 여러 번 복제하여 전문가를 초기화합니다. 이미지 토큰과 텍스트 토큰이 MoE 레이어에 공급되면 라우터는 각 토큰과 전문가 간의 매칭 가중치를 계산한다. 그런 다음 각 토큰은 상위 k명의 전문가에 의해 처리되고, 출력은 라우터의 가중치에 기초한 가중 합산에 의해 집계된다. 톱k 전문가가 활성화되면 나머지 전문가들은 침묵한다. 이 모델링 접근법은 무한히 가능한 희소 경로를 사용하여 MoE-LLaVA를 형성하여 광범위한 기능을 제공한다.\n' +
+      '\n' +
+      '### Objective\n' +
+      '\n' +
+      '(\\mathcal{L}_{\\text{total}\\)은 자기회귀적 손실\\(\\mathcal{L}_{\\text{regressive}\\)과 보조적 손실\\(\\mathcal{L}_{\\text{aux}\\)으로 구성되며, 보조적 손실은 밸런싱 계수\\(\\alpha\\)에 의해 스케일링된다.\n' +
+      '\n' +
+      '\\[\\mathcal{L}_{\\text{total}=\\mathcal{L}_{\\text{regressive}}+\\alpha\\cdot\\mathcal{L}_{\\text{aux}\\tag{7}\\\\text{l}\n' +
+      '\n' +
+      '**자동 회귀 손실** 자동 회귀 방식으로 생성 손실을 통해 LLM의 출력을 최적화합니다. 이미지와 텍스트가 주어지면 MoE-LLaVA는 출력을 생성한다.\n' +
+      '\n' +
+      '그림 3: **훈련 프레임워크 및 전략.** MoE-LLaVA는 2단계 훈련 전략을 채택한다. (a) 우리는 LLM을 시각적 입력에 적응시키기 위해 MLP만을 훈련한다. (b) LLM 백엔드 기능을 훈련시키는 것은 멀티모달 이해 능력 및 MoE 계층은 관여하지 않는다. (c) 이 단계에서 각 전문가를 초기화하기 위해 FFN의 가중치를 복제한다. 또한 입력에 따라 다른 전문가에게 토큰을 드물게 할당하는 라우터를 훈련합니다.\n' +
+      '\n' +
+      '각 요소를 점진적으로 생성함으로써 \\(\\mathcal{Y}=[y_{1},y_{2},\\cdots,y_{K}]\\in\\mathbb{R}^{K\\times D}\\)의 퀀스 \\(\\mathcal{Y}=[y_{1},y_{2},\\cdots,y_{K}]는 출력열의 길이를 나타낸다.\n' +
+      '\n' +
+      '\\[\\mathcal{L}_{\\text{regressive}=-\\sum_{i=1}^{N}\\text{log}p_{\\theta}\\left(\\mathcal{Y}^{[P+i]}\\mid\\mathcal{V},\\mathcal{T}^{[i-1]}\\right}\\tag{8}\\text{log}p_{\\theta}\\left(\\mathcal{Y}^{[P+i]}\\mid\\mathcal{V},\\mathcal{T}^{[i-1]}\\right)\n' +
+      '\n' +
+      '여기서 \\(\\theta\\)는 훈련 가능한 매개변수이며 우리는 생성된 텍스트에 대한 손실만 계산한다.\n' +
+      '\n' +
+      '**보조 손실** 다수의 전문가가 존재하기 때문에 MoE 계층에 부하 균형 제약을 가할 필요가 있다. 우리는 전문가가 균형 잡힌 방식으로 토큰을 처리하도록 장려하기 위해 각 MoE 계층에 미분 가능한 부하 균형 손실(Fedus et al., 2022)을 통합한다.\n' +
+      '\n' +
+      '\\[\\mathcal{L}_{\\text{aux}}=E\\cdot\\sum_{i=1}^{E}\\mathcal{F}_{i}\\cdot\\mathcal{P}_{i}\\tag{9}\\mathcal{F}_{i}\n' +
+      '\n' +
+      '여기서 \\(\\mathcal{F}\\)은 각 전문가 \\(\\mathcal{E}_{i}\\)에 의해 처리된 토큰의 분율을 나타내고, \\(\\mathcal{P}\\)은 \\(\\mathcal{E}_{i}\\)의 평균 라우팅 확률을 나타내며, 이는 다음 공식으로 표현될 수 있다:\n' +
+      '\n' +
+      '\\frac{1}{K}\\sum_{i=1}^{E}1\\{\\operatorname{argmax}\\operatorname{GATE}(\\mathbf{x})=i\\}\\tag{10}\\]\\[\\mathcal{P}=\\frac{1}{K}\\sum_{i=1}^{K}\\operatorname{GATE}(\\mathbf{x_{i}}}}\\tag{11}\\\\tag{10}\\]\\mathcal{P}=\\frac{1}{K}\\sum_{i=1}^{K}\\operatorname{GATE}(\\mathbf{x_{i}}}}\\tag{11}\\\\tag{10}\\\\mathcal{P}=\\frac{1}{K}\\sum_{i=1}^{K}\\operatorname{GATE}(\\mathbf{x_{i}}}}\\tag{11}\\tag{10}\\\\mathcal{P}=\\frac\n' +
+      '\n' +
+      '## 4 Experiments\n' +
+      '\n' +
+      '### Experimental Setup\n' +
+      '\n' +
+      '**Model Settings** Following LLaVA 1.5 (Liu et al., 2023), 우리는 CLIP-Large (Radford et al., 2021)를 비전 인코더로 활용하며, MLP는 이들 사이에 GELU 활성화 함수(Hendrycks and Gimpel, 2016)를 갖는 두 개의 선형 레이어로 구성된다. 달리 명시되지 않는 한, MoE-LLaVA는 FFN을 MoE 층들로 교번적으로 대체하는 것을 채용하며, 이는 MoE 층들의 수가 전체 층들의 수의 절반임을 의미한다. 균형계수 \\(\\alpha\\)의 값은 0.01로 부록 A.2에서 추가 학습 내용을 제공한다.\n' +
+      '\n' +
+      '**Data Details** 표 2에 나타난 바와 같이 현재 3단계 훈련에 사용할 수 있는 데이터를 재구성한다. 프리트레이닝의 첫 번째 단계는 LLaVA 1.5-558k(Liu et al., 2023)의 프리트레이닝된 데이터를 이용한다. 두 번째 단계에서는 MIMIC-IT(Li et al., 2023), LRV(Liu et al., 2023), SViT(Zhao et al., 2023) 및 LVIS(Wang et al., 2023)로부터 데이터 세트를 수집하여 MoE-LLaVA에 대한 강력한 초기화를 제공한다. 세 번째 단계에서는 LLaVA-mix-665k(Liu et al., 2023)와 동일한 데이터 파이프라인을 사용한다.\n' +
+      '\n' +
+      '##### 이미지 이해도 평가\n' +
+      '\n' +
+      '**제로샷 이미지 질문-답변** 표 3과 같이 MoE-LLaVA는 LVLM 기반 소프트 라우터가 장착된 희소 모델이므로 이전 모델을 밀집 모델로 분류한다. 5가지 이미지 질문 응답 벤치마크에서 MoE-LLaVA의 성능을 평가하고 활성화된 매개변수의 수를 보고한다. 최첨단 방법 LLaVA 1.5에 비해 MoE-LLaVA는 강력한 이미지 이해 능력을 보여주며 5개의 벤치마크에서 LLaVA-1.5에 매우 근접한 성능을 보인다. 구체적으로, MoE-LLaVA-Phi-2.7Bx4는 3.6B 희소 활성화 파라미터를 사용하여 SQA1에서 LLaVA-1.5-7B를 1.9% 능가한다. 특히, MoE-LLaVA-StableLM-1.6Bx4는 2.0B 활성화된 파라미터만으로 IDEFICS-80B에 비해 포괄적인 우위를 달성한다. 또한, 최근 소규모 비전 언어 모델인 LLaVA-Phi를 관찰한다. MoE-LLaVA-Phi-2.7Bx4는 VQAv2에서 LLaVA-Phi보다 5.7% 이상 뛰어나 자연 시각에서 MoE-LLaVA의 강력한 이해 능력을 강조한다.\n' +
+      '\n' +
+      '** 벤치마크 툴킷에서의 평가** 컴프리언\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l|c c c c|c c c c c|c c} \\hline \\hline\n' +
+      '**Name** & **Experts** & **Top-k** & **MoE** & **Embedding** & **Width** & **Layers** & **FFN** & **FFN** & **Heads** & **Activated** & **Pram** & **Total** \\\\ \\hline StableLM-1.6B (Team) & - & - & - & 100352 & 2560 & 32 & 10240 & 2 & 32 & 1.6B & 1.6B \\\\ MoE-LLaVA-1.6Bx4-Top2 & 4 & 2 & 16 & 100352 & 2560 & 32 & 10240 & 2 & 32 & 2.0B & 2.9B \\\\ \\hline Qwen-1.8B (Bai et al., 2023) & - & - & - & 151936 & 2048 & 24 & 5504 & 3 & 16 & 1.8B & 1.8B \\\\ MoE-LLaVA-1.8Bx4-Top2 & 4 & 2 & 12 & 151936 & 2048 & 24 & 5504 & 3 & 16 & 2.2B & 3.1B \\\\ \\hline Phi2-2.7B (Microsoft, 2023) & - & - & - & 51200 & 2560 & 32 & 10240 & 2 & 32 & 2.7B & 2.7B \\\\ MoE-LLaVA-2.7Bx4-Top2 & 4 & 2 & 16 & 51200 & 2560 & 32 & 10240 & 2 & 32 & 3.6B & 5.3B \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 1: MoE-LLaVA 모델의 **Architecture details. "FFN 인자"는 FFN 내의 선형 층들의 수를 나타낸다. "="은 키(k)에 대한 숨겨진 상태의 차원을 나타내고 값(v)은 1024이다. "1.6Bx4-Top2"는 1.6B 파라미터를 갖는 밀집된 기초 모델을 나타내며, 이는 총 4명의 전문가가 장착되며 그 중 2명이 활성화된다.**\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l|c c c} \\hline \\hline\n' +
+      '**Data group** & **Usage** & **Source** & **\\#Sample** \\\\ \\hline LLaVA-PT & Stage I & LLaVA 1.5-558k & 558k \\\\ \\hline \\multirow{2}{*}{Hybird-FT} & Stage II &\n' +
+      '\\begin{tabular}{c} SViT-157k, LVIS-220k \\\\ LRV-331k, MIMIC-IT-256k \\\\ \\end{tabular} & 964k \\\\ \\hline LLaVA-FT & Stage III & LLaVA 1.5-mix-665k & 665k \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 2: 데이터 그룹들의 **구성. MIMIC-IT 및 SViT 데이터 세트의 경우 각각 LA 분할 및 코어 분할만 사용한다.**MoE-LLaVA의 다중 모드 이해 능력을 평가하여 4개의 벤치마크 툴킷에서 성능을 평가한다. 이러한 벤치마크 툴킷은 일반적으로 개방형 답변을 포함하며, 자연어 질문에 참여하는 모델의 능력을 검증하는 도구 역할을 한다. 표 3에서 MoE-LLaVA-Qwen-1.8Bx4는 MMBench에서 Qwen-VL-7B를 21.5% 능가한다. 이러한 결과는 희소 모델 MoE-LLaVA가 더 적은 활성화된 파라미터를 갖는 밀집 모델에 필적하거나 심지어 우수한 성능을 달성한다는 것을 집합적으로 입증한다.\n' +
+      '\n' +
+      '#객체 환각 평가\n' +
+      '\n' +
+      'MoE-LLaVA에서 객체 환각을 평가하기 위해 폴링 기반 질의 방법인 POPE(Li et al., 2023)의 평가 파이프라인을 채택한다. 결과는 표 4에 제시되었으며, 여기서 MoE-LLaVA는 최상의 성능을 나타내며, 이는 MoE-LLaVA가 주어진 이미지와 일치하는 객체를 생성하는 경향이 있음을 나타낸다. 구체적으로 MoE-LLaVA-1.8Bx4는 2.2B 활성화된 매개변수로 적대적 샘플링, 인기 샘플링 및 무작위 샘플링에서 LLaVA-1.5-13B를 각각 1.0%, 1.5% 및 0.8% 능가한다. 또한 MoE-LLaVA의 예 비율이 비교적 균형을 유지하고 있음을 관찰하여 희소 모델이 주어진 질문에 기초하여 정확한 피드백을 제공할 수 있음을 나타낸다.\n' +
+      '\n' +
+      '### Visualization\n' +
+      '\n' +
+      '**Routing Distributions** 그림 4에서 사이언스QA의 MoE-LLaVA-2.7Bx4-Top2를 통해 전문가 부하(최좌측 도표)와 다른 전문가(우측 4개의 하위 도표)의 양식 선호도를 제시한다. 더 많은 시각화는 부록 B.2에서 찾을 수 있다. 우선, 모든 MoE 층의 전문가 하중은 완전히 균형을 이룬다. 그러나 모델이 점점 더 희박해짐에 따라 전문가 3은\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l|c c|c c c|c c c|c c c} \\hline \\hline \\multirow{2}{*}{**Methods**} & \\multirow{2}{*}{**LLM**} & \\multirow{2}{*}{**Activated**} & \\multicolumn{3}{c|}{**Adersarial**} & \\multicolumn{3}{c|}{**Popular**} & \\multicolumn{3}{c}{**Random**} \\\\  & & Acc & F1-Score & Yes & Acc & F1-Score & Yes & Acc & F1-Score & Yes \\\\ \\hline \\multicolumn{12}{l|}{_Dense Model_} \\\\ mPLUG-Owl (Ye et al., 2023) & L-7B & 6.7B & 82.4 & 81.6 & 45.2 & 85.5 & 84.3 & 42.1 & 86.3 & 85.3 & 42.3 \\\\ MM-GPT (Gong et al., 2023) & L-7B & 6.7B & 50.0 & 66.7 & 100.0 & 50.0 & 66.7 & 100.0 & 50.0 & 66.7 & 100.0 \\\\ MiniGPT-4 (Zhu et al., 2023) & V-13B & 13B & 66.6 & 71.4 & 66.7 & 68.3 & 72.2 & 64.1 & 77.8 & 78.9 & 54.8 \\\\ InstructBLIP (Dai et al., 2023) & V-13B & 13B & 74.4 & 78.5 & 69.0 & 81.4 & 83.5 & 62.6 & 88.7 & 89.3 & 55.2 \\\\ LLaVA-1.5 (Liu et al., 2023b) & V-13B & 13B & 85.5 & 84.4 & 43.3 & 87.4 & 86.2 & 41.3 & 88.0 & 87.1 & 41.7 \\\\ \\hline \\multicolumn{12}{l|}{_Sparse Model_} \\\\ MoE-LLaVA-1.6Bx4-Top2 & S-1.6B & 2.0B & 85.9 & 84.3 & 39.9 & 84.7 & 83.2 & 41.5 & 86.7 & 85.4 & 39.8 \\\\ MoE-LLaVA-1.8Bx4-Top2 & Q-1.8B & 2.2B & **86.1** & **85.4** & 44.9 & **88.6** & **87.7** & 42.3 & **88.6** & **87.9** & 42.8 \\\\ MoE-LLaVA-2.7Bx4-Top2 & P-2.7B & 3.5B & 85.2 & 83.8 & 41.5 & 86.9 & 84.5 & 40.5 & 87.6 & 86.6 & 40.5 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 4: **제로샷 대상 환각 평가 결과. "예"는 주어진 질문에 대한 긍정적인 답변의 비율을 나타낸다.**\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l|c c|c c c c c c|c c c} \\hline \\hline \\multirow{2}{*}{**Methods**} & \\multirow{2}{*}{**LLM**} & \\multirow{2}{*}{**Act.**} & \\multirow{2}{*}{**Res.**} & \\multicolumn{4}{c|}{**Image Question Answering**} & \\multicolumn{4}{c}{**Benchmark Toolkit**} \\\\  & & & & & VQA\\({}^{\\text{\\text{\\tiny{2}}}}\\) & GQA & VisWiz & SQA\\({}^{\\text{\\tiny{1}}}\\) & VQA\\({}^{\\text{\\tiny{T}}}\\) & POPE & MMB & LLaVA\\({}^{\\text{\\tiny{W}}}\\) & MM-Vet \\\\ \\hline \\multicolumn{12}{l|}{_Dense Model_} \\\\ I-80B (Laurencon et al., 2023) & L-65B & 65B & 224 & 60.0 & 45.2 & 36.0 & - & 30.9 & - & 54.5 & - & - \\\\ BLIP-2 (Li et al., 2023) & V-13B & 13B & 224 & 41.0 & 41.0 & 19.6 & 61.0 & 42.5 & 85.3 & - & 38.1 & 22.4 \\\\ InstruckBLIP (Dai et al., 2023) & V-13B & 13B & 224 & - & 49.5 & 33.4 & 63.1 & 50.7 & 78.9 & - & 58.2 & 25.6 \\\\ Owen-VL (Bai et al., 2023) & Q-7B & 6.7B & 448 & 78.8\\({}^{\\text{\\tiny{5}}}\\) & 59.3\\({}^{\\text{\\tiny{3}}}\\) & 35.2 & 67.1 & 63.8 & - & 38.2 & - & - \\\\ LLaVA-1.5 (Liu et al., 2023b) & V-7B & 6.7B & 336 & 78.5\\({}^{\\text{\\tiny{5}}}\\) & 62.0\\({}^{\\text{\\tiny{5}}}\\) & 50.0 & 66.8 & 58.2 & 85.9 & 64.3 & 63.4 & 30.5 \\\\ TinyGPT-V (Yuan et al., 2023) & P-2.7B & 2.7B & 448 & - & 33.6\\({}^{\\text{\\tiny{5}}}\\) & 33.4 & - & - & - & - & - & - \\\\ MobileVLM (Chu et al., 2023) & M-2.7B & 2.7B & 336 & - & 59.0\\({}^{\\text{\\tiny{*}}}\\) & - & 61.0 & 47.5 & 84.9 & 59.6 & - & - \\\\ LLaVA-Phi (Zhu et al., 2024) & P-2.7B & 2.7B & 336 & 71.4\\({}^{\\text{\\tiny{*}}}\\) & - & 35.9 & 68.4 & 48.6 & 85.0 & 59.8 & - & 28.9 \\\\ \\hline \\multicolumn{12}{l|}{_Sparse Model_} \\\\ MoE-LLaVA-1.6Bx4-Top2 & S-1.6B & 2.0B & 336 & 76.0\\({}^{\\text{\\tiny{*}}}\\) & 60.4\\({}^{\\text{\\tiny{*}}}\\) & 37.2 & 62.6 & 47.8 & 84.3 & 59.4 & 85.9 & 26.1 \\\\ MoE-LLaVA-1.8Bx4-Top2 & Q-1.8B & 2.2B & 336 & 76.2\\({}^{\\text{\\tiny{*}}}\\) & **61.5\\({}^{\\text{\\tiny{*}}}\\)** & 32.3 & 63.1 & 48.0 & **87.0** & 59.7 & 88.7 & 25.3 \\\\ MoE-LLaVA-2.7Bx4-Top2 & P-2.7B & 3.6B & 336 & **77.1\\({}^{\\text{\\tiny{*}}}\\)** & 61.1\\({}^{\\text{\\tiny{*}}}\\)** & **43.4** & **68.7** & **50.2** & 85.0 & **65.5** & **93.2** & **31.1** \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 3: 이미지 이해 벤치마크에 대한 서로 다른 LVLM 간의 비교. 입력 영상 해상도, 활성화된 파라미터, LLaMA(Touvron et al., 2023), Vicuna(Chiang et al., 2023), StableLM(Team), Qwen(Bai et al., 2023), Phi-2(Microsoft, 2023) MobileLaMA(Chu et al., 2023) 및 IDEFICS(Laurencon et al., 2023)를 각각 나타낸다. 페이지 제한으로 인해 벤치마크 이름이 축약됩니다. VQA-v2(Goyal et al., 2017), GQA(Hudson and Manning, 2019); VisWiz(Gurari et al., 2018); SQA\\({}^{\\text{\\tiny{1}}}\\): ScienceQA-IMG(Lu et al., 2022); VQA\\({}^{\\text{\\tiny{T}}\\): TextVQA(Singh et al., 2019); POPE(Li et al., 2023); MMBBench(Liu et al., 2023); LLaVA\\({}^{\\text{\\tiny{W}}\\): LLaVA-Bench(In-the-layer 17 내지 27)가 갑자기 증가하여 거의 모든 토큰의 워크로드를 지배한다. 얕은 층(5-11)의 경우 전문가 2, 3, 4가 주로 협업한다. 전문가 1은 처음 몇 개의 계층에서만 주로 작동하며, 모델이 깊어짐에 따라 전문가 1은 점차 작업량에서 철수한다는 점에 주목할 필요가 있다. 따라서 MoE-LLaVA의 전문가들은 특정한 방식으로 자신의 업무를 나눌 수 있는 일정한 패턴을 학습하였다.\n' +
+      '\n' +
+      '또한 그림 5에서 다양한 전문가에 대한 양식 분포를 보여주며, 마찬가지로 전문가도 자신만의 선호도를 개발한다. 또한, 텍스트와 이미지에 대한 라우팅 분포가 매우 유사함을 알 수 있었다. 예를 들어, 전문가 3이 17-27 계층에서 활발하게 작업하고 있는 경우, MoE-LLaVA가 처리하는 텍스트와 이미지의 비율은 유사하다. MoE-LLaVA의 각 전문가는 텍스트 토큰과 이미지 토큰을 동시에 처리할 수 있으며, 이는 MoE-LLaVA가 어떤 촬영장비에도 명확한 선호도를 나타내지 않는다는 것을 보여준다. 이는 멀티모달 학습에서 강한 상호 작용의 증거로 작용한다.\n' +
+      '\n' +
+      '**토큰 패스웨이** 더 나아가 토큰 수준에서 전문가의 행동을 살펴본다. 더 많은 시각화는 부록 B.3과 부록 B.4에서 찾을 수 있으며, 다운스트림 작업에서 모든 토큰의 궤적을 추적한다. 활성화된 모든 경로에 대해 그림 6과 같이 상위 10개 경로를 얻기 위해 PCA(피어슨, 1901)를 사용한다. 주어진 보이지 않는 텍스트 토큰 또는 이미지 토큰에 대해 MoE-LLaVA는 모델의 더 깊은 계층에서 전문가 2와 3을 할당하는 경향이 일관되게 있음을 발견했다. 전문가 1과 전문가 4에 대해서는 초기화 단계에서 토큰을 처리하는 경향이 있다. 이러한 연구 결과는 다중 모달 학습에서 희소 모델의 행동을 더 잘 이해하는 데 기여한다.\n' +
+      '\n' +
+      '### Ablation Results\n' +
+      '\n' +
+      '본 절에서는 먼저 3단계 훈련 전략의 필요성을 검증한다. 그런 다음 다양한 기본 모델의 영향을 조사하고 전문가 수, 활성 전문가 수 및 MoE 구조에 대한 절제 연구를 수행한다.\n' +
+      '\n' +
+      '**훈련 전략의 효과** 표 5에서 우리는 3단계 MoE 튜닝을 위한 초기화로 2단계 명령어 튜닝을 사용하여 뒤에 있는 근거를 입증하기 위해 세 가지 변형 실험을 수행한다. MoE를 LVLM에 적용할 때 간단한 접근법은 고전적인 것을 대체하는 것이다.\n' +
+      '\n' +
+      '도 4: **전문가 로딩의 분포.** 불연속 라인은 상이한 전문가들 또는 모달리티들 간의 토큰들의 완벽하게 균형 잡힌 분포를 나타낸다. 왼쪽의 첫 번째 그림은 전문가 간의 작업량을 나타내고 나머지 네 그림은 다른 양식에 대한 전문가의 선호도를 나타낸다.\n' +
+      '\n' +
+      '그림 5: **다양한 전문가에 걸친 모달리티의 분포.** 불연속 선은 토큰의 완벽하게 균형 잡힌 분포를 나타낸다.\n' +
+      '\n' +
+      '그림 6: **활성화된 경로의 시각화.** 텍스트 및 이미지에서 상위 10개 활성화된 경로를 강조 표시합니다. 이 중 비회색 경로는 top-2 경로를 나타내고, 회색 경로는 나머지 8개의 경로를 나타낸다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c|c c c c|c c c} \\hline \\hline  & **MoE** & **Stage II** & **Stage III** & **GQA** & **SQA\\({}^{1}\\)** & **POPE** & **LLaVA\\({}^{\\textbf{W}}\\)** \\\\ \\hline (a) & \\(\\bigvee\\) & - & LV+Hb & 58.4 & 58.1 & 81.9 & **88.0** \\\\ (b) & \\(\\bigvee\\) & Hb & LV & **61.5** & **63.1** & **87.0** & **88.7** \\\\ (c) & \\(\\bigtimes\\) & LV+Hb & - & 60.9 & 60.2 & 86.4 & 86.3 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 5: **다른 훈련 전략에 대한 절제 연구.** "LA" 및 "Hb"는 각각 표 2의 LLaVA-FT 및 하이브리드-FT를 나타낸다.\n' +
+      '\n' +
+      'MoE 레이어를 가진 LLAVA의 FFN은 변형(a)로 표시된 원래 2단계 스크립트에 따라 훈련된다. 그러나 변형 (a)는 최악을 수행하는데, 이는 현재의 멀티모달 명령어 데이터세트가 LLM에서 LVLM으로의 변환과 LVLM에서 희소 모델로의 변환을 동시에 지원하기에 불충분함을 시사한다. 따라서 Hybrid-FT라고 하는 더 많은 데이터를 수집하고 처음에는 LLM을 LVLM으로 변환한다. 그 후, 세 번째 단계에서 LVLM은 LLaVA-FT 데이터 세트를 사용하여 희소화되어 변형(b)이 발생한다. 또한, 우리는 변형(c)로 표시된 공정한 비교를 위해 원래 LLaVA의 두 번째 단계의 데이터를 확장한다. 결과는 변이체 (b)가 변이체 (a) 및 (c)를 능가했음을 나타낸다. 이러한 결과는 합리적인 LVLM 초기화를 제공하면 모델이 밀집 모델에서 희소 모델로 빠르게 전환되어 3단계 훈련 전략의 근거를 검증할 수 있음을 보여준다.\n' +
+      '\n' +
+      '**다른 서브세트의 파라미터 튜닝의 효과**\n' +
+      '\n' +
+      '표 5(a)에서 매개변수의 다른 부분을 미세 조정하는 성능을 조사한다. "FFN"은 모델에서 모든 FFN 층 및 MoE 층을 미세 조정하는 것을 나타낸다. "모두"는 모든 파라미터를 미세 조정하는 것을 나타낸다. 결과는 FFN 조정이 전체 매개변수 조정에 필적하는 결과를 달성하기에 충분하지만 약 75%의 시간만 소요됨을 나타낸다. 따라서 일반화를 강화하고 훈련 비용을 줄이기 위해 FFN 레이어만 미세 조정합니다.\n' +
+      '\n' +
+      '**전문가 수의 영향**\n' +
+      '\n' +
+      '통상적으로, 전문가의 수를 증가시키는 것은 직접적으로 더 높은 성과로 이어진다(Lepnikhin et al., 2020; Fedus et al., 2022). 표 5(b)에서 우리는 활성화된 전문가 수를 동일하게 유지하면서 전문가 수를 변경하므로 두 모델에 대한 활성화된 매개 변수의 수는 동일하게 유지된다. 더 많은 희소 전문가가 단일 전문가 밀집 모델을 POPE에서 1.1%, SQA1에서 0.6% 각각 능가한다. 결과는 희박한 전문가가 우수한 성능을 제공할 수 있음을 보여줍니다.\n' +
+      '\n' +
+      '**Top-k**의 가치의 영향\n' +
+      '\n' +
+      '활성화된 전문가 수의 영향을 조사하기 위해 표 5(c)의 top-k 값에 대한 절제 결과를 제공한다. 활성화된 전문가가 1명에서 2명으로 증가하면 모델의 성능이 크게 향상되는 반면 훈련 시간은 1시간만 증가했다. 이러한 결과는 MoE-LLaVA의 성능 향상이 더 많은 전문가를 활성화함으로써 달성될 수 있음을 나타낸다. MoE 아키텍처의 장점을 활용하기 위해 활성화된 전문가 수를 2명으로 설정했습니다.\n' +
+      '\n' +
+      '**건축의 효과**\n' +
+      '\n' +
+      '표 5(d)에서 MoE 아키텍처의 4가지 변형을 탐구한다. 구체적으로, "First-Half"는 MoE 레이어가 모델의 전반부에만 적용되는 반면 후반부는 원래의 조밀한 아키텍처를 유지하는 것을 나타낸다. "두 번째-반"은 MoE 층이 모델의 후반부에 배치된 반면 전반부는 조밀하게 유지된다는 것을 의미한다. "간격"은 MoE 층과 조밀한 층의 교번적인 발생을 나타낸다. "모두"는 모든 레이어가 희소 MoE 레이어임을 나타낸다. 직관적으로 모든 MoE를 통합하면 성능이 향상될 것으로 예상된다. 그러나, "모두"를 사용하는 것은 다른 아키텍처들에 비해 더 나은 결과들을 산출하지 못하고, 더 긴 트레이닝 시간들을 초래한다. 따라서 MoE-LLaVA는 MoE 층의 삽입을 교대로 한다.\n' +
+      '\n' +
+      '**모형크기의 효과**\n' +
+      '\n' +
+      '표 7과 같이 모수 크기가 다른 모델의 성능을 MoE-LLaVA에 대한 기초 모델로 비교한다. 더 작게\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\n' +
+      '\\end{table}\n' +
+      '표 6: 훈련 설정 및 아키텍처 설계 결정에 대한 **절제 연구.** 표 3 및 표 4의 결과에 대한 설정은 \\(\\overline{\\text{blue}}\\)에서 강조 표시된다. 우리는 8 V100-32G의 훈련 시간을 보고한다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\n' +
+      '\\end{table}\n' +
+      '표 7: MoE-LLaVA.**"Act."의 모델 크기에 대한 절제 연구는 활성화된 파라미터를 나타낸다.\n' +
+      '\n' +
+      'Phi2-MoE, Qwen-MoE와 같은 모델은 MoE를 사용한 성능이 밀집 모델의 성능을 능가한다. 부록 B.1에서 모델 스케일링에 대한 추가 결과 및 관련 논의를 제공한다.\n' +
+      '\n' +
+      '##5 결론 및 향후 방향\n' +
+      '\n' +
+      '본 논문에서는 LVLM에 MoE 아키텍처를 적용하기 위한 MoE-tuning을 제안하고, 이미지와 텍스트 특징을 동시에 처리하여 희소 경로를 찾을 수 있는 MoE 기반 예비 모델 MoE-LLaVA를 구성한다. 우리의 프레임워크는 3B 활성화된 매개변수만으로 LLaVA-1.5-7B의 유사한 성능을 달성하면서 다중 모드 이해의 강력한 능력과 환각 억제에 대한 풍부한 잠재력을 보여준다.\n' +
+      '\n' +
+      'MoE-LLaVA는 경쟁 능력을 보여주지만, 특히 16비트 플로트 정밀도로 훈련 안정성에 몇 가지 어려움을 관찰한다. 또한 다양한 능력을 전문으로 하는 여러 전문가가 존재하기 때문에 MoE-LLaVA를 쉽게 확장하여 탐지, 분할, 생성 또는 비디오, 깊이 및 열과 같은 더 많은 모달리티를 처리하는 것과 같은 추가 작업을 처리할 수 있다. 또한, 현재 MoE 아키텍처가 더 큰 LVLM에서 어떻게 수행되는지 알려져 있지 않으며, 우리는 더 큰 MoE-LVLM을 구동하기 위해 더 많은 데이터가 필요하다고 제안한다.\n' +
+      '\n' +
+      '## References\n' +
+      '\n' +
+      '*[1]O. Alayrac, J. Donahue, P. Luc, A. Miech, I. Barr, Y. 하손기 Lenc, A. Mensch, K 밀리컨, M. Reynolds, et al. (2022) Flamingo: a visual language model for few-shot learning. The Advances in Neural Information Processing Systems35, pp. 23716-23736. Cited by: SS1.\n' +
+      '*[2]A. 배브스키와 M. Auli (2018) Adaptive input representation for neural language modeling. ArXiv:1809.10853. 인용: SS1.\n' +
+      '*[3]J. 배승 배영 양승 왕승 Tan, P. Wang, J. Lin, C. Zhou, 그리고 J. Zhou (2023) Qwen-vl: 다재다능한 능력을 가진 프론티어 대형 비전 언어 모델. ArXiv:2308.12966. 인용: SS1.\n' +
+      '*[4]H. 바오원 왕락 동규 류오경모하메드 아가왈 솜승 Piao, and F. Wei(2022) Vlmo: 통합 시각 언어 사전 훈련과 모달리티 전문가의 혼합. The Advances in Neural Information Processing Systems35, pp. 32897-32912. Cited by: SS1.\n' +
+      '*[5]T. 브라운, B. 만, N. 라이더 Subbiah, J. D. Kaplan, P. Dhariwal, A. Neelakantan, P. Shyam, G. Sastry, A. Askell, et al. (2020) 언어 모델은 소수의 학습자이다. neural information processing systems33, pp. 1877-1901. Cited by: SS1.\n' +
+      '*[6]J. 차원 Kang, J. Mun, and B. Roh(2023) 꿀벌: 지역성 강화 다중 모드 llm용 프로젝터. ArXiv:2312.06742. 인용: SS1.\n' +
+      '*[7]J. 천락 곽정선 샤오진 유안 Lin, and D. Zhang(2023) Eve: masked prediction과 modality-aware moe를 이용한 효율적인 비전 언어 사전 훈련. ArXiv:2308.11971. 인용: SS1.\n' +
+      '*[8]J. 천동주 셴진 이종욱 류필장 크리시나모오르티 찬드라 시온과 M Elhoseiny(2023) Minigpt-v2: vision-language multi-task 학습을 위한 통일된 인터페이스로서 큰 언어 모델. ArXiv:2310.09478. 인용: SS1.\n' +
+      '*[9]K. 천진 장원 정룡 장, F. Zhu, R. Zhao(2023) WileA: 멀티모달 llm의 지시적 대화 마법을 풀다. ArXiv:2306.15195. 인용: SS1.\n' +
+      '*[10]L. 천진리 동, P. Zhang, C. He, J. Wang, F. Zhao, and D. Lin(2023) Sharegpt4v: 더 나은 캡션을 갖는 대형 멀티모달 모델 개선. ArXiv:2311.12793. 인용: SS1.\n' +
+      '*[11]Z. 천진우 왕욱 수기천 징지 무옌, 큐 장진 주룡 Lu, et al. (2023) Interrvl: scaling up vision foundation models and aligning for generic visual-linguistic tasks. ArXiv:2312.14238. 인용: SS1.\n' +
+      '*[12]W. 장종 이종욱 임영식 성진 우현장 장승 장영 Gonzalez, et al. (2023) Vicuna: 90%* chatgrt 품질로 gpt-4를 인상하는 오픈 소스 챗봇. https://vicuna. lmsys. org (2023년 4월 14일에 접속) 인용: SS1.\n' +
+      '*[13]X. 추림 차오 린성호 서영 양영 후피웨이 엑스 장병장 Wei, et al. (2023) Mobilevlm: a fast, reproducible and strong vision language assistant for mobile devices. ArXiv:2312.16886. 인용: SS1.\n' +
+      '*[14]Y. 최지영 양, X. 야오(2023) 중국 라마와 알파카에 대한 효율적이고 효과적인 텍스트 인코딩. ArXiv:2304.08177. 인용: SS1.\n' +
+      '*[15]W. Dai, J. Li, D. Li, A. M. H. Tiong, J. Zhao, W. 왕병리, P. 펑, S. Hoi(2023) Instructblip: 명령어 튜닝이 있는 범용 비전 언어 모델을 향해. 인용: SS1.\n' +
+      '*[16]W. Dai, J. Li, D. Li, A. M. H. Tiong, J. Zhao, W. 왕병리, P. 펑, S. Hoi(2023) Instructblip: 명령어 튜닝이 있는 범용 비전 언어 모델을 향해. 인용: SS1.\n' +
+      '*[17]A. L. 도소비츠키 Beyer, A. Kolesnikov, D. Weissenborn, X. 자이태 Unterthiner, M 데하니 민더러, G. 헤이골드, S. Gelly, et al.(2020) 이미지는 16x16 단어들의 가치가 있다: 스케일에서 이미지 인식을 위한 트랜스포머들. ArXiv:2010.11929. 인용: SS1.\n' +
+      '*[18]Z. 두영 기안 류민 딩종주 Yang, and J. Tang(2021) GIM: general language model preraining with autoregressive blank infilling. ArXiv:2103.10360. 인용: SS1.\n' +
+      '*[19]D. 아이겐 Ranzato, and I. Sutskever (2013) Learning factored representation in the deep mixture of experts. ArXiv:1312.4314. 인용: SS1.\n' +
+      '*[20]F. Falcon-180b(2023) [https://falconllm.tii.ae/](https://falconllm.tii.ae/) 인용: SS1.\n' +
+      '*[21]W. 페더스, B. 조프, N. Shazeer (2022) 스위치 트랜스포머: 간단하고 효율적인 희소성으로 조 단위 파라미터 모델로의 스케일링. The Journal of Machine Learning Research23 (1), pp. 5232-5270. Cited by: SS1.\n' +
+      '*[22]J. 가오, X 류승 Wang, and J. Wang (2020) Multi-modal deep learning for visual-language pre-training. ArXiv:2009.10853. 인용: SS1.\n' +
+      '*[23]W. 공창류 장영 왕민 정규 조경 류원 장, P. 루오, 그리고 K. Chen(2020) Multimodal-gpt:A vision and language model for conversation with humans. _ arXiv preprint arXiv:2305.04790_, 2023.\n' +
+      '*Gou et al.(2023) Gou, Y., Liu, Z., Chen, K., Hong, L., Xu, H., Li, A., Yeung, D.-Y., Kwok, J. T., and Zhang, Y. 비젼 언어 명령어 튜닝을 위한 클러스터 조건 로라 전문가의 혼합. _ arXiv preprint arXiv:2312.12379_, 2023.\n' +
+      '* Goyal et al. (2017) Goyal, Y., Khot, T., Summers-Stay, D., Batra, D., and Parikh, D. Making the v in vqa matter: Elevating the role of image understanding in visual question answering. In _Proceedings of the IEEE conference on computer vision and pattern recognition_, pp. 6904-6913, 2017.\n' +
+      '* Gurari et al. (2018) Gurari, D., Li, Q., Stangl, A. J., Guo, A., Lin, C., Grauman, K., Luo, J., and Bigham, J. P. Vizwiz grand challenge: Answering visual questions from blind people. In _Proceedings of the IEEE conference on computer vision and pattern recognition_, pp.3608-3617, 2018.\n' +
+      '* Hendrycks & Gimpel (2016) Hendrycks, D. and Gimpel, K. 가우시안 오차 선형 단위(gelus) _ ArXiv:1606.08415_, 2016.\n' +
+      '* Hudson & Manning (2019) Hudson, D. A. and Manning, C. D. Gqa: real-world visual reasoning and compositional question answering을 위한 새로운 데이터셋. In _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_, pp. 6700-6709, 2019.\n' +
+      '* Jacobs et al. (1991) Jacobs, R. A., Jordan, M. I., Nowlan, S. J., and Hinton, G. E. Adaptive mixtures of local experts. _ Neural computation_, 3(1):79-87, 1991.\n' +
+      '* Jiang et al. (2023) Jiang, A. Q., Sablayrolles, A., Mensch, A., Bamford, C., Chaplot, D. S., de las Casas, D., Bressand, F., Lengyel, G., Lample, G., Saulnier, L., Lavaud, L. R., Lachaux, M. - A., Stock, P., Scao, T. L., Lavril, T., Wang, T., Lacroix, T., and Sayed, W. E. Mistral 7b, 2023.\n' +
+      '* Jiang et al. (2024) Jiang, A. Q., Sablayrolles, A., Roux, A., Mensch, A., Savary, B., Bamford, C., Chaplot, D. S., de las Casas, D., Hanna, E. B., Bressand, F., Lengyel, G., Bour, G., Lample, G., Lavaud, L. R., Saulnier, L., Lachaux, M. -A., Stock, P., Subramanian, S., Yang, S., Antoniak, S., Scao, T. L., Gervet, T., Lavril, T., Wang, T., Lacroix, T., and Sayed, W. E. Mistral of experts, 2024.\n' +
+      '* Koh et al. (2023) Koh, J. Y., Salakhutdinov, R., and Fried, D. Grounding language models to images for multiimodal generation. _ arXiv preprint arXiv:2301.13823_, 2023.\n' +
+      '* Komatsuzaki et al. (2022) Komatsuzaki, A., Puigcerver, J., Lee-Thorp, J., Ruiz, C. R., Mustafa, B., Ainslie, J., Tay, Y., Dehghani, M., and Houlsby, N. 희박 업사이클링: 조밀한 검문소에서 전문가의 혼합물을 교육합니다. _ arXiv preprint arXiv:2212.05055_, 2022.\n' +
+      '* Kudugunta et al. (2021) Kudugunta, S., Huang, Y., Bapna, A., Krikun, M., Lepikhin, D., Luong, M. - T, 그리고 피라트, O. 증류를 넘어서: 효율적인 추론을 위한 과제 수준의 혼합 전문가들_ arXiv preprint arXiv:2110.03742_, 2021.\n' +
+      '* Lai et al. (2023) Lai, X., Tian, Z., Chen, Y., Li, Y., Yuan, Y., Liu, S., and Jia, J. Lisa: Reasoning segmentation via large language model. _ arXiv preprint arXiv:2308.00692_, 2023.\n' +
+      '* Laurencon et al. (2023) Laurencon, H., Saulnier, L., Tronchon, L., Bekman, S., Singh, A., Lozhkov, A., Wang, T., Karamcheti, S., Rush, A. M., Kiela, D., Cord, M., and Sanh, V. Obelics: open web-scale filtered dataset of interleaved image-text documents, 2023.\n' +
+      '* Lepikhin et al. (2020) Lepikhin, D., Lee, H., Xu, Y., Chen, D., Firat, O., Huang, Y., Krikun, M., Shazeer, N., and Chen, Z. Gshard: 조건부 계산과 자동 샤딩으로 거대 모델을 스케일링하는 것; _ arXiv preprint arXiv:2006.16668_, 2020.\n' +
+      '* Li 등 (2022a) Li, B., Zhang, Y., Chen, L., Wang, J., Pu, F., Yang, J., Li, C., and Liu, Z. Mimic-it: Multi-modal in-context instruction tuning. _ arXiv preprint arXiv:2306.05425_, 2022a.\n' +
+      '* Li 등 (2022b) Li, J., Li, D., Xiong, C., and Hoi, S. Blip: 통일된 시각 언어 이해 및 생성을 위한 언어 이미지 사전 훈련. In _International Conference on Machine Learning_, pp. 12888-12900. PMLR, 2022.\n' +
+      '* Li 등(2023b) Li, J., Li, D., Savarese, S., and Hoi, S. Blip-2: 냉동 이미지 인코더 및 대형 언어 모델을 사용한 부트스트래핑 언어-이미지 사전 트레이닝_ arXiv preprint arXiv:2301.12597_, 2023b.\n' +
+      '* Li 등 (2023c) Li, X., Yao, Y., Jiang, X., Fang, X., Meng, X., Fan, S., Han, P., Li, J., Du, L., Qin, B., et al. Flm-101b: An open llm and how to training it with 100 k budget. _ arXiv preprint arXiv:2309.03852_, 2023c.\n' +
+      '*Li 등(2023d) Li, Y., Du, Y., Zhou, K., Wang, J., Zhao, W. X., and Wen, J.-R. 대용량 시각 언어 모델에서 객체 환각을 평가하는 방법. _ arXiv preprint arXiv:2305.10355_, 2023d.\n' +
+      '*Li 등(2023e) Li, Y., Hui, B., Yin, Z., Yang, M., Huang, F., and Li, Y. 페이스: 진보적, 구성적 전문가와의 통합 멀티모달 대화 사전 훈련. _ arXiv preprint arXiv:2305.14839_, 2023e.\n' +
+      '* Liang et al. (2022) Liang, V. W., Zhang, Y., Kwon, Y., Yeung, S., and Zou, J. Y. Mind the gap: Understanding the modality gap in multi-modal contrastive representation learning. _ 신경 정보 처리 시스템_, 35:17612-17625, 2022에서의 발전.\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:12]\n' +
+      '\n' +
+      'conference on computer vision and pattern recognition_, pp. 8317-8326, 2019.\n' +
+      '* Sun et al. (2023) Sun, T., Zhang, X., He, Z., Li, P., Cheng, Q., Yan, H., Liu, X., Shao, Y., Tang, Q., Zhao, X., et al. Moss: training conversation language models from synthetic data. _ arXiv preprint arXiv:2307.15020_, 7, 2023.\n' +
+      '* SUSTech-IDEA (2023) SUSTech-IDEA. Sus-chat: 명령어 튜닝이 올바르게 수행되었다. [https://github.com/SUSTech-IDEA/SUS-Chat] (https://github.com/SUSTech-IDEA/SUS-Chat), 2023.\n' +
+      '* Taori et al. (2023) Taori, R., Gulrajani, I., Zhang, T., Dubois, Y., Li, X., Guestrin, C., Liang, P., and Hashimoto, T. B. Alpaca: A strong, replicable instruction-following model. _ 스탠포드 기초모델 연구센터. [https://crfm.stanford] (https://crfm.stanford). edu/2023/03/13/alpaca. html_, 3(6):7, 2023.\n' +
+      '* Team(2023) Team, I. Interlm: 점진적으로 향상된 기능을 가진 다국어 언어 모델, 2023.\n' +
+      '* Team(2023) Team, S. A. L. Stable Im 2 1.6b. URL[[https://huggingface.co/stabilityai/stablelm-2-1.6b](https://huggingface.co/stabilityai/stablelm-2-1.6b)]([https://huggingface.co/stabilityai/stablelm-2-1.6b](https://huggingface.co/stabilityai/stablelm-2-1.6b])\n' +
+      '* Touvron et al. (2023a) Touvron, H., Lavril, T., Izacard, G., Martinet, X., Lachaux, M. - A., Lacroix, T., Roziere, B., Goyal, N., Hambro, E., Azhar, F., et al. Llama: Open and efficient foundation language models. _ arXiv preprint arXiv:2302.13971_, 2023a.\n' +
+      '* Touvron et al. (2023b) Touvron, H., Martin, L., Stone, K., Albert, P., Almahairi, A., Babaei, Y., Bashlykov, N., Batra, S., Bhargava, P., Bhosale, S., et al. Llama 2: Open foundation and fine-tuned chat models. _ arXiv preprint arXiv:2307.09288_, 2023b.\n' +
+      '* Wang et al. (2023a) Wang, G., Cheng, S., Zhan, X., Li, X., Song, S., and Liu, Y. 오픈챗: 양질의 데이터가 혼합된 오픈소스 언어 모델의 발전 arXiv preprint arXiv:2309.11235_, 2023a.\n' +
+      '* Wang et al. (2023b) Wang, J., Meng, L., Weng, Z., He, B., Wu, Z., and Jiang, Y. - G. 보는 것은 믿는 것이다: 더 나은 시각적 지시 튜닝을 위해 gpt-4v를 프롬프트하는 것; _ arXiv preprint arXiv:2311.07574_, 2023b.\n' +
+      '* Wang et al. (2019) Wang, Q., Li, B., Xiao, T., Zhu, J., Li, C., Wong, D. F., and Chao, L. S. Learning deep transformer models for machine translation. _ ArXiv preprint arXiv:1906.01787_, 2019.\n' +
+      '* Wang et al. (2022) Wang, W., Bao, H., Dong, L., Bjorck, J., Peng, Z., Liu, Q., Aggarwal, K., Mohammed, O. K., Singhal, S., Som, S., et al. Image as foreign language: Beit pretraining for all vision and vision-language tasks. _ arXiv preprint arXiv:2208.10442_, 2022.\n' +
+      '* Wang et al. (2023c) Wang, W., Chen, Z., Chen, X., Wu, J., Zhu, X., Zeng, G., Luo, P., Lu, T., Zhou, J., Qiao, Y., et al. Visionlm: Large language model is also a open-ended decoder for vision-centric tasks. _ arXiv preprint arXiv:2305.11175_, 2023c.\n' +
+      '* Wang et al. (2023d) Wang, W., Lv, Q., Yu, W., Hong, W., Qi, J., Wang, Y., Ji, J., Yang, Z., Zhao, L., Song, X., et al. Cogylm: Visual expert for prerained language models. _ arXiv preprint arXiv:2311.03079_, 2023d.\n' +
+      '* Wei et al. (2022) Wei, J., Wang, X., Schuurmans, D., Bosma, M., Xia, F., Chi, E., Le, Q. V., Zhou, D., et al. Chain-of-thought prompting elicits reasoning in large language models. _ 신경 정보 처리 시스템_, 35:24824-24837, 2022에서의 발전.\n' +
+      '* Wei et al. (2023) Wei, T., Zhao, L., Zhang, L., Zhu, B., Wang, L., Yang, H., Li, B., Cheng, C., Lu, W., Hu, R., et al. Skywork: A more open bilingual foundation model. _ arXiv preprint arXiv:2310.19341_, 2023.\n' +
+      '* Yang et al. (2023) Yang, A., Xiao, B., Wang, B., Zhang, B., Bian, C., Yin, C., Lv, C., Pan, D., Wang, D., Yan, D., et al. Baichuan 2: Open large-scale language models. _ arXiv preprint arXiv:2309.10305_, 2023.\n' +
+      '* Ye et al. (2023) Ye, Q., Xu, H., Xu, G., Ye, J., Yan, M., Zhou, Y., Wang, J., Hu, A., Shi, P., Shi, Y., et al. mplug-owl: Modularization empowers large language models with multimodality. _ arXiv preprint arXiv:2304.14178_, 2023.\n' +
+      '* Yu et al. (2023) Yu, W., Yang, Z., Li, L., Wang, J., Lin, K., Liu, Z., Wang, X., and Wang, L. Mm-vet: 통합 기능을 위한 대규모 멀티모달 모델 평가 arXiv preprint arXiv:2308.02490_, 2023.\n' +
+      '* Yuan et al. (2023) Yuan, Z., Li, Z., and Sun, L. Tinygpt-v: 작은 백본을 통한 효율적인 멀티모달 대형 언어 모델 _ arXiv preprint arXiv:2312.16862_, 2023.\n' +
+      '* Zeng et al. (2022) Zeng, A., Liu, X., Du, Z., Wang, Z., Lai, H., Ding, M., Yang, Z., Xu, Y., Zheng, W., Xia, X., et al. Glm-130b: open bilingual pre-trained model. _ ARXiv 프리프린트 arXiv:2210.02414_, 2022.\n' +
+      '* Zhang et al. (2023a) Zhang, P., Wang, X. D. B., Cao, Y., Xu, C., Ouyang, L., Zhao, Z., Ding, S., Zhang, S., Duan, H., Yan, H., et al. Internlm-xcomposer: Advanced text-image comprehension and composition. _ arXiv preprint arXiv:2309.15112_, 2023a.\n' +
+      '* Zhang et al. (2022) Zhang, S., Roller, S., Goyal, N., Artetxe, M., Chen, M., Chen, S., Dewan, C., Diab, M., Li, X., Lin, X. V., et al. Opt: Open pre-trained transformer language models. _ arXiv preprint arXiv:2205.01068_, 2022.\n' +
+      '* Zhang et al. (2022) Zhang, S., Dong, L., Li, X., Zhang, S., Sun, X., Wang, S., Li, J., Hu, R., Zhang, T., Wu, F., et al. Instruction tuning for large language models: A survey. _ arXiv preprint arXiv:2308.10792_, 2023b.\n' +
+      '* Zhang & Yang(2023) Zhang, X. 및 Yang, Q 슈안위안 2.0: 수천억 개의 매개 변수를 가진 중국의 대형 금융 채팅 모델. In _Proceedings of the 32nd ACM International Conference on Information and Knowledge Management_, pp. 4435-4439, 2023.\n' +
+      '* Zhang et al. (2023) Zhang, Y., Zhang, R., Gu, J., Zhou, Y., Lipka, N., Yang, D., and Sun, T. 라바: 텍스트가 풍부한 이미지 이해를 위한 향상된 시각적 명령어 튜닝. _ arXiv preprint arXiv:2306.17107_, 2023c.\n' +
+      '* Zhao et al. (2023a) Zhao, B., Wu, B., and Huang, T. Svit: 시각적 지시 튜닝을 스케일링 업한다. _ arXiv preprint arXiv:2307.04087_, 2023a.\n' +
+      '* Zhao et al. (2023b) Zhao, Y., Lin, Z., Zhou, D., Huang, Z., Feng, J., and Kang, B. Bubogpt: Enabling visual grounding in multi-modal llms. _ arXiv preprint arXiv:2307.08581_, 2023b.\n' +
+      '* Zheng et al. (2023) Zheng, L., Chiang, W. L., Sheng, Y., Zhu, S., Wu, Z., Zhu, Y., Lin, Z., Li, Z., Li, Z., Li, D., Xing, E., et al., Judging llm-as-a-judge with mt-bench and chatbot arena. _ arXiv preprint arXiv:2306.05685_, 2023.\n' +
+      '* Zhu et al. (2023) Zhu, D., Chen, J., Shen, X., Li, X., and Elhoseiny, M. Minigpt-4: 고급 대형 언어 모델로 비전 언어 이해력 향상. _ arXiv preprint arXiv:2304.10592_, 2023.\n' +
+      '* Zhu et al. (2022) Zhu, J., Zhu, X., Wang, W., Wang, X., Li, H., Wang, X., and Dai, J. Uni-perceiver-moe: learning sparse generalist models with conditional moes. _ 신경 정보 처리 시스템_, 35:2664-2678, 2022에서의 발전.\n' +
+      '* Zhu et al. (2024) Zhu, Y., Zhu, M., Liu, N., Ou, Z., Mou, X., and Tang, J. Llava-phi: Efficient multi-modal assistant with small language model, 2024.\n' +
+      '* Zoph et al. (2022) Zoph, B., Bello, I., Kumar, S., Du, N., Huang, Y., Dean, J., Shazeer, N., and Fedus, W. St-moe: 안정적이고 전이 가능한 희소 전문가 모델 설계. _ arXiv preprint arXiv:2202.08906_, 2022.\n' +
+      '\n' +
+      '## 부록 구현 세부사항\n' +
+      '\n' +
+      '더 많은 모델 아키텍처\n' +
+      '\n' +
+      '표 8에서 MoE-LLaVA의 추가 변형을 제시한다. 우리는 총 모수가 어떻게 계산되는지 소개한다. 활성화된 전문가의 수가 2일 때, \\(전문가=2\\)을 설정하면 활성화된 매개변수의 수가 산출된다.\n' +
+      '\n' +
+      '{split} Total\\_Parameters=&Embedding\\cdot Width\\\\\\&+Layers\\cdot(4\\cdot Width\\cdot Width+Width\\cdot FFN\\cdot FFN\\cdot Factor+2\\cdot Width)\\\\&+Width\\cdot Embedding\\\\&+MoE\\cdot Layer\\cdot(전문가-1)\\cdot(Width\\cdot FFN\\cdot FFN\\cdot Factor+2\\cdot Width)\\\\\\\\end{split} \\cdot(Width\\cdot Experts)\\\\\\\\end{split} \\cdot(Width\\cdot Experts)\n' +
+      '\n' +
+      '### Training Details\n' +
+      '\n' +
+      '표 9와 같이 Qwen, StableLM, Phi 및 OpenChat에 적용할 수 있는 모든 모델에 대한 훈련 하이퍼파라미터를 제시한다. 모든 단계의 훈련 과정을 위해, 우리는 모델이 2개의 에폭에 대해 훈련할 때 과도하게 적합하다는 것을 발견함에 따라 1개의 에폭에 대해 일관되게 훈련한다. 첫 번째 단계에 대한 배치 크기는 두 번째 및 세 번째 단계에 대해 256 및 128입니다. 우리는 세 단계 모두에 대해 336x336의 이미지 해상도를 사용한다. 또한 Qwen-1.8B와 같은 소규모 모델의 경우 8개의 V100-32G GPU에서 교육하는 것이 가능하다. 그러나, 트레이닝 프로세스 동안, fp16을 사용하는 것은 때때로 손실이 NaN.**로 이어질 수 있다. 우리의 모델들은 7B보다 작기 때문에, 우리는 그것들을 _zero2_ 모드로 트레이닝할 수 있다. 그러나, 스테이지 3의 경우, 일시적으로 딥스피드는 _zero3_ 모드의 트레이닝 MoE 아키텍처를 지원하지 않는다. 따라서 메모리 요구 사항을 더욱 줄이고 8개의 A100 GPU에서 실행할 수 있도록 _zero2_offload_를 선택한다. 우리는 모든 훈련 단계에서 그래디언트 체크포인트 모드를 활성화한다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l|c c c|c c c c c|c c} \\hline \\hline \\multirow{2}{*}{**Name**} & \\multirow{2}{*}{**Experts**} & \\multirow{2}{*}{**Top-k**} & \\multicolumn{2}{c|}{**MoE**} & \\multirow{2}{*}{**Embedding**} & \\multirow{2}{*}{**Width**} & \\multirow{2}{*}{**Layers**} & \\multicolumn{2}{c|}{**FFN**} & \\multirow{2}{*}{**Heads**} & **Activated** & **Total** \\\\  & & & & & & & & & & & & & & \\\\ \\hline StableLM-1.6B (Team) & - & - & - & 100352 & 2560 & 32 & 10240 & 2 & 32 & 1.6B & 1.6B \\\\ MoE-LLaVA-1.6Bx4-Top2 & 4 & 2 & 16 & 100352 & 2560 & 32 & 10240 & 2 & 32 & 2.0B & 2.9B \\\\ MoE-LLaVA-1.6Bx4-Top2 & 4 & 2 & 32 & 100352 & 2560 & 32 & 10240 & 2 & 32 & 2.5B & 4.1B \\\\ \\hline Qwen-1.8B (Bai et al., 2023a) & - & - & - & 151936 & 2048 & 24 & 5504 & 3 & 16 & 1.8B & 1.8B \\\\ MoE-LLaVA-1.8Bx4-Top2 & 4 & 2 & 12 & 151936 & 2048 & 24 & 5504 & 3 & 16 & 2.2B & 3.1B \\\\ MoE-LLaVA-1.8Bx4-Top2 & 4 & 2 & 24 & 151936 & 2048 & 24 & 5504 & 3 & 16 & 2.6B & 4.3B \\\\ \\hline Phi2-2.7B (Microsoft, 2023) & - & - & - & 51200 & 2560 & 32 & 10240 & 2 & 32 & 2.7B & 2.7B \\\\ MoE-LLaVA-2.7Bx4-Top2 & 4 & 2 & 16 & 51200 & 2560 & 32 & 10240 & 2 & 32 & 3.6B & 5.3B \\\\ MoE-LLaVA-2.7Bx4-Top2 & 4 & 2 & 32 & 51200 & 2560 & 32 & 10240 & 2 & 32 & 4.5B & 7.8B \\\\ \\hline OpenChat-7B (Wang et al., 2023a) & - & - & - & 32000 & 4096\\({}^{*}\\) & 32 & 14336 & 3 & 32 & 6.7B & 6.7B \\\\ MoE-LLaVA-7Bx4-Top2 & 4 & 2 & 16 & 32000 & 4096\\({}^{*}\\) & 32 & 14336 & 3 & 32 & 9.6B & 15.2B \\\\ MoE-LLaVA-7Bx4-Top2 & 4 & 2 & 32 & 32000 & 4096\\({}^{*}\\) & 32 & 14336 & 3 & 32 & 12.4B & 23.7B \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 8: **MoE-LLaVA 모델의 더 많은 아키텍처 세부사항.** "FFN Factor"는 FFN 내의 선형 레이어의 수를 나타낸다. "*"는 키(k)에 대한 숨겨진 상태의 차원을 나타내며 값(v)은 1024이다. "1.6Bx4-Top2"는 1.6B 파라미터를 갖는 조밀한 기초 모델을 나타내며, 이 기초 모델은 총 4명의 전문가가 장착되며 그 중 2명이 활성화된다. “\\(\\dagger\\)”는 MoE 층이 구비된 모든 층을 기부한다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{l|c c c} \\hline \\hline Config & Stage I & Stage II & Stage III \\\\ \\hline Experts & - & - & 4 \\\\ Top-k & - & - & 2 \\\\ \\hline Deepspeed & Zero2 & Zero2 & Zero2\\_offload \\\\ Data & LLaVA-PT & Hybrid-PT & LLaVA-FT \\\\ Image resolution & & 336x336 \\\\ Image encoder & & CLIP-Large/336 \\\\ Feature select layer & & -2 \\\\ Image projector & 2 Linear layers with GeLU \\\\ Epoch & & 1 \\\\ Learning rate & 1e-3 & 2e-5 & 2e-5 \\\\ Learning rate schulte & & Cosine & \\\\ Weight decay & & 0.0 & \\\\ Text max length & & 2048 & \\\\ Batch size per GPU & 32 & 16 & 16 \\\\ GPU & & \\(8\\times\\) A800-80G \\\\ Precision & & Bf16 & \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 9: **훈련 하이퍼파라미터.**\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:16]\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:17]\n' +
+      '\n' +
+      '### Exhibition Board\n' +
+      '\n' +
+      '표 11에서, 우리는 LLaVA (Liu et al., 2023c) 및 LLaVA-1.5 (Liu et al., 2023b)로부터의 이미지들을 사용하여 몇몇 고전적인 예들을 제시한다. 우리는 MoE-LLaVA가 더 적은 매개변수를 사용함에도 불구하고 이러한 고전적인 이미지에서 그들과 비교 가능한 성능을 발휘한다는 것을 관찰한다.\n' +
+      '\n' +
+      '그림 11: **MoE-LLaVA-OpenChat-7Bx4-Top2**에 대한 다양한 전문가에 걸친 양식 분포.\n' +
+      '\n' +
+      '도 10: **MoE-LLaVA-StableLM-1.6Bx4-Top2**에 대한 전문가 적재 및 전문가 선호도의 분포.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c} \\hline \\hline\n' +
+      '**Visual input example, Tricky Question and Image:** & \\hline \\hline\n' +
+      '**Visual input example, Common Question:** \\\\ \\hline User & If there are factual errors in the questions, point it out; if not, proceed answering the question. \\\\  & What’s happening in the desert? \\\\ \\hline LLaVA-1.5 & There are no deserts in the image. The image features a beach with palm trees, a city skyline, and a large body of water. \\\\ \\hline MoE-LLaVA & There are no deserts in the image. The scene features a city with a beach and a large body of water, which is more likely to be a coastal city. \\\\ \\hline User & Do you know who drew this painting? \\\\ \\hline MoE-LLaVA & The painting is a portrait of the famous artist, Leonardo da Vinci. \\\\ \\hline User & Do you know who drew this painting? \\\\ \\hline MoE-LLaVA & The painting is a drawing of a dog, and it is not possible to definitively determine the artist who created it based on the image alone. \\\\ \\hline User & What is the name of the man in the photo? \\\\ \\hline MoE-LLaVA & The man in the photo is named Elon Musk. \\\\ \\hline User & What is the name of the man in the photo? \\\\ \\hline MoE-LLaVA & The man in the photo is named Elon Musk. \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\begin{tabular}{c c} \\hline \\hline\n' +
+      '**Visual input example, Common Question:** \\\\ \\hline User & Can you explain this meme? \\\\ \\hline GPT-4 (OpenAI, 2023) & This meme is a joke that combines two unrelated things: pictures of the earth from space and chicken muggets. The text of the meme suggests that the image below is a beautiful picture of the earth from space. However, the image is actually of chicken muggets arranged to vaguely resemble a map of the world. The humor in this meme comes from the unexpected jurisdiction of the text and the image. The text sets up an expectation of a majestic image of the earth, but the image is actually something mundane and silly. \\\\ \\hline MoE-LLaVA & The image features a pan filled with golden-brown fried chicken pieces arranged in the shape of a world map. There are numerous chicken pieces spread across the pan, with some pieces located near the center, while others are positioned towards the edges. The chicken pieces are placed in a way that resembles the continents and countries, creating a visually appealing and creative presentation. The pan itself is placed on a table, ready to be served and enjoyed. \\\\ \\hline User & What is unusual about this image? \\\\ \\hline MoE-LLaVA & The unusual aspect of this image is that a man is standing on a clothesline that is attached to the back of a moving taxi cab. This is not a typical scene, as clotheslines are usually found in residential areas, patios, or laundry rooms, and not on the back of a vehicle. The man is holding a shirt while standing on the clothesline, which adds to the unusualness of the situation. It is likely that the man is performing some task or trying to dry the shirt in an unconventional manner. \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\begin{tabular}{c c} \\hline \\hline MoE-LLaVA & The image is a graph or chart with a red arrow pointing to the bottom. The graph is color-coded, with pink and green lines, and it appears to be a line graph. The red arrow is located at the bottom of the graph, indicating a specific point or value. \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 11: **MoE-LLaVA의 전시 보드. MoE-LLaVA는 어려운 질문을 확인하라는 프롬프트가 있을 때 탐지하고 답변하는 능력을 보여준다.**그림 14: **MoE-LLaVA-StableLM-1.6Bx4-Top2**에 대한 다양한 전문가에 걸친 양식 분포.\n' +
+      '\n' +
+      '그림 12: **MoE-LLaVA-Phi-2.7Bx4-Top2**에 대한 다양한 전문가에 걸친 양식 분포.\n' +
+      '\n' +
+      '그림 13: **MoE-LLaVA-Qwen-1.8Bx4-Top2**에 대한 다양한 전문가에 걸친 양식 분포.\n' +
+      '\n' +
+      '도 16: **MoE-LLaVA-Phi-2.7B\\(\\times\\)4-Top2** 상의 활성화된 경로의 시각화.\n' +
+      '\n' +
+      '도 17: **MoE-LLaVA-Qwen-1.8B\\(\\times\\)4-Top2**에서 활성화된 경로의 시각화.\n' +
+      '\n' +
+      '도 15: **MoE-LLaVA-OpenChat-7B\\(\\times\\)4-Top2**에서 활성화된 경로의 시각화.\n' +
+      '\n' +
+      '도 18: **MoE-LLaVA-StableLM-1.6B\\(\\times\\)4-Top2** 상의 활성화된 경로의 시각화.\n' +
+      '\n';
+  </script>
+  <style>
+    #content {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+  <script>
+    let script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/mathpix-markdown-it@1.0.40/es5/bundle.js";
+    document.head.append(script);
+
+    script.onload = function() {
+      const isLoaded = window.loadMathJax();
+      if (isLoaded) {
+        console.log('Styles loaded!')
+      }
+
+      const el = window.document.getElementById('content-text');
+      if (el) {
+        const options = {
+          htmlTags: true
+        };
+        const html = window.render(text, options);
+        el.outerHTML = html;
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="content"><div id="content-text"></div></div>
+</body>
+</html>
