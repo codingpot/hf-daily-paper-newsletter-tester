@@ -4,220 +4,220 @@
   <title>Title</title>
   <script>
     const text = '' +
-      '# TIP-Editor: 텍스트-Prompts와 이미지-Prompts를 모두 따르는 정확한 3DEditor\n' +
+      '# TIP-Editor: An Accurate 3D Editor Following Both Text-Prompts And Image-Prompts\n' +
       '\n' +
-      '징규장\\({}^{1,2}\\) Di Kang\\({}^{2}\\) Yan-Pei Cao\\({}^{2}\\) Guanbin Li\\({}^{1}\\) Liang Lin\\({}^{1}\\) Ying Shan\\({}^{2}\\)\n' +
+      'Jingyu Zhuang\\({}^{1,2}\\)  Di Kang\\({}^{2}\\)  Yan-Pei Cao\\({}^{2}\\)  Guanbin Li\\({}^{1}\\) Liang Lin\\({}^{1}\\)  Ying Shan\\({}^{2}\\)\n' +
       '\n' +
-      '선야트센대학교 ({}^{1}\\)텐센트 인공지능 연구실\n' +
+      '\\({}^{1}\\)Sun Yat-sen University  \\({}^{2}\\)Tencent AI Lab\n' +
       '\n' +
       'zhuangjy6@mail2.sysu.edu.cn, di.kang@outlook.com, caoyanpei@gmail.com,\n' +
       '\n' +
       'liguanbin@mail.sysu.edu.cn, linliang@ieee.org, yingsshan@tencent.com\n' +
       '\n' +
-      '교신저자 이 논문은 검토 중이다.\n' +
+      'Corresponding author. This paper is under review.\n' +
       '\n' +
       '###### Abstract\n' +
       '\n' +
-      '_Text 기반 3D 장면 편집은 편리성과 사용자 편의성으로 인해 큰 주목을 받고 있다. 그러나, 기존의 방법들은 텍스트 기술의 고유한 한계로 인해 여전히 편집 결과의 특정된 외관 및 위치에 대한 정확한 제어가 부족하다. 이를 위해 텍스트와 이미지 프롬프트를 모두 수용하는 3D 장면 편집 프레임워크인 TIP-Editor와 편집 영역을 지정하는 3D 바운딩 박스를 제안한다. 이미지 프롬프트를 통해 사용자는 텍스트 설명을 보완하여 대상 콘텐츠의 상세한 외관/스타일을 편리하게 지정할 수 있어 외관의 정확한 제어가 가능하다. 구체적으로, TIP-Editor는 기존의 장면 및 참조 이미지의 표현을 더 잘 학습하기 위해 단계적 2D 개인화 전략을 채택하며, 바운딩 박스에 의해 특정된 바와 같은 정확한 객체 배치를 장려하기 위해 로컬리제이션 손실이 제안된다. 또한, TIP-Editor는 명시적이고 유연한 3D 가우시안 스플래팅을 3D 표현으로 사용하여 배경을 변경하지 않고 로컬 편집을 용이하게 한다. 광범위한 실험을 통해 TIP-Editor가 지정된 경계 상자 영역에서 텍스트 및 이미지 프롬프트에 따라 정확한 편집을 수행하여 편집 품질에서 기준선을 일관되게 능가하고 프롬프트에 대한 정렬을 질적 및 정량적으로 수행할 수 있음을 입증하였다. 웹 페이지를 참조하십시오.\n' +
+      '_Text-driven 3D scene editing has gained significant attention owing to its convenience and user-friendliness. However, existing methods still lack accurate control of the specified appearance and location of the editing result due to the inherent limitations of the text description. To this end, we propose a 3D scene editing framework, TIP-Editor, that accepts both text and image prompts and a 3Dbounding box to specify the editing region. With the image prompt, users can conveniently specify the detailed appearance/style of the target content in complement to the text description, enabling accurate control of the appearance. Specifically, TIP-Editor employs a stepwise 2D personalization strategy to better learn the representation of the existing scene and the reference image, in which a localization loss is proposed to encourage correct object placement as specified by the bounding box. Additionally, TIP-Editor utilizes explicit and flexible 3D Gaussian splatting as the 3D representation to facilitate local editing while keeping the background unchanged. Extensive experiments have demonstrated that TIP-Editor conducts accurate editing following the text and image prompts in the specified bounding box region, consistently outperforming the baselines in editing quality, and the alignment to the prompts, qualitatively and quantitatively. Refer to our webpage.\n' +
       '\n' +
       '## 1 Introduction\n' +
       '\n' +
-      '전례 없는 사실적 렌더링 품질로 인해, 래디언스 필드-관련 표현들(예를 들어, NeRF[31] 및 3D 가우시안 스플래팅[20])을 사용하는 방법들은 3D 재구성 필드[5, 60, 25] 및 다양한 다운스트림 3D 편집 작업들, 예컨대 텍스처 편집[41, 56], 형상 변형[57, 58], 장면 분해[50], 스타일화[53]에서 점점 더 대중화되고 있다.\n' +
+      'Due to the unprecedented photorealistic rendering quality, methods that use radiance field-related representations (e.g. NeRF [31] and 3D Gaussian Splatting [20]) have been more and more popular in 3D reconstruction field [5, 60, 25] and various downstream 3D editing tasks, such as texture editing [41, 56], shape deformation [57, 58], scene decomposition [50], and stylization [53].\n' +
       '\n' +
-      '높은 수준의 지시(예를 들어, 텍스트 프롬프트)만을 필요로 하는 생성 편집은 _광범위_사용자 상호작용을 필요로 하는 이전의 회화-유사 및 조각-유사 편집 접근법 [56, 58]을 보완하는 새로운 접근법으로 등장한다. 이러한 방법 중 텍스트 기반 방법[63, 15]은 그 편리성으로 인해 상당한 주목을 받았으며, 대규모 텍스트 대 이미지(T2I) 모델의 성공으로 괄목할 만한 진전을 이루었다.\n' +
+      'Generative editing, which only requires high-level instructions (e.g. text prompts), emerges as a new approach in complement to previous painting-like and sculpting-like editing approaches [56, 58] that require _extensive_ user interactions. Among these methods, text-driven methods [63, 15] have gained significant attention due to their convenience and have achieved remarkable progress due to the success of large-scale text-to-image (T2I) models.\n' +
       '\n' +
-      '그러나, 텍스트만을 조건으로 하는 방법들은 텍스트 기술의 내재적 한계로 인해 특정된 위치에 특정된 외형을 갖는 편집 결과를 정확하게 생성하기 위해 고군분투한다. 예를 들어, 기존의 텍스트 기반 방법들은 대개 덜 만족스러운 결과들을 생성한다(도 3). 만약 우리가 그 장난감을 특별한 하트 모양의 선글라스로 입히거나 남자들에게 영화 \'다크 나이트\'에 나온 조커 메이크업을 주고 싶다면. 더욱이, 텍스트 안내에 의해 정확한 편집 위치를 특정하는 것은 어렵다(도 4). 이러한 과제는 주로 생성된 객체의 다양한 모습과 생성된 장면의 다양한 공간 레이아웃에서 비롯된다.\n' +
+      'However, methods using only text as the condition struggle to precisely generate editing results with the specified appearance at the specified location due to the inherent limitations of the text description. For example, existing text-driven methods usually produce less satisfactory results (Fig. 3) if we want to dress the toy in a special heart-shaped sunglasses or give the male the Joker makeup appeared in the movie _The Dark Knight_. Moreover, it is hard to specify the accurate editing location by text guidance (Fig. 4). These challenges primarily stem from the diverse appearances of the generated objects and the diverse spatial layout of the generated scenes.\n' +
       '\n' +
-      '본 논문에서는 이러한 문제점을 해결하기 위해 텍스트 프롬프트와 이미지 프롬프트를 함께 사용하여 기존의 GS 기반 복사 필드를 직관적이고, 편리하고, 정확하게 편집할 수 있는 TIP-Editor를 제안한다. 우리의 프레임워크는 두 가지 중요한 설계를 통해 그러한 기능을 달성합니다. (1) 첫 번째는 (참조 이미지를 통해) 정밀한 외관 제어와 (3D 바운딩 박스를 통해) 위치 제어를 가능하게 하는 새로운 단계적 2D 개인화 전략이다. 구체적으로, 사용자 정의 편집 영역 내부에서 편집이 발생하는 것을 보장하기 위한 로컬리제이션 손실을 포함하는 장면 개인화 단계 및 LoRA를 기반으로 기준 이미지 전용의 별도의 신규 콘텐츠 개인화 단계를 포함한다[18]. (2) 두 번째는 3D 표현으로 명시적이고 유연한 3D 가우시안 스플래팅[20]을 채택하는데, 이는 효율적이고, 더 중요하게는 국부 편집에 매우 적합하기 때문이다.\n' +
+      'To overcome the challenges above, we present TIP-Editor, which allows the users to intuitively, conveniently, and accurately edit the exiting GS-based radiance fields using both text prompts and image prompts. Our framework achieves such capabilities through two crucial designs. (1) The first one is a novel stepwise 2D personalization strategy that enables precise appearance control (via a reference image) and location control (via a 3D bounding box). Specifically, it contains a scene personalization step, which includes a localization loss to ensure the editing occurs inside the user-defined editing region, and a separate novel content personalization step dedicated to the reference image based on LoRA [18]. (2) The second one is adopting explicit and flexible 3D Gaussian splatting [20] as the 3D representation since it is efficient and, more importantly, highly suitable for local editing.\n' +
       '\n' +
-      '사물, 사람 얼굴, 야외 장면 등 다양한 실세계 장면에 걸쳐 TIP-Editor에 대한 종합적인 평가를 진행한다. 우리의 편집 결과(도 1 및 도 7) 참조 이미지에 지정된 고유한 특성을 캡처합니다. 이는 편집 과정의 통제성을 크게 향상시켜 상당한 실용적 가치를 제시한다. 정성적, 정량적 비교 모두에서 TIP-Editor는 기존 방법과 비교할 때 편집 품질, 시각적 충실도 및 사용자 만족도에서 일관되게 우수한 성능을 보여준다.\n' +
+      'We conduct comprehensive evaluations of TIP-Editor across various real-world scenes, including objects, human faces, and outdoor scenes. Our editing results (Fig. 1 and Fig. 7) successfully capture the unique characteristics specified in the reference images. This significantly enhances the controllability of the editing process, presenting considerable practical value. In both qualitative and quantitative comparisons, TIP-Editor consistently demonstrates superior performance in editing quality, visual fidelity, and user satisfaction when compared to existing methods.\n' +
       '\n' +
-      '우리의 기여는 다음과 같이 요약할 수 있다:\n' +
+      'Our contributions can be summarized as follows:\n' +
       '\n' +
-      '* 텍스트 프롬프트 뿐만 아니라 참조 이미지에 의해 안내되는 다양한 편집 작업(예: 객체 삽입, 객체 교체, 재 텍스쳐링, 스타일화)을 사용자가 수행할 수 있도록 하는 다용도 3D 장면 편집 프레임워크인 TIP-Editor를 제시한다.\n' +
-      '* 장면 개인화 단계에서 로컬리제이션 손실을 특징으로 하는 신규 단계적 2D 개인화 전략과 LoRA 기반의 기준 영상 전용 별도의 신규 콘텐츠 개인화 단계를 제시하여 정확한 위치 및 외형 제어가 가능하도록 한다.\n' +
-      '* 3차원 가우시안 스플래팅(Gaussian splatting)을 사용하여 렌더링 효율과 보다 중요한 것은 명시적인 포인트 데이터 구조를 이용하여 정밀한 국부 편집에 매우 적합하다는 점이다.\n' +
+      '* We present TIP-Editor, a versatile 3D scene editing framework that allows the users to perform various editing operations (e.g. object insertion, object replacement, re-texturing, and stylization) guided by not only the text prompt but also by a reference image.\n' +
+      '* We present a novel stepwise 2D personalization strategy, which features a localization loss in the scene personalization step and a separate novel content personalization step dedicated to the reference image based on LoRA, to enable accurate location and appearance control.\n' +
+      '* We adopt 3D Gaussian splatting to represent scenes due to its rendering efficiency and, more importantly, its explicit point data structure, which is very suitable for precise local editing.\n' +
       '\n' +
-      '##2 관련 작품\n' +
+      '## 2 Related Works\n' +
       '\n' +
-      '### 텍스트 유도 이미지 생성 및 편집\n' +
+      '### Text-guided image generation and editing\n' +
       '\n' +
-      '텍스트-이미지 확산 모델[39, 42, 45]은 대규모 쌍을 이루는 이미지-텍스트 데이터 집합으로 훈련되어 복잡한 텍스트 프롬프트에 부합하는 다양하고 고품질의 이미지를 생성할 수 있기 때문에 상당한 주목을 받고 있다. 처음부터 이미지를 직접 생성하는 대신, 인기 있고 밀접하게 관련된 또 다른 작업은 텍스트 프롬프트[1, 3, 10, 17, 19, 30]에 따라 주어진 이미지를 편집하는 것이다.\n' +
+      'Text-to-image (T2I) diffusion models [39, 42, 45], trained on large-scale paired image-text datasets, have gained significant attention since they can generate diverse and high-quality images that match the complicated text prompt. Instead of directly generating images from scratch, another popular and closely related task is to edit the given image according to the text prompt [1, 3, 10, 17, 19, 30].\n' +
       '\n' +
-      '또 다른 인기 있는 작업은 객체/개념 개인화이며, 이는 주어진 이미지 컬렉션에서 정의된 지정된 객체/개념에 대한 이미지를 생성하는 것을 목표로 한다. Textual Inversion(TI) [13]은 텍스트 임베딩 공간에서 특수 텍스트 토큰(들)을 최적화하여 지정된 개념을 표현한다. 드림부스[44]는 정규화로 클래스별 사전 보존 손실로 전체 확산 모델을 미세 조정한다. 일반적으로 드림부스는 더 많은 양의 업데이트된 모델 파라미터(즉, 전체 UNet 모델)를 포함하기 때문에 더 높은 품질의 이미지를 생성한다. 그러나, 전술한 모든 방법들은 다수의 개인화된 객체들을 동시에 포함하는 이미지들을 생성하는 것을 지원하지 않는다.\n' +
+      'Another popular task is object/concept personalization, which aims at generating images for a specified object/concept defined in the given image collection. Textual Inversion (TI) [13] optimizes special text token(s) in the text embedding space to represent the specified concept. DreamBooth [44] fine-tunes the entire diffusion model with a class-specific prior preservation loss as regularization. In general, DreamBooth generates higher-quality images since it involves a larger amount of updated model parameters (i.e. the whole UNet model). However, all the aforementioned methods do not support generating images containing multiple personalized objects simultaneously.\n' +
       '\n' +
-      '커스텀 확산[24]은 상기 태스크를 확장하여 하나의 이미지에서 다수의 개인화된 _concepts_를 동시에 생성한다. 각각의 _concept_에 별도의 특수 텍스트 토큰이 할당되지만, UNet은 모든 _concepts_에 의해 업데이트되어, 만족스럽지 못한 개인화 결과를 초래한다. 또한, 두 _concepts_ 사이의 상호 작용을 특정하기 위한 로컬리제이션 메커니즘이 결여되어 있다(도 10). 이에 반해, 기존의 장면과 새로운 콘텐츠를 별도로 학습하여 고품질의 충실한 개인화 결과를 달성하고 순차적인 편집 시나리오에 일반화할 수 있는 단계적 2D 개인화 전략을 제안한다.\n' +
+      'Custom Diffusion [24] extends the above task to generate multiple personalized _concepts_ in one image simultaneously. Although separate special text tokens are assigned to each _concept_, the UNet is updated by all _concepts_, resulting in less satisfactory personalization results. Furthermore, it lacks a localization mechanism to specify the interaction between two _concepts_ (Fig. 10). In contrast, we propose a stepwise 2D personalization strategy to learn the existing scene and the new content separately, achieving high-quality and faithful personalization results and being generalizable to sequential editing scenarios.\n' +
       '\n' +
-      '### Radiance 필드 기반 3D 세대\n' +
+      '### Radiance field-based 3D generation\n' +
       '\n' +
-      'T2I 확산 모델의 성공은 3D 객체/장면 생성의 발전을 크게 발전시켰다. 한 가지 중요한 기여인 DreamFusion[35]은 스코어 증류 샘플링(SDS)을 도입하며, 이는 미리 훈련된 2D T2I 모델로부터 임의의 3D 데이터에 의존하지 않고 복사 필드를 _optimize_a radiance 필드에 지식을 증류한다. 대부분의 후속 작업은 이러한 최적화 기반 파이프라인을 채택하고 추가 정제 단계(예를 들어, Magic3D[27] 및 DreamBooth3D[38])를 도입하거나, 더 적합한 SDS 변이체를 제안하거나(예를 들어, VSD[55]) 또는 더 강력한 3D 표현[7, 9, 59]을 사용함으로써 더 발전시킨다.\n' +
+      'The success of T2I diffusion models has largely advanced the development of 3D object/scene generation. One seminal contribution, DreamFusion [35], introduces score distillation sampling (SDS), which distills knowledge from a pre-trained 2D T2I model to _optimize_ a radiance field without the reliance on any 3D data. Most of the subsequent works adopt such an optimization-based pipeline and make further progresses by introducing an extra refinement stage (e.g., Magic3D [27] and DreamBooth3D [38]), or proposing more suitable SDS variants (e.g., VSD [55]), or using more powerful 3D representations [7, 9, 59].\n' +
       '\n' +
-      '또한, 연구 주제 [11, 29, 36, 51]은 최적화 프레임워크 내에서 참조 이미지를 통합하기 위해 노력한다. 이러한 통합은 재구성 손실의 적용, 예측된 깊이 맵의 사용 및 미세 조정 프로세스의 실행을 포함한 다양한 기술에 의해 촉진된다. 그럼에도 불구하고, 이러한 방법들은 처음부터 단일 객체를 생성하도록 제약되며, 기존의 3D 장면들을 편집할 수 없다.\n' +
+      'Furthermore, a body of research [11, 29, 36, 51] endeavors to integrate reference images within the optimization framework. This integration is facilitated by various techniques, including the application of reconstruction loss, employment of predicted depth maps, and the execution of a fine-tuning process. Nevertheless, these methods are constrained to generate a single object from scratch and cannot edit existing 3D scenes.\n' +
       '\n' +
-      '### Radiance 필드 기반 3D 편집\n' +
+      '### Radiance field-based 3D editing\n' +
       '\n' +
-      '이전 작업[52, 53]은 주로 주어진 3D 장면의 글로벌 스타일 변환에 중점을 두는데, 이는 텍스트 프롬프트 또는 참조 이미지를 입력으로 하고 일반적으로 최적화 동안 CLIP 기반 유사성 측정[37]을 활용한다. 여러 연구에서 기존의 복사 필드를 업데이트하기 위해 새로운 학습 이미지를 얻기 위해 2D 이미지 조작 기술(예: 인페인팅)[2, 23, 28]을 활용하여 일반 장면에 대한 로컬 편집을 가능하게 한다. 일부 작업은 메쉬 변형을 기본 복사 필드로 전파하기 위해 3D 모델링 기술(예: 메쉬 변형)[57, 58, 61]을 채택한다. 그러나, 이러한 방법들은 광범위한 사용자 상호 작용을 필요로 한다.\n' +
+      'Earlier works [52, 53] mainly focus on global style transformation of a given 3D scene, which takes text prompts or reference images as input and usually leverage a CLIP-based similarity measure [37] during optimization. Several studies enable local editing on generic scenes by utilizing 2D image manipulation techniques (e.g. inpainting) [2, 23, 28] to obtain new training images to update the existing radiance field. Some works adopt 3D modeling techniques (e.g. mesh deformation) [57, 58, 61] to propagate the mesh deformation to the underlying radiance field. However, these methods require extensive user interactions.\n' +
       '\n' +
-      '최근 텍스트 기반 복사 필드 편집 방법은 편집의 유연성과 접근성으로 인해 점점 더 많은 관심을 받고 있다. 예를 들어, InstructNeRF2NeRF[15]는 이미지 기반 확산 모델(InstructPix2Pix[3])을 채용하여 사용자들의 지시에 의해 렌더링된 이미지를 수정하고, 이어서 수정된 이미지로 3D 래디언스 필드를 업데이트한다. DreamEditor[63] 및 Vox-E[48]은 명시적인 3D 표현들(즉, 각각 메쉬 및 복셀)을 채택함으로써 더 나은 로컬 편집을 가능하게 하며, 여기서 편집 영역은 2D 교차-어텐션 맵들에 의해 자동으로 결정된다. 가우시안 편집기[8, 12]는 장면 표현으로서 GS를 채택하고, 효율적이고 정밀한 장면 편집을 용이하게 하기 위해 3D 시맨틱 세분화[6, 21]를 통합한다. 그러나 이러한 텍스트 기반 접근 방식은 편집 결과의 지정된 모양과 위치에 대한 정확한 제어가 부족하다.\n' +
+      'Recently, text-driven radiance field editing methods have gained more and more attention for their editing flexibility and accessibility. For example, InstructNeRF2NeRF [15] employs an image-based diffusion model (InstructPix2Pix [3]) to modify the rendered image by the users\' instructions, and subsequently update the 3D radiance field with the modified image. DreamEditor [63] and Vox-E [48] enable better local editing by adopting explicit 3D representations (i.e. mesh and voxel, respectively), where the editing region is automatically determined by the 2D cross-attention maps. GaussianEditor [8, 12] adopts GS as the scene representation and incorporates 3D semantic segmentation [6, 21] to facilitate efficient and precise scene editing. However, these text-driven approaches lack precise control over the specified appearance and position of the editing results.\n' +
       '\n' +
-      '동시 작업인 CustomNeRF[16]은 작업 설정과 가장 관련이 있습니다. 그러나 CustomNeRF는 편집 대상으로서 묵시적 NeRF 장면에 존재하는 분할 도구[22]에 의해 검출될 수 있는 객체를 요구하기 때문에 객체 대체 작업만을 지원한다. 이와는 대조적으로, 우리는 3D 표현으로 명시적 GS를 채택하여 더 많은 편집 작업(예: 객체 삽입 및 스타일화)을 수행하는 방법을 용이하게 한다.\n' +
+      'A concurrent work, CustomNeRF [16], is most related to our task setting. But CustomNeRF only supports the object replacement task, since it requires an object that can be detected by the segmentation tool [22] existing in the implicit NeRF scene, as the editing target. In contrast, we adopt explicit GS as the 3D representation which facilitates our method to perform more editing tasks (e.g., object insertion and stylization).\n' +
       '\n' +
       '## 3 Background\n' +
       '\n' +
-      '###3D Gaussian Splitting.\n' +
+      '### 3D Gaussian Splitting.\n' +
       '\n' +
-      '3차원 가우시안 스플래팅(Gaussian Splatting, GS)[20]은 높은 렌더링 품질과 효율로 인해 빠르게 엄청난 관심을 끌고 있다. GS는 점-유사 이방성 가우시안 \\(g_{i}\\)을 이용하여 장면을 표현한다. \\(\\mathcal{G}=\\{g_{1},g_{2},...,g_{N}\\}\\). 각 \\(g_{i}\\)에는 중심 위치 \\(\\mu\\in\\mathbb{R}^{3}\\), 불투명도 \\(\\alpha\\in\\mathbb{R}^{1}\\), 3차원 공분산 행렬 \\(\\Sigma\\), 색상 \\(c\\) 등 일련의 최적화 가능한 속성이 포함되어 있다. 미분가능한 스플랫팅 렌더링 프로세스는 다음과 같이 개요된다:\n' +
+      '3D Gaussian Splatting (GS) [20] quickly draws tremendous attention due to its high rendering quality and efficiency. GS utilizes a set of point-like anisotropic Gaussians \\(g_{i}\\) to represent the scene: \\(\\mathcal{G}=\\{g_{1},g_{2},...,g_{N}\\}\\). Each \\(g_{i}\\) contains a series of optimizable attributes, including center position \\(\\mu\\in\\mathbb{R}^{3}\\), opacity \\(\\alpha\\in\\mathbb{R}^{1}\\), 3D covariance matrix \\(\\Sigma\\), and color \\(c\\). The differentiable splatting rendering process is outlined as follows:\n' +
       '\n' +
-      'C=\\sum_{i\\in\\mathcal{N}}c_{i}\\sigma_{i-1}\\prod_{i-1}^{j=1}(1-\\sigma_{j}),\\\\sigma_{i}=\\alpha_{i}G(x)=\\alpha_{i}e^{-\\frac{1}{2}(x)^{T}\\Sigma ^{-1}(x)}\\end{split}\\tag{1}\\tag{1}\\split}\n' +
+      '\\[\\begin{split} C=\\sum_{i\\in\\mathcal{N}}c_{i}\\sigma_{i}\\prod_{i-1} ^{j=1}(1-\\sigma_{j}),\\\\ \\sigma_{i}=\\alpha_{i}G(x)=\\alpha_{i}e^{-\\frac{1}{2}(x)^{T}\\Sigma ^{-1}(x)}\\end{split} \\tag{1}\\]\n' +
       '\n' +
-      '여기서 \\(j\\)는 광학 중심까지의 거리에 따라 \\(g_{i}\\) 앞에 있는 가우시안들을 오름차순으로 인덱싱하고, \\(\\mathcal{N}\\)은 광선에 기여한 가우시안들의 수이며, \\(c_{i}\\), \\(\\alpha_{i}\\), \\(x_{i}\\)은 각각 \\(i\\)번째 가우시안들의 색상, 밀도, 중심점까지의 거리를 나타낸다.\n' +
+      'where \\(j\\) indexes the Gaussians in front of \\(g_{i}\\) according to their distances to the optical center in ascending order, \\(\\mathcal{N}\\) is the number of Gaussians that have contributed to the ray, and \\(c_{i}\\), \\(\\alpha_{i}\\), and \\(x_{i}\\) represent the color, density, and distance to the center point of the \\(i\\)-th Gaussian, respectively.\n' +
       '\n' +
-      'SDS 손실이 있는 복사 필드 최적화\n' +
+      '### Optimizing Radiance Fields with SDS Loss.\n' +
       '\n' +
-      'Score distillation sampling (SDS) [35]는 3D 생성을 위한 Text-to-Image (T2I) 확산 모델의 전수를 증류하여 복사 필드를 최적화한다. 사전 학습된 확산 모델 \\(\\phi\\)은 잡음 영상 \\(\\hat{I}_{t}\\)과 텍스트 조건 \\(y\\)에서 추가된 잡음을 예측하는데 사용된다.\n' +
+      'Score distillation sampling (SDS) [35] optimizes a radiance field by distilling the priors from a Text-to-Image (T2I) diffusion model for 3D generation. The pre-trained diffusion model \\(\\phi\\) is used to predict the added noise given a noised image \\(\\hat{I}_{t}\\) and its text condition \\(y\\).\n' +
       '\n' +
-      '\\phi,\\hat{I}=f(\\theta))=\\mathbb{E}_{\\epsilon, t}\\bigg{[}w(t)(\\epsilon_{\\phi}(\\hat{I}_{t;y,t)-\\epsilon)\\frac{\\partial\\hat{I}}{partial\\theta}\\bigg{}, \\tag{2}\\]에서 \\(f(\\cdot)\\)는 복사 필드의 매개변수를 나타내며, \\(w(t)\\)는 잡음 레벨 \\(t\\)에서 파생된 미리 정의된 가중치 함수이다.\n' +
+      '\\[\\nabla_{\\theta}\\mathcal{L}_{SDS}(\\phi,\\hat{I}=f(\\theta))=\\mathbb{E}_{\\epsilon, t}\\bigg{[}w(t)(\\epsilon_{\\phi}(\\hat{I}_{t};y,t)-\\epsilon)\\frac{\\partial\\hat{I}}{ \\partial\\theta}\\bigg{]}, \\tag{2}\\]where \\(\\theta\\) denotes the parameters of the radiance field, \\(f(\\cdot)\\) is the differentiable image formation process, and \\(w(t)\\) is a predefined weighting function derived from noise level \\(t\\).\n' +
       '\n' +
       '## 4 Method\n' +
       '\n' +
-      '목표 장면의 포즈된 이미지(즉, 이미지 및 COLMAP[46])가 추정된 관련 카메라 파라미터가 주어지면, 우리의 목표는 사용자가 지정한 3D 바운딩 박스 내에서 하이브리드 텍스트-이미지 프롬프트에 따라 보다 정확한 편집을 가능하게 하는 것이다. GS는 명시적이고 매우 유연한 3D 표현 방법이기 때문에 3D 장면을 표현하기 위해 3D 가우스 스플래팅(Gaussian splatting, GS) [20]을 선택하는데, 이는 다음과 같은 편집 작업, 특히 로컬 편집에 유익하다.\n' +
+      'Given posed images (i.e., images and their associated camera parameters estimated by COLMAP [46]) of the target scene, our goal is to enable more accurate editing following a hybrid text-image prompt within a user-specified 3D bounding box. We choose 3D Gaussian splatting (GS) [20] to represent the 3D scene since GS is an explicit and highly flexible 3D representation method, which is beneficial for the following editing operations, especially local editing.\n' +
       '\n' +
-      '도 1에 도시된 바와 같다. 2) TIP-Editor는 1) 기존 장면과 신규 콘텐츠의 단계적 2D 개인화(Sec. 4.1), 2) 스코어 증류 샘플링(SDS) [35]를 이용한 거친 3D 편집 단계(Sec. 4.2), 3) 3D 장면의 픽셀 수준 개선(Sec. 4.3)의 세 가지 단계를 포함한다.\n' +
+      'As shown in Fig. 2, TIP-Editor contains three major steps, including 1) a stepwise 2D personalization of the existing scene and the novel content (Sec. 4.1), 2) a coarse 3D editing stage using score distillation sampling (SDS) [35] (Sec. 4.2), and 3) a pixel-level refinement of the 3D scene (Sec. 4.3).\n' +
       '\n' +
-      '###단계적 2D 개인화\n' +
+      '### Stepwise 2D Personalization\n' +
       '\n' +
-      '일반적으로 미리 훈련된 T2I 모델(즉, 안정 확산(SD)[42])의 단계적 개인화는 드림부스[44]를 기반으로 하지만 두 가지 중요한 수정이 있다. 이러한 변화는 참조 이미지에서 기존 장면과 신규한 내용을 모두 개인화하기 위해 필수적이다. 먼저, 기존 장면의 2D 개인화에서, 우리는 제공된 3D 바운딩 박스(예를 들어, 이마의 선글라스, 도 4 참조)에 의해 특정된 기존 및 신규 콘텐츠 사이의 상호작용을 강제하기 위한 주의 기반 로컬라이제이션 손실을 제안한다. 참조 이미지는 이 단계에 관여하지 않는다는 점에 유의한다. 둘째, 신규 콘텐츠의 2D 개인화에서 LoRA 레이어를 도입하여 기준 이미지에서 특정 항목의 고유한 특성을 더 잘 포착한다.\n' +
+      'In general, our stepwise personalization of the pre-trained T2I model (i.e., Stable Diffusion (SD) [42]) is based on DreamBooth [44], but with two significant modifications. These changes are essential to personalize both the existing scene and the novel content in the reference image. First, in the 2D personalization of the existing scene, we propose an attention-based localization loss to enforce the interaction between the existing and the novel content specified by the provided 3D bounding box (e.g., sunglasses on the forehead, see Fig. 4). Note that the reference image is not involved in this step. Second, in the 2D personalization of the novel content, we introduce LoRA layers to better capture the unique characteristics of the specified item in the reference image.\n' +
       '\n' +
-      '기존 장면의 4.1.1 2D 개인화.\n' +
+      '#### 4.1.1 2D personalization of the existing scene.\n' +
       '\n' +
-      '우리는 먼저 SD를 주어진 장면에 개인화하여 장면의 다양한 편집을 용이하게 한다. 구체적으로, 초기 텍스트 프롬프트(예를 들어, "장난감")는 이미지 캡션 모델, BLIP-2 [26]을 사용하여 획득된다. 장면의 특수성을 높이기 위해 장면을 설명하는 명사 앞에 특수 토큰 \\(V_{1}\\)을 추가하여 [63]과 같이 장면별 텍스트 프롬프트(예: "a\\(V_{1}\\)"를 생성한다. T2I 모델의 UNet\\(\\epsilon_{\\phi}\\)은 재구성 손실과 사전 보존 손실로 미세 조정된다[44]. 재구성 트레이닝의 입력은 장면-특정 텍스트 및 랜덤 뷰로부터의 3D 장면의 렌더링된 이미지를 포함한다. 상기 사전 보존 훈련의 입력은 상기 초기 텍스트 및 달리기를 포함하는\n' +
+      'We first personalize the SD to the given scene to facilitate various types of editing of the scene afterward. Specifically, the initial text prompt (e.g. "a toy") is obtained using an image captioning model, BLIP-2 [26]. To enhance the specificity of the scene, we add a special token \\(V_{1}\\) in front of the noun describing the scene, resulting in a scene-specific text prompt (e.g., "a \\(V_{1}\\) toy") as in [63]. The UNet \\(\\epsilon_{\\phi}\\) of the T2I model is fine-tuned with the reconstruction loss and the prior preservation loss [44]. The input of the reconstruction training includes the scene-specific text and a rendered image of the 3D scene from a random view. The input of the prior preservation training includes the initial text and a ran\n' +
       '\n' +
-      '도 2: **방법 개요. TIP-Editor는 주어진 하이브리드 텍스트-이미지 프롬프트를 따르기 위해 3D 가우스 스플래팅(GS)으로 표현되는 3D 장면을 최적화한다. 편집 과정은 1) 장면 개인화 단계에서 국소화 손실을 특징으로 하는 단계적 2D 개인화 전략 및 LoRA(Sec. 4.1) 기반 참조 이미지 전용 별도의 신규 콘텐츠 개인화 단계; 2) SDS(Sec. 4.2)를 사용한 조잡한 편집 단계; 및 3) 렌더링된 이미지와 잡음 제거된 이미지 모두에서 주의 깊게 생성된 의사-GT 이미지를 활용하는 픽셀 수준의 텍스처 개선 단계(Sec. 4.3)의 세 단계로 구성된다.\n' +
+      'Figure 2: **Method overview. TIP-Editor optimizes a 3D scene that is represented as 3D Gaussian splatting (GS) to conform with a given hybrid text-image prompt. The editing process includes three stages: 1) a stepwise 2D personalization strategy, which features a localization loss in the scene personalization step and a separate novel content personalization step dedicated to the reference image based on LoRA (Sec. 4.1); 2) a coarse editing stage using SDS (Sec. 4.2); and 3) a pixel-level texture refinement stage, utilizing carefully generated pseudo-GT image from both the rendered image and the denoised image (Sec. 4.3).**\n' +
       '\n' +
-      '초기 텍스트를 입력으로 사용하여 SD에 의해 생성된 돔 이미지(클러터를 줄이기 위해 도 2에서 생략됨). 상기 손실들은 다음과 같이 계산된다:\n' +
+      'dom image generated by SD using the initial text as input (omitted in Fig. 2 to reduce clutter). The above losses are computed as follows:\n' +
       '\n' +
-      '{L}_{scene}=&\\mathbb{E}_{z,y, \\epsilon,t}||\\epsilon_{\\phi_{1}}(z_{t},t,p,y)-\\epsilon||_{2}^{2}+\\\\\\&\\mathbb{E}_{z^{*},y^{*},\\epsilon,t^{*}}||\\epsilon_{\\phi_{1}}(z_{t}^{*},t^{*},p^{*},y^{*})-\\epsilon||_{2}^{3}\\end{split}}\\epsilon|_{2}^{2}+\\\\\\&\\mathbb{E}_{z^{*},y^{*},\\epsilon,t^{1}}(z_{t}^{*},t^{*},p^{*},y^{*}}}\n' +
+      '\\[\\begin{split}\\mathcal{L}_{scene}=&\\mathbb{E}_{z,y, \\epsilon,t}||\\epsilon_{\\phi_{1}}(z_{t},t,p,y)-\\epsilon||_{2}^{2}+\\\\ &\\mathbb{E}_{z^{*},y^{*},\\epsilon,t^{*}}||\\epsilon_{\\phi_{1}}(z_{ t}^{*},t^{*},p^{*},y^{*})-\\epsilon||_{2}^{2}\\end{split} \\tag{3}\\]\n' +
       '\n' +
-      '여기서 \\(y\\)는 텍스트 프롬프트, \\(t\\) 타임스텝, \\(z_{t}\\)는 입력 장면 이미지에서 추출된 \\(t\\)번째 타임스텝에서의 잡음 잠재 코드 및 \\(p\\) 카메라 포즈를 나타낸다. 위 첨자 \\(*\\)는 사전 보존 훈련에 사용되는 해당 변수를 나타낸다. SDS 기반 3D 장면 최적화를 용이하게 하기 위해 네트워크 내의 조건 임베딩에 추가적인 카메라 포즈 \\(p\\)를 추가한다. 사전 보존 훈련을 위해 무작위로 생성된 이미지는 의미 있는 "장면 포즈"가 없기 때문에 렌더링을 위해 사용되지 않을 고정된 카메라 포즈 \\(p^{*}=I_{4}\\)을 할당한다.\n' +
+      'where \\(y\\) denotes the text prompt, \\(t\\) the timestep, \\(z_{t}\\) the noised latent code at \\(t\\)-th timestep extracted from the input scene image, and \\(p\\) the camera pose. Superscript \\(*\\) denotes the corresponding variables used in prior preservation training. Note that we add an additional camera pose \\(p\\) to the condition embeddings in the network to have a better viewpoint control of the generated images from the SD, facilitating the subsequent SDS-based 3D scene optimization. Since randomly generated images for prior preservation training do not have a meaningful "scene pose", we assign a fixed camera pose \\(p^{*}=I_{4}\\) that will never be used for rendering.\n' +
       '\n' +
-      '대상 객체의 정확한 위치 파악을 장려하기 위해 주의력 기반 위치 파악 손실을 소개한다(도 2). 상기 SD가 필요한 장면-객체 상호작용을 포함하는 이미지들을 생성하도록 장려하기 위해 상기 2D 장면 개인화 동안. 이 단계는 타겟 객체가 드물게 보이는 위치(예를 들어, 이마의 선글라스, 도 4 참조)에서 특정되는 경우 특히 중요하다. SD에 의해 생성된 대상 객체의 실제 위치는 [17]에 이어지는 객체 키워드(예를 들어, "선글라스")의 교차 주의 지도 \\(A_{t}\\)로부터 추출된다. 타겟 객체(즉, GT 편집 영역)의 원하는 위치는 제공된 3D 바운딩 박스를 이미지 평면에 투영함으로써 획득된다. 실제 위치와 수배 위치 사이의 손실은 다음과 같이 정의된다:\n' +
+      'To encourage accurate localization of the target object, we introduce an attention-based localization loss (Fig. 2) during the 2D scene personalization to encourage the SD to generate images containing the required scene-object interaction. This step is particularly important if the target object is specified at a rarely seen location (e.g., sunglasses on the forehead, see Fig. 4). The actual location of the target object generated by SD is extracted from the cross-attention map \\(A_{t}\\) of the object keyword (e.g., "sunglasses") following [17]. The wanted location of the target object (i.e., GT editing region) is obtained by projecting the provided 3D bounding box to the image plane. The loss between the actual and the wanted location is defined as:\n' +
       '\n' +
-      '\\[\\mathcal{L}_{loc}=(1-\\underset{s\\in\\mathcal{S}}{max}(A_{t}^{s}))+\\lambda\\sum_{s\\in\\tilde{\\mathcal{S}}||A_{t}^{s}||_{2}^{2} \\tag{4}\\\\tag{4}}\n' +
+      '\\[\\mathcal{L}_{loc}=(1-\\underset{s\\in\\mathcal{S}}{max}(A_{t}^{s}))+\\lambda\\sum_ {s\\in\\tilde{\\mathcal{S}}}||A_{t}^{s}||_{2}^{2} \\tag{4}\\]\n' +
       '\n' +
-      '여기서, \\(\\lambda\\)는 GT 편집 마스크 영역(3D 바운딩 박스의 투사)과 \\(\\tilde{\\mathcal{S}\\)의 두 용어 균형을 맞추기 위한 가중치이다. 직관적으로, 이러한 손실은 편집 영역 내부의 높은 확률을 장려하고 편집 영역 외부의 타겟 객체의 존재를 벌한다. 절제 연구에서 입증된 바와 같이(도 4). 이 손실은 지정된 지역 내에서 정확한 편집을 보장하는 데 중요합니다.\n' +
+      'where, \\(\\lambda\\) is a weight to balance two terms, \\(\\mathcal{S}\\) the GT editing mask region (projection of the 3D bounding box \\(\\mathcal{B}\\)) and \\(\\tilde{\\mathcal{S}}\\) the otherwise. Intuitively, this loss encourages a high probability inside the editing area and penalizes the presence of the target object outside the editing area. As demonstrated in our ablation study (Fig. 4), this loss is crucial for ensuring precise editing within the specified region.\n' +
       '\n' +
-      '소설 콘텐츠의 4.1.2 2D 개인화.\n' +
+      '#### 4.1.2 2D personalization of the novel content.\n' +
       '\n' +
-      '우리는 기준 이미지에 포함된 고유한 특성을 더 잘 포착하기 위해 LoRA[18]를 사용하는 전용 개인화 단계를 소개한다. 이 단계는 여러 개념을 학습(개인화)할 때 부정적인 영향(예: [24]를 잊는 개념)을 줄이는 데 필수적이며, 그 결과 장면과 소설 내용 모두를 더 잘 표현할 수 있다. 구체적으로, 기존에 개인화 및 고정된 T2I 모델\\(\\epsilon_{\\phi^{*}}\\)에 삽입된 추가적인 LoRA 레이어를 학습한다. 마지막 단계와 유사하게 BLIP-2 모델을 사용하여 초기 텍스트 프롬프트를 구하고 여기에 특수 토큰 \\(V_{2}\\)을 삽입하여 기준 객체(예: "\\(V_{2}\\)"의 객체별 텍스트 프롬프트 \\(y^{r}\\)를 생성한다. 새로운 LoRA 계층들은 다음의 손실 함수로 트레이닝된다:\n' +
+      'We introduce a dedicated personalization step using LoRA [18] (with the UNet fixed) to better capture the unique characteristics contained in the reference image. This step is essential to reduce the negative influence (e.g. concept forgetting [24]) when learning (personalizing) multiple concepts, resulting in a better representation of both the scene and the novel content. Specifically, we train the additional LoRA layers inserted to the previously personalized and fixed T2I model \\(\\epsilon_{\\phi^{*}}\\). Similar to the last step, we obtain the initial text prompt using BLIP-2 model and insert a special token \\(V_{2}\\) into it, yielding an object-specific text prompt \\(y^{r}\\) of the reference object (e.g. "\\(V_{2}\\) sunglasses"). The new LoRA layers are trained with the following loss function:\n' +
       '\n' +
-      '[\\mathcal{L}_{ref}=\\mathbb{E}_{z^{r},y^{r},\\epsilon,t}||\\epsilon_{\\phi_{2}}(z_{t}^{r},t,p^{*},y^{r})-\\epsilon||_{2}^{2} \\tag{5}\\\\t.\n' +
+      '\\[\\mathcal{L}_{ref}=\\mathbb{E}_{z^{r},y^{r},\\epsilon,t}||\\epsilon_{\\phi_{2}}(z_{ t}^{r},t,p^{*},y^{r})-\\epsilon||_{2}^{2} \\tag{5}\\]\n' +
       '\n' +
-      '훈련 후 장면과 기준 이미지의 내용이 각각 UNet에 저장되고 LoRA 레이어가 추가되어 상호 간섭이 크게 줄어든다.\n' +
+      'After training, the content of the scene and the reference image are stored in UNet and added LoRA layers, respectively, resulting in largely reduced mutual interference.\n' +
       '\n' +
-      'SDS 손실을 통한 조잡한 편집\n' +
+      '### Coarse Editing via SDS Loss\n' +
       '\n' +
-      '맞춤형 T2I 확산 모델 \\(\\epsilon_{\\phi_{2}\\)로부터 SDS 손실로 선택된 가우시안 \\(\\mathcal{G}^{\\mathcal{B}}\\in\\mathcal{B}\\)(즉, 바운딩 박스 \\(\\mathcal{B}\\))을 최적화한다. 구체적으로, 샘플링된 카메라 포즈\\(p\\)와 텍스트 프롬프트\\(y^{G}\\)을 이용하여 랜덤 렌더링된 이미지\\(\\hat{I}\\)을 T2I 모델\\(\\epsilon_{\\phi_{2}}\\)에 입력하고, 전역 장면 SDS 손실을 다음과 같이 계산한다:\n' +
+      'We optimize the selected Gaussians \\(\\mathcal{G}^{\\mathcal{B}}\\in\\mathcal{B}\\) (i.e., those inside the bounding box \\(\\mathcal{B}\\)) with SDS loss from the personalized T2I diffusion model \\(\\epsilon_{\\phi_{2}}\\). Specifically, we input randomly rendered images \\(\\hat{I}\\) using sampled camera poses \\(p\\) and the text prompt \\(y^{G}\\) into the T2I model \\(\\epsilon_{\\phi_{2}}\\), and calculate the global scene SDS Loss as follows:\n' +
       '\n' +
-      '\\mathcal{L}_{SDS}^{G}(\\phi_{2},f(\\mathcal{G}))=\\\\mathbb{E}_{\\epsilon,t}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_{t};t,p,y^{G})-\\epsilon\\frac{\\partial\\hat{I}\\frac{\\partial\\hat{G}\\bigg{}\\end{split}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_{t};t,p,y^{G})-\\epsilon\\frac{\\partial\\hat{I}}\\frac{\\partial\\hat{G}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_t};t,p,y^{G})-\\epsilon\\frac{\\partial\\hat{\n' +
+      '\\[\\begin{split}\\nabla_{\\mathcal{G}}\\mathcal{L}_{SDS}^{G}(\\phi_{2},f (\\mathcal{G}))=\\\\ \\mathbb{E}_{\\epsilon,t}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_{t};t, p,y^{G})-\\epsilon)\\frac{\\partial z}{\\partial\\hat{I}}\\frac{\\partial\\hat{I}}{ \\partial\\mathcal{G}}\\bigg{]}\\end{split} \\tag{6}\\]\n' +
       '\n' +
-      '여기서 \\(y^{G}\\)는 특수 토큰 \\(V_{1},V_{2}\\)을 포함하는 텍스트 프롬프트이며, 우리가 원하는 결과인 \\(f(\\cdot)\\) GS 렌더링 알고리즘을 설명한다.\n' +
+      'where \\(y^{G}\\) is the text prompt including special tokens \\(V_{1},V_{2}\\) and describes our wanted result, \\(f(\\cdot)\\) the GS rendering algorithm.\n' +
       '\n' +
-      '주목할 점은 최적화될 가우시안(\\mathcal{G}^{\\mathcal{B}}\\)의 선택 및 업데이트 기준이 편집 작업의 유형에 따라 약간 다르다는 것이다. 객체 삽입을 위해 경계 상자 안에 있는 모든 가우시안들을 복제하고 이 새로운 가우시안들의 모든 속성들을 배타적으로 최적화한다. 객체 교체 및 재 텍스쳐링을 위해, 바운딩 박스 내의 모든 가우시안들이 업데이트될 것이다. 양식화를 위해 장면의 모든 가우시안에게 최적화가 적용된다. 우리는 모든 속성을 업데이트하는 대신 재 텍스쳐링을 위해 색상(즉, 구면 조화 계수)만 업데이트한다는 점에 유의한다.\n' +
+      'It is noteworthy that the selection and update criteria of the Gaussians \\(\\mathcal{G}^{\\mathcal{B}}\\) to be optimized are slightly different for different types of editing tasks. For object insertion, we duplicate all the Gaussians inside the bounding box and exclusively optimize all the attributes of these new Gaussians. For object replacement and re-texturing, all the Gaussians inside the bounding box will be updated. For stylization, optimization is applied to all the Gaussians in the scene. Note that we only update the colors (i.e., the spherical harmonic coefficients) for re-texturing instead of updating all the attributes.\n' +
       '\n' +
-      'GS 기반 장면의 전경 및 배경은 바운딩 박스\\(\\mathcal{G}^{\\mathcal{B}}\\)을 고려할 때 쉽게 분리 가능하므로, 다음과 같이 아티팩트를 줄이기 위해 객체 중심 편집(예: 객체 삽입/교체)을 위한 또 다른 국부 SDS 손실을 소개한다:\n' +
+      'Since the foreground and background of a GS-based scene are readily separable given the bounding box \\(\\mathcal{G}^{\\mathcal{B}}\\), we introduce another local SDS loss for object-centric editing (e.g., object insertion/replacement) to reduce artifacts as follows:\n' +
       '\n' +
-      'nabla_{\\mathcal{G}^{L}(\\phi_{2},f(\\mathcal{G}^{\\mathcal{B}))=\\\\mathbb{E}_{\\epsilon,t}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_{t};t,p,y^{L})-\\epsilon\\frac{\\partial\\hat{I}}\\frac{\\partial\\hat{G}^{\\mathcal{B}}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_{t};t,p,y^{L})-\\epsilon\\frac{\\partial\\hat{I}}\\bigg{{G}^{\\mathcal{B}}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_t};t,p,y^{L})-\\epsilon\\frac{\\\n' +
+      '\\[\\begin{split}\\nabla_{\\mathcal{G}^{\\mathcal{B}}}\\mathcal{L}_{SDS}^{L}(\\phi_{2},f( \\mathcal{G}^{\\mathcal{B}}))=\\\\ \\mathbb{E}_{\\epsilon,t}\\bigg{[}w(t)(\\epsilon_{\\phi_{2}}(z_{t};t, p,y^{L})-\\epsilon)\\frac{\\partial z}{\\partial\\hat{I}}\\frac{\\partial\\hat{I}}{ \\partial\\mathcal{G}^{\\mathcal{B}}}\\bigg{]}\\end{split} \\tag{7}\\]\n' +
       '\n' +
-      '여기서 \\(y^{L}\\)은 특수 토큰 \\(V_{2}\\)을 포함하는 텍스트 프롬프트이며, 전경 객체만을 포함하는 렌더링된 이미지인 원하는 새로운 객체 \\(\\hat{I}\\)만을 기술한다.\n' +
+      'where \\(y^{L}\\) is the text prompt including the special tokens \\(V_{2}\\) and only describes our wanted new object, \\(\\hat{I}\\) the rendered images containing only the foreground object.\n' +
       '\n' +
-      '\\(\\mathcal{L}_{SDS}^{G}\\)과 \\(\\mathcal{L}_{SDS}^{L}\\)을 \\(\\gamma\\)으로 사용하여 \\(\\mathcal{G}^{\\mathcal{B}\\)을 최적화한다.\n' +
+      'We employ \\(\\mathcal{L}_{SDS}^{G}\\) and \\(\\mathcal{L}_{SDS}^{L}\\) with \\(\\gamma\\) to optimize \\(\\mathcal{G}^{\\mathcal{B}}\\):\n' +
       '\n' +
-      '\\[\\mathcal{L}_{\\mathcal{SDS}}=\\gamma\\mathcal{L}_{SDS}^{G}+(1-\\gamma\\mathcal{L}_{SDS}^{L}\\tag{8}\\]\n' +
+      '\\[\\mathcal{L}_{\\mathcal{SDS}}=\\gamma\\mathcal{L}_{SDS}^{G}+(1-\\gamma)\\mathcal{L}_ {SDS}^{L} \\tag{8}\\]\n' +
       '\n' +
-      '### 픽셀 레벨 이미지 정제\n' +
+      '### Pixel-Level Image Refinement\n' +
       '\n' +
-      '이 단계에서는 SDS 손실로 직접 최적화된 3D 결과가 일반적으로 아티팩트(예: 안경 프레임의 녹색 노이즈, 그림 11의 머리카락에 바늘 모양의 노이즈)를 포함하기 때문에 편집 결과의 품질을 효과적으로 향상시키기 위해 픽셀 수준의 재구성 손실을 도입한다.\n' +
+      'In this stage, we introduce a pixel-level reconstruction loss to effectively enhance the quality of the editing results, since the 3D results directly optimized with SDS loss usually contain artifacts (e.g. green noise on the glasses\' frame, needle-like noise on the hair in Fig. 11).\n' +
       '\n' +
-      '이 단계의 핵심은 거친 GS로부터 렌더링된 이미지\\(I_{c}\\)를 감독하기 위해 의사-GT 이미지\\(I_{gt}\\)을 생성하는 것이다. 먼저, SDEdit[30]을 따라 \\(I_{c}\\)에 노이즈를 추가하여 \\(I_{c}\\)을 구한 후, 개인화된 T2I 모델 \\(e_{\\phi_{2}}\\)을 잡음 제거 네트워크로 사용하여 \\(I_{c}^{d}\\)을 구한다. 디노이징 프로세스는 \\(I_{c}\\)에서 아티팩트를 효과적으로 감소시키지만(보완의 그림 D.1 참조), 배경 이미지도 변경한다. 둘째, 편집 가능한 가우시안(\\mathcal{G}^{\\mathcal{B}}\\)만을 렌더링하고 불투명도 마스크를 임계화하여 편집된 객체/부분의 이진 인스턴스 마스크(M^{inst}\\)를 얻는다. 그리고 고정된 가우시안만을 이용하여 배경영상\\(I_{bg}\\)을 렌더링한다. 마지막으로, 의사-GT 이미지 \\(I_{gt}\\)는 다음과 같이 얻어진다:\n' +
+      'The core of this stage is to create a pseudo-GT image \\(I_{gt}\\) to supervise the rendered image \\(I_{c}\\) from the coarse GS. Firstly, we follows SDEdit [30] to add noise on \\(I_{c}\\) to obtain \\(I_{c}\\) and then utilized the personalized T2I model \\(e_{\\phi_{2}}\\) as a denoising network and obtain \\(I_{c}^{d}\\). The denoising process effectively reduces the artifacts in \\(I_{c}\\) (see Fig. D.1 in the supplementary), but also alters the background image. Secondly, we obtain the binary instance mask \\(M^{inst}\\) of the edited object/part by rendering only the editable Gaussians \\(\\mathcal{G}^{\\mathcal{B}}\\) and thresholding its opacity mask. Then, we render a background image \\(I_{bg}\\) with only the fixed Gaussians. Finally, the pseudo-GT image \\(I_{gt}\\) is obtained as:\n' +
       '\n' +
-      '\\[I_{gt}=M^{inst}\\odot I_{c}^{d}+(1-M^{inst}\\odot I_{bg}\\tag{9}\\]\n' +
+      '\\[I_{gt}=M^{inst}\\odot I_{c}^{d}+(1-M^{inst})\\odot I_{bg} \\tag{9}\\]\n' +
       '\n' +
-      '이 과정은 전경 편집 가능 영역이 T2I 모델\\(\\epsilon_{\\phi_{2}}\\)에 의해 향상되면서 배경 이미지가 깨끗하고 원본 장면과 동일하다는 것을 보장한다. 이 의사-GT 이미지를 픽셀-레벨 감독으로서 사용하는 것은 결과 텍스쳐를 효과적으로 향상시키고 플로터를 감소시킨다(도 11). 렌더링된 영상\\(I_{c}\\)과 생성된 의사-GT 영상\\(I_{gt}\\) 사이에 MSE 손실을 적용한다. \\(I_{gt}\\)의 완전한 준비를 묘사하는 흐름도(도 B.1)가 보충에 포함된다.\n' +
+      'This process ensures that the background image is clean and the same as the original scene while the foreground editable region is enhanced by the T2I model \\(\\epsilon_{\\phi_{2}}\\). Using this pseudo-GT image as pixel-level supervision effectively enhances the resultant texture and reduces floaters (Fig. 11). MSE loss is applied between the rendered image \\(I_{c}\\) and the created pseudo-GT image \\(I_{gt}\\). A flowchart (Fig. B.1) depicting the complete preparation of \\(I_{gt}\\) is included in the supplementary.\n' +
       '\n' +
-      '더 나은 커버리지를 유지하기 위해, 렌더링 카메라 포즈는 미리 정의된 범위 내에서 \\(30^{\\circ}\\)의 간격으로 모든 고도 및 방위각을 커버한다. 잡음 제거된 영상의 더 나은 시점 일관성을 유지하기 위해, SDEdit에서 작은 잡음 레벨(\\(t_{0}=0.05\\), 즉 "중간 시간"을 설정했다. 이러한 작은 노이즈 레벨을 사용하면 미세한 텍스처 디테일을 효과적으로 향상시키고, 작은 아티팩트를 제거하며, 현저한 형상 및 외관 변화를 도입하지 않아, 타겟 편집 영역에 대한 더 나은 뷰 일관성을 유지한다.\n' +
+      'To maintain better coverage, the rendering camera poses cover all elevation and azimuth angles with an interval of \\(30^{\\circ}\\) within a predefined range. To maintain better view-consistency of the denoised images, we set a small noise level (\\(t_{0}=0.05\\), i.e, "intermediate time" in SDEdit). Using such a small noise level effectively enhances fine texture details, removes small artifacts, and does not introduce significant shape and appearance change, maintaining better view consistency for the target editing region.\n' +
       '\n' +
       '## 5 Experiments\n' +
       '\n' +
       '### Experimental Setup\n' +
       '\n' +
-      '**구현 상세.** 기본 하이퍼-파라미터를 갖는 원래의 장면 GS를 트레이닝하기 위해 공식 코드를 사용한다. 단계적 2D 개인화 단계에서 장면 개인화 단계는 1k 반복으로 이루어지며, 새로운 콘텐츠 개인화는 500을 포함한다. 우리는 \\(\\lambda=0.1\\)을 \\(\\mathcal{L}_{loc}\\)으로 설정하였다. 조잡한 편집 단계에서는 [63]의 뷰 샘플링 전략을 채택한다. 렌더링된 이미지의 크기는 512\\(\\times\\)512이다. 편집 작업의 복잡성으로 인해 이 단계는 1K\\(\\sim\\)5K 반복에 대한 최적화가 필요하며, 약 5\\(\\sim\\)25분이 소요된다. 개선 단계는 생성된 \\(I_{gt}\\)의 감독으로 3K 반복이 소요되며, 3분 이내에 종료된다. 더 많은 구현 세부 사항은 보충서에서 찾을 수 있다.\n' +
+      '**Implementation Details.** We use the official code to train the original scene GS, with the default hyper-parameters. In the stepwise 2D personalization stage, the scene personalization step consists of 1k iterations, while the novel content personalization contains 500. We set \\(\\lambda=0.1\\) in \\(\\mathcal{L}_{loc}\\). In the coarse editing stage, we adopt the sampling strategy of views from [63]. The size of the rendered images is 512\\(\\times\\)512. Owing to the different complexity of the editing task, this stage requires optimizing for 1K\\(\\sim\\)5K iterations, consuming approximately 5\\(\\sim\\)25 minutes. The refinement stage takes 3K iterations with the supervision of the generated \\(I_{gt}\\), concluding in less than 3 minutes. More implementation details can be found in the supplementary.\n' +
       '\n' +
-      '**Dataset.** 우리의 방법을 종합적으로 평가하기 위해, 우리는 이전 작업들 [8, 15, 63]에 이어서 상이한 수준의 복잡성을 갖는 6개의 대표적인 장면들을 선택한다. 이러한 장면은 단순한 배경의 사물, 사람의 얼굴, 복잡한 야외 장면 등을 포함한다. 우리는 원본 GS를 훈련하기 위해 장면 이미지와 COLMAP[47]에서 추출한 추정된 카메라 포즈를 사용한다. 각 편집에는 텍스트와 인터넷에서 얻은 참조 이미지로 구성된 하이브리드 프롬프트가 사용되어 편집을 안내한다. 또한, 수동으로 3D 경계 상자를 설정하여 편집 영역을 정의합니다.\n' +
+      '**Dataset.** To comprehensively evaluate our method, We select six representative scenes with different levels of complexity following previous works [8, 15, 63]. These scenes include objects in simple backgrounds, human faces, and complex outdoor scenes. We use scene images and the estimated camera poses extracted from COLMAP [47] to train the original GS. For each editing, a hybrid prompt, consisting of text and a reference image obtained from the Internet, is employed to guide the editing. Additionally, we manually set a 3D bounding box to define the editing region.\n' +
       '\n' +
-      '**베이스라인.** 전용 이미지 기반 편집 베이스라인이 부족하여 Instruct-NeRF2NeRF("I-N2N")[15] 및 DreamEditor[63]를 포함하여 두 가지 최첨단 텍스트 기반 래디언스 필드 편집 방법과 비교한다. I-N2N은 명령어-픽스2픽스[3]을 활용하여 특수 텍스트 명령에 따라 렌더링된 다시점 이미지를 업데이트한다. DreamEditor는 메쉬 기반 표현을 채택하고 로컬 편집을 지원하기 위해 어텐션 기반 로컬화 동작을 포함한다. 공정한 비교를 위해 자동 로컬리제이션을 보다 정확한 수동 선택으로 대체합니다. 자세한 구현 내용은 보충을 참조하십시오.\n' +
+      '**Baselines.** Due to the lack of dedicated image-based editing baselines, we compare with two state-of-the-art text-based radiance field editing methods, including Instruct-NeRF2NeRF ("I-N2N") [15] and DreamEditor [63]. I-N2N utilizes Instruct-pix2pix [3] to update the rendered multi-view images according to special text instructions. DreamEditor adopts a mesh-based representation and includes an attention-based localization operation to support local editing. For a fair comparison, we replace its automatic localization with a more accurate manual selection. See our supplementary for more implementation details.\n' +
       '\n' +
-      '**평가 기준.** 정량적 평가를 위해 주어진 텍스트 프롬프트와 편집 결과의 정렬을 평가하기 위해 [15, 63]에 이어 CLIP 텍스트-이미지 방향 유사성을 채택한다. 이미지-이미지 정렬(편집된 장면과 참조 이미지 사이)을 평가하기 위해, 우리는 [16]을 따라 편집된 3D 장면의 참조 이미지와 렌더링된 다시점 이미지 사이의 평균 DINO 유사성[33]을 계산한다. 이러한 계산에 대한 자세한 정보는 보충서에서 확인할 수 있습니다.\n' +
+      '**Evaluation Criteria.** For quantitative evaluation, we adopt CLIP Text-Image directional similarity following [15, 63] to assess the alignment of the editing outcomes with the given text prompt. To evaluate image-image alignment (between the edited scene and the reference image), we follow [16] to calculate the average DINO similarity [33] between the reference image and the rendered multi-view images of the edited 3D scene. Detailed information about these calculations is available in the supplementary.\n' +
       '\n' +
-      '또한 사용자 연구를 수행하고 참가자(총 50명)에게 두 가지 측면(전체 "품질" 및 참조 이미지에 대한 "정렬")에서 다른 방법의 결과를 평가하도록 요청한다. 사용자 연구에는 두 기준선의 편집된 결과와 우리가 무작위로 회전하는 비디오로 렌더링한 10개의 질문이 포함된다. 10개의 질문은 다양한 시나리오에서 방법을 더 잘 비교하기 위해 다양한 장면과 편집 유형을 다루었다.\n' +
+      'Additionally, we conduct a user study and ask the participants (50 in total) to evaluate the results of different methods from two aspects (overall "Quality", and "Alignment" to the reference image). The user study includes 10 questions, each containing the edited results of the two baselines and ours rendered into rotating videos in random order (see our supplementary). The 10 questions have covered various scenes and editing types to better compare the methods under different scenarios.\n' +
       '\n' +
-      '### TIP-Editor의 시각적 결과\n' +
+      '### Visual Results of TIP-Editor\n' +
       '\n' +
-      '도 1 및 도 1에서, 7, 우리는 TIP-Editor의 질적 결과를 제시한다. 비디오 시연은 보충에 포함되어 있습니다. 다양한 3D 장면에 대한 실험은 TIP-Editor가 재 텍스쳐링, 객체 삽입, 객체 교체 및 스타일화를 포함한 다양한 편집 작업을 효과적으로 수행하여 고품질 결과를 달성하고 제공된 텍스트 프롬프트 및 참조 이미지를 엄격하게 준수함을 보여준다.\n' +
+      'In Fig.1 and Fig. 7, we present qualitative results of TIP-Editor. Video demonstrations are included in the supplementary. Experiments on diverse 3D scenes demonstrate that TIP-Editor effectively executes various editing tasks, including re-texturing, object insertion, object replacement, and stylization, achieving both high-quality results and strictly following the provided text prompt and reference image.\n' +
       '\n' +
-      '**참조 이미지에 의해 지정된 고유한 특성을 유지하는 것** TIP-Editor와 이전 방법의 가장 구별되는 차이점 중 하나는 TIP-Editor가 이미지 프롬프트를 또한 지원한다는 것이며, 이는 보다 정확한 제어를 제공하고 실제 애플리케이션에서 보다 사용자 친화적이다. 결과는 그림 1과 같다. 1&7은 업데이트된 3D 장면과 기준 이미지(예를 들어, 선글라스의 _styles_; _white_기린; _virtual ghost_ horse; 영화 _The Dark Knight_에 나타난 조커 메이크업) 사이의 높은 일관성을 보여준다. 또한 그림 1의 하단에 표시된 대로이다. 도 1을 참조하면, 본 방법은 참조 영상의 _Modigliani_ style에서 전체 장면을 옮기는 등 전역 장면 편집을 수행할 수도 있다.\n' +
+      '**Keeping unique characteristics specified by the reference image.** One of the most distinguishable differences between TIP-Editor and previous methods is that TIP-Editor also supports an image prompt, which offers more accurate control and makes it more user-friendly in real applications. Results in Fig. 1&7 demonstrate high consistency between the updated 3D scene and the reference image (e.g. the _styles_ of the sunglasses; the _white_ giraffe; the _virtual ghost_ horse; the joker make-up appeared in movie _The Dark Knight_). Moreover, as depicted in the bottom of Fig. 1, our method can also perform global scene editing, such as transferring the entire scene in the _Modigliani_ style of the reference image.\n' +
       '\n' +
-      '**순차 편집.** TIP-Editor는 GS의 로컬 업데이트와 단계적 2D 개인화 전략에 힘입어 초기 장면을 여러 번 순차적으로 편집할 수 있어 기존 장면과 신규 콘텐츠 간의 간섭을 효과적으로 줄일 수 있다. 그림 8의 결과는 순차적 편집 기능을 보여준다. 여러 번의 편집 후 관찰 가능한 품질 저하가 없으며 서로 다른 편집 작업 간에 간섭이 없습니다.\n' +
+      '**Sequential editing.** TIP-Editor can sequentially edit the initial scene multiple times thanks to the local update of the GS and the stepwise 2D personalization strategy, which effectively reduces the interference between the existing scene and the novel content. Results in Fig.8 demonstrate the sequential editing capability. There is no observable quality degradation after multiple times of editing and no interference between different editing operations.\n' +
       '\n' +
-      '**생성된 이미지를 기준으로 사용한다.** 참조 이미지가 없는 경우 T2I 모델에서 여러 후보를 생성하고 사용자가 만족스러운 후보를 선택하도록 할 수 있다. 이러한 상호 작용은 사용자에게 더 많은 제어를 제공하고 최종 결과를 더 예측 가능하게 한다. 도. 도 9는 몇 가지 예를 도시한다.\n' +
+      '**Using generated image as the reference.** In the absence of the reference image, we can generate multiple candidates from a T2I model and let the user choose a satisfactory one. This interaction offers the user more control and makes the final result more predictable. Fig. 9 shows some examples.\n' +
       '\n' +
-      '### 최신 방법과의 비교\n' +
+      '### Comparisons with State-of-the-Art Methods\n' +
       '\n' +
-      '**정성적 비교.** 그림 3은 우리의 방법과 기준선 간의 시각적 비교를 보여준다. 두 기준선 모두 입력으로서 이미지 프롬프트를 지원하지 않기 때문에, 객체 카테고리에 속하는 제어되지 않는(아마도 가장 일반적인) 항목을 생성한다. 대조적으로, 우리의 결과는 기준 이미지(즉, _heart-shaped_ 선글라스; _white_기린; 영화 _The Dark Knight_의 조커)에서 지정된 고유한 특성을 일관되게 유지한다.\n' +
+      '**Qualitative comparisons.** Fig.3 shows visual comparisons between our method and the baselines. Since both baselines do not support image prompts as input, they generate an uncontrolled (probably the most common) item belonging to the object category. In contrast, our results consistently maintain the unique characteristics specified in the reference images (i.e., the _heart-shaped_ sunglasses; the _white_ giraffe; the joker from the movie _The Dark Knight_).\n' +
       '\n' +
-      '더욱이, Instruct-N2N은 때때로 키워드를 오인(1행)하거나 간과(2행)하거나 제한된 실험(3행)에서 지정된 모양을 생성할 수 없으며, 이는 아마도 Instruct-Pix2Pix의 제한된 지원 명령 때문일 것이다. 또한, 사용자가 지정된 선글라스 아이템(행 1)을 추가하고자 하는 경우, 드림 에디터는 어려움에 직면한다. 또한, 드림 에디터는 덜 채택되어 기존 객체에 명백한 모양 변경(2행)을 하기가 어렵다.\n' +
+      'Moreover, Instruct-N2N sometimes misunderstands (row 1) or overlooks (row 2) the keywords, or cannot generate a specified appearance in limited experiments (row 3), probably due to limited supported instructions in Instruct-Pix2Pix. DreamEditor also faces difficulty if the user wants to add a specified sunglasses item (row 1). Additionally, it is difficult for DreamEditor to make obvious shape changes (row 2) to the existing object due to its adoption of a less\n' +
       '\n' +
       '\\begin{table}\n' +
       '\\begin{tabular}{l c c c c} \\hline \\hline Method & CLIP\\({}_{dir}\\) & DINO\\({}_{sim}\\) & Vote\\({}_{quality}\\) & Vote\\({}_{alignment}\\) \\\\ \\hline Instruct-N2N & 8.3 & 36.4 & 21.6\\% & 8.8\\% \\\\ DreamEditor & 11.4 & 36.8 & 7.6\\% & 10.0\\% \\\\ Ours & **15.5** & **39.5** & **70.8\\%** & **81.2\\%** \\\\ \\hline \\hline \\end{tabular}\n' +
       '\\end{table}\n' +
-      '표 1: 정량적 비교. CLIP\\({}_{dir}\\)은 CLIP Text-Image 방향성 유사성이다. DINO\\({}_{sim}\\)는 DINO 유사성이다.\n' +
+      'Table 1: Quantitative comparisons. CLIP\\({}_{dir}\\) is the CLIP Text-Image directional similarity. DINO\\({}_{sim}\\) is the DINO similarity.\n' +
       '\n' +
-      '그림 3: 서로 다른 방법 간의 시각적 비교. 제안된 방법은 보다 높은 품질의 결과를 얻을 수 있으며 _accurately_는 참조 이미지 입력(열 1의 오른쪽 하단 모서리)을 따른다. 인스트럭션-N2N은 때때로 키워드를 오해하거나(1행) 간과한다(2행). 드림 에디터는 명백한 모양 변경을 하는 데 어려움을 겪는다(2행). 둘 다 자세한 모양/스타일을 지정하라는 이미지 프롬프트를 지원하지 않아 제어되지 않는 결과를 생성합니다.\n' +
+      'Figure 3: Visual comparisons between different methods. Our method produces obviously higher-quality results and _accurately_ follows the reference image input (bottom-right corner in column 1). Instruct-N2N sometimes misunderstands (row 1) or overlooks (row 2) the keywords. DreamEditor faces difficulty in making obvious shape changes (row 2). Both of them do not support image prompts to specify detailed appearance/style, producing less controlled results.\n' +
       '\n' +
-      '플렉서블 메쉬 기반 표현(즉, NeuMesh).\n' +
+      'flexible mesh-based representation (i.e., NeuMesh).\n' +
       '\n' +
-      '** 정량적 비교** 탭 도 1은 CLIP Text-Image 방향성 유사도(CLIP\\({}_{dir}\\))와 DINO 유사도(DINO\\({}_{sim}\\))의 결과를 나타낸다. 결과는 두 메트릭 모두에서 본 방법의 우수성을 분명히 보여주며, 본 방법에 의해 생성된 외관이 텍스트 프롬프트 및 이미지 프롬프트 모두에 더 잘 정렬됨을 시사한다. 사용자 연구에 따르면 유사한 결론이 도출되었다. 우리의 결과는 _quality_ 평가(\\(70.8\\%\\)표)와 _alignment_ 평가(\\(81.2\\%\\)표) 모두에서 상당한 표차로 기준선을 능가한다.\n' +
+      '**Quantitative comparisons.** Tab. 1 shows the results of the CLIP Text-Image directional similarity (CLIP\\({}_{dir}\\)) and DINO similarity (DINO\\({}_{sim}\\)). The results clearly demonstrate the superiority of our method in both metrics, suggesting that the appearance generated by our method aligns better with both the text prompt and the image prompt. A similar conclusion has been drawn according to the user study. Our results surpass the baselines with a substantial margin on both the _quality_ evaluation (\\(70.8\\%\\) votes) and the _alignment_ evaluation (\\(81.2\\%\\) votes).\n' +
       '\n' +
       '### Ablation Study\n' +
       '\n' +
-      '**단계적 2D 개인화에 대한 절제 연구** 단계적 2D 개인화에 \\(\\mathcal{L}_{loc}\\) 및 LoRA 레이어를 사용하는 이점을 입증하기 위해 그림 4에서 절제 실험을 수행한다. 미세조정된 T2I 모델은 \\(\\mathcal{L}_{loc}\\)이 없으면 원래 T2I 모델의 학습 데이터에 존재하는 편향으로 인해 지정된 영역(이마)에 선글라스를 배치하지 못한다. 참조 이미지에서 고유한 특징을 개인화하기 위해 전용 LoRA 레이어를 도입하면 더 충실한 출력이 얻어지며, 참조 이미지에서 세부 정보를 캡처하는 데 제안된 단계적 2D 개인화 전략의 효과를 입증한다.\n' +
+      '**Ablation studies on the stepwise 2D personalization.** We conduct ablative experiments in Fig.4 to demonstrate the benefit of using \\(\\mathcal{L}_{loc}\\) and LoRA Layers in the stepwise 2d personalization. Without \\(\\mathcal{L}_{loc}\\), the fine-tuned T2I model fails to place the sunglasses in the specified region (i.e. on the forehead) due to the bias present in the training data of the original T2I model. Introducing dedicated LoRA layers to personalize the unique features in the reference image results in more faithful output, demonstrating the effectiveness of the proposed stepwise 2D personalization strategy in capturing details in the reference image.\n' +
       '\n' +
-      '**다른 3D 표현에 대한 절제 연구.** 그림에서 다른 3D 표현을 테스트한다. 5는 다른 모든 설정을 동일하게 유지하면서. GS를 사용하면 배경을 변경하지 않고 최상의 편집 결과를 얻을 수 있습니다. 인스턴트-NGP[32]의 경우, 공유 MLP 디코더와 다중 해상도 그리드의 채택으로 인해 서로 다른 위치에 있는 콘텐츠가 독립적이지 않기 때문에 배경의 원하지 않는 변화를 관찰한다.\n' +
+      '**Ablation study on different 3D representations.** We test different 3D representations in Fig. 5 while keeping all the other settings the same. Using GS obtains the best editing result while keeping the background unchanged. For Instant-NGP [32], we observe undesired changes in the background since its content in different locations is not independent due to its adoption of a shared MLP decoder and multi-resolution grid.\n' +
       '\n' +
-      '**픽셀-레벨 정제 단계의 효과.** 도 11에서와 같이, 정제 단계를 도입하는 것은 아티팩트를 효과적으로 감소시키고 텍스처를 향상시켜, 실질적으로 개선된 품질을 초래한다.\n' +
+      '**Effectiveness of the pixel-level refinement step.** As in Fig.11, introducing the refinement stage effectively reduces artifacts and enhances the texture, resulting in substantially improved quality.\n' +
       '\n' +
-      '** 거친 편집에서 다른 \\(\\gamma\\)의 영향.** 그림 6에서와 같이 전역 및 국소 SDS 손실이 모두 필요하며 우리의 솔루션이 최상의 결과를 달성한다. 특히, 전역 SDS 손실(\\mathcal{L}_{SDS}^{G}\\)만을 사용하여 편집 가능한 영역에서 명백한 아티팩트를 생성한다. 로컬 SDS 손실\\(\\mathcal{L}_{SDS}^{L}\\)만을 사용하는 것은 편집 중에 컨텍스트 정보가 누락되기 때문에 객체의 부정확한 배치 및 배경과 새로운 콘텐츠 사이의 부자연스러운 색상 불일치를 초래한다.\n' +
+      '**Influence of different \\(\\gamma\\) in coarse editing.** As in Fig.6, both the global and local SDS loss are necessary and our solution achieves the best result. Specifically, only using global SDS loss \\(\\mathcal{L}_{SDS}^{G}\\) results in obvious artifacts in the editable region. Only using local SDS loss \\(\\mathcal{L}_{SDS}^{L}\\) results in inaccurate placement of the object and unnatural color discrepancy between the background and the novel content since the context information is missing during editing.\n' +
       '\n' +
-      '##6 결론 및 한계\n' +
+      '## 6 Conclusion and Limitations\n' +
       '\n' +
-      '본 논문에서 제안하는 TIP-Editor는 텍스트 기반의 3D 편집에 추가적인 이미지 프롬프트를 추가하여 텍스트 설명을 보완하고, 배경은 그대로 유지하면서 텍스트 및 이미지 프롬프트에 정확하게 정렬된 고품질 편집 결과를 생성한다. TIP-Editor는 상당히 향상된 제어성을 제공하며 객체 삽입, 객체 교체, 재텍스처링 및 스타일화를 포함한 다양한 응용 프로그램을 지원합니다.\n' +
+      'In this paper, our proposed TIP-Editor equips the emerging text-driven 3D editing with an additional image prompt as a complement to the textual description and produces high-quality editing results accurately aligned with the text and image prompts while keeping the background unchanged. TIP-Editor offers significantly enhanced controllability and enables versatile applications, including object insertion, object replacement, re-texturing, and stylization.\n' +
       '\n' +
-      'TIP-편집기의 한 가지 한계는 거친 경계 상자 입력이다. 편리하지만 바운딩 박스가 원치 않는 요소를 포함할 수 있는 복잡한 장면에서 어려움을 겪는다. 장면의 3D 인스턴스 분할을 자동으로 획득하는 것은 매우 유익할 것이다. 또 다른 한계는 GS로 표현된 장면으로부터 매끄럽고 정확한 메쉬를 추출하기 어렵기 때문에 기하학 추출과 관련이 있다.\n' +
+      'One limitation of TIP-Editor is the coarse bounding box input. Although convenient, it struggles in complex scenes where bounding boxes may include unwanted elements. It would be very beneficial to automatically obtain 3D instance segmentation of the scene. Another limitation is related to geometry extraction since it is hard to extract a smooth and accurate mesh from GS-represented scenes.\n' +
       '\n' +
-      '그림 4: 단계적 2D 개인화에서 제안된 구성 요소에 대한 절제 연구. 개인화된 T2I 모델의 생성된 이미지와 업데이트된 3D 장면(하단 행)의 렌더링된 이미지를 비교한다. 로컬리제이션 손실\\(\\mathcal{L}_{loc}\\)을 제거하면 지정된 위치에 새로운 객체를 배치하지 못한다. 기준 이미지의 개인화를 위해 전용된 별도의 LoRA 레이어를 제거하는 것은 덜 유사한 결과(하트 모양 대 규칙적인 둥근 모양)를 생성한다.\n' +
+      'Figure 4: Ablation study on the components proposed in stepwise 2D personalization. We compare the generated images of the personalized T2I model (top row) and the rendered images of the updated 3D scene (bottom row). Removing the localization loss \\(\\mathcal{L}_{loc}\\) fails to place the new object in the specified place. Removing the separate LoRA layers dedicated for the personalization of the reference image produces less similar results (heart-shaped vs. regular round shape).\n' +
       '\n' +
-      '그림 5: 이 작업에 대한 GS의 이점을 보여주기 위해 다른 3D 표현에 대한 절제 연구. 인스턴트-NGP를 사용하면 NeuMesh를 사용하는 동안 배경이 변경되어 충분한 형상 변형을 생성할 수 없다. 반면, _explicit_와 _flexible_ GS를 사용하면 배경을 변경하지 않고 유지하면서 최상의 전경 편집 결과를 얻을 수 있다.\n' +
+      'Figure 5: Ablation study on different 3D representations to show the advantage of GS for this task. Using Instant-NGP results in a changed background while using NeuMesh cannot produce large enough shape deformation. In contrast, using _explicit_ and _flexible_ GS obtains the best foreground editing result while keeping the background unchanged.\n' +
       '\n' +
-      '도 6: 전역 및 국소 SDS의 영향에 대한 절제 연구(식 8) 거친 단계에서. 맨 위 행은 편집 가능한 가우시안 \\(\\mathcal{G}^{B}\\)의 렌더링을 보여준다. 전역 SDS\\(\\mathcal{L}_{SDS}^{G}\\)만을 사용하여 낮은 품질의 전경 객체/부분을 생성하는 반면, 국부 SDS\\(\\mathcal{L}_{SDS}^{L}\\)만을 사용하여 기존의 장면(색상, 배치)과 합성될 때 부자연스러운 전경을 생성한다.\n' +
+      'Figure 6: Ablation study on the influence of global and local SDS (Eq. 8) in the coarse stage. The top row shows the rendering of the editable Gaussians \\(\\mathcal{G}^{B}\\). Only using global SDS \\(\\mathcal{L}_{SDS}^{G}\\) produces low-quality foreground object/part, while only using local SDS \\(\\mathcal{L}_{SDS}^{L}\\) produces unnatural foreground when composited with the existing scene (e.g., color, placement).\n' +
       '\n' +
-      '도 8: 순차 편집 결과. 우리는 매 편집 단계 후에 3D 장면의 두 개의 렌더링된 이미지를 보여주며, 왼쪽 상단 모서리의 숫자로 표시된다. \\ (V_{*}\\), \\(V_{**}\\), \\(V_{**}\\)은 편집의 서로 다른 시퀀스에서 장면의 특수 토큰을 나타낸다.\n' +
+      'Figure 8: Sequential editing results. We show two rendered images of the 3D scene after every editing step, indicated by the number in the top-left corner. \\(V_{*}\\), \\(V_{**}\\), and \\(V_{**}\\) represent the special tokens of the scene in different sequences of editing.\n' +
       '\n' +
-      '그림 7: 제안된 TIP-Editor의 더 많은 편집 결과. 텍스트 프롬프트의 이미지는 최적화 없이 고정된 관련 _rare tokens_를 나타낸다.\n' +
+      'Figure 7: More editing results of the proposed TIP-Editor. Images in the text prompts denote their associated _rare tokens_, which are fixed without optimization.\n' +
       '\n' +
-      '도 11: 거친 편집 결과와 정제 결과의 비교. 화살표로 표시된 영역은 편집 결과의 품질을 향상시키는 개선 단계의 효능을 보여준다.\n' +
+      'Figure 11: Comparison of the coarse editing results and the refinement results. The region indicated by the arrow demonstrates the efficacy of the refinement step in enhancing the quality of the editing results.\n' +
       '\n' +
-      '도 10: 상이한 2D 개인화 방법의 비교. 개인화(상부) 및 최종 업데이트된 3D 장면(하부) 이후의 T2I 모델들의 생성된 이미지들이 제시된다. _ 문자 프롬프트_: "A\\(V_{1}\\) 이마에 \\(V_{2}\\) 선글라스를 착용한 장난감"\n' +
+      'Figure 10: Comparison of different 2D personalization methods. Generated images of the T2I models after personalization (top) and the final updated 3D scene (bottom) are presented. _Text prompt_: “A \\(V_{1}\\) toy wearing \\(V_{2}\\) sunglasses on the forehead”\n' +
       '\n' +
-      '그림 9: 생성된 이미지를 기준으로 사용한 결과. 먼저 텍스트 프롬프트를 이용하여 확산 모델에 의해 여러 후보 이미지를 생성한 후, 편집을 위한 참조 이미지로 선택한다.\n' +
+      'Figure 9: Results of using a generated image as the reference. We first generate several candidate images by the diffusion model using text prompts, then we choose one as the reference image for editing.\n' +
       '\n' +
       '## References\n' +
       '\n' +
@@ -278,77 +278,77 @@
       '* [55] Fanbo Xiang, Zexiang Xu, Milos Hasan, and et al. Neutex: Neural texture mapping for volumetric neural rendering. In _CVPR 2021_, pages 7119-7128, 2021.\n' +
       '* [56] Tianhan Xu and Tatsuya Harada. Deforming radiance fields with cages. In _Computer Vision-ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23-27, 2022, Proceedings, Part XXXIII_, pages 159-175. Springer, 2022.\n' +
       '* [57] Bangbang Yang, Chong Bao, and Junyi et al. Zeng. NeuMesh: Learning disentangled neural mesh-based implicit field for geometry and texture editing. In _ECCV 2022_, pages 597-614. Springer, 2022.\n' +
-      '*[58]*[59] Taoran Yi, Jiemin Fang, Guanjun Wu, Lingxi Xie, Xiaopeng Zhang, Wenyu Liu, Qi Tian, Xinggang Wang. 가우시안-드림러: 포인트 클라우드 전과를 가진 텍스트에서 3d 가우시안 스플래팅까지의 빠른 생성 arXiv preprint arXiv:2310.08529_, 2023.\n' +
+      '* [58]* [59] Taoran Yi, Jiemin Fang, Guanjun Wu, Lingxi Xie, Xiaopeng Zhang, Wenyu Liu, Qi Tian, and Xinggang Wang. Gaussian-dreamer: Fast generation from text to 3d gaussian splatting with point cloud priors. _arXiv preprint arXiv:2310.08529_, 2023.\n' +
       '* [60] Alex Yu, Vickie Ye, Matthew Tancik, and Angjoo Kanazawa. pixelnerf: Neural radiance fields from one or few images. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition_, pages 4578-4587, 2021.\n' +
       '* [61] Yu-Jie Yuan, Yang-Tian Sun, Yu-Kun Lai, and et al. NeRF-editing: geometry editing of neural radiance fields. In _CVPR 2022_, pages 18353-18364, 2022.\n' +
       '* [62] Xiuming Zhang, Pratul P Srinivasan, Boyang Deng, Paul Debevec, William T Freeman, and Jonathan T Barron. Nerfactor: Neural factorization of shape and reflectance under an unknown illumination. _ACM Transactions on Graphics (ToG)_, 40(6):1-18, 2021.\n' +
       '* [63] Jingyu Zhuang, Chen Wang, Liang Lin, Lingjie Liu, and Guanbin Li. DreamEditor: Text-driven 3d scene editing with neural fields. In _SIGGRAPH Asia 2023 Conference Papers_, pages 1-10, 2023.\n' +
       '\n' +
-      '보충 자료에서는 더 많은 결과(A), 방법(B)의 구현 세부 사항 및 기준(C) 및 평가 세부 사항(D)을 제공합니다.\n' +
+      'In our supplementary material, we provide more results (A), implementation details of our method (B) and the baselines (C), and evaluation details (D)\n' +
       '\n' +
-      '## 부록 추가 실험 결과\n' +
+      '## Appendix A More Experimental Results\n' +
       '\n' +
-      '**잡음 제거 결과.** 그림 A.1은 거친 3DGS로부터의 렌더링된 이미지 \\(I_{c}\\) 및 잡음 제거 프로세스 후에 대응하는 향상된 이미지의 텍스처 세부사항을 보여준다.\n' +
+      '**Denoising results.** Fig. A.1 demonstrates the texture details of the rendered image \\(I_{c}\\) from the coarse 3DGS and its corresponding enhanced image after the denoising process.\n' +
       '\n' +
-      '*거친 단계에서 가중치 매개변수의 영향.** 그림 A.2는 식 8에서 서로 다른 \\(\\gamma\\)으로 최적화된 거친 편집 결과를 보여준다. \\(\\gamma\\) 값이 증가함에 따라(즉, 전역 SDS 손실의 중요성이 증가함에 따라), 편집 가능한 영역(즉, 선글라스)에 더 많은 명백한 아티팩트가 나타난다. 반면에, 너무 작은 \\(\\gamma\\) 값을 사용하면 선글라스에서 더 적은 아티팩트가 발생한다. 그러나, 최종 합성 이미지는 최적화 동안 컨텍스트 정보의 부족으로 인해 부자연스러움(예를 들어, 원래의 장면과 새로운 객체 사이의 색상 갭, 새로운 객체의 배치)이 된다. 일반적으로 식에서 \\(\\gamma=0.5\\)을 설정한다. 8은 좋은 균형을 이루며, 편집 가능한 가우시안(\\mathcal{G}^{\\mathcal{B}\\)의 소음을 효과적으로 줄이고, 선글라스를 올바르게 배치하고, 조화로운 색상을 생성한다.\n' +
+      '**Influence of the weighting parameter in the coarse stage.** Fig. A.2 demonstrates the coarse editing results optimized with different \\(\\gamma\\) in Eq. 8. As the \\(\\gamma\\) value increases (i.e. increasing the importance of the global SDS loss), more and more obvious artifacts appear in the editable region (i.e. the sunglasses). On the other hand, using too small \\(\\gamma\\) values results in fewer artifacts in the sunglasses. However, the final composited image becomes unnatural (e.g. the color gap between the original scene and the new object, the placement of the new object) due to lack of context information during optimization. Generally, setting \\(\\gamma=0.5\\) in Eq. 8 strikes a good balances, effectively reducing the noise in the editable Gaussians \\(\\mathcal{G}^{\\mathcal{B}}\\), correctly placing the sunglasses, and producing harmony colors.\n' +
       '\n' +
-      '## 부록 B 구현 상세\n' +
+      '## Appendix B Implementation Details\n' +
       '\n' +
-      '공간상 본문에 포함될 수 없는 더 많은 구현 세부 사항을 제공합니다. 우리의 모든 실험은 단일 NVIDIA Tesla A100 GPU에서 수행된다.\n' +
+      'We provide more implementation details that cannot be included in the main paper due to space. All our experiments are conducted on a single NVIDIA Tesla A100 GPU.\n' +
       '\n' +
-      '### 초기 GS 장면의 최적화\n' +
+      '### Optimization of the initial GS scene\n' +
       '\n' +
-      '실험에서는 3차원 장면들을 표현하기 위해 3차원 가우시안 스플래팅(Gaussian Splatting, GS)[20]을 사용한다. 타겟 장면의 상이한 뷰들로부터 촬영된 이미지들이 주어지면, 우리는 먼저 COLMAP[46]을 사용하여 그들의 대응하는 카메라 파라미터들을 추정한다. 그런 다음 공식 3DGS 저장소에서 기본 하이퍼파라미터를 사용하여 초기 GS 장면을 훈련한다[49].\n' +
+      'In our experiments, we employ 3D Gaussian Splatting (GS) [20] to represent the 3D scenes. Given images shot from different views of the target scene, we first use COLMAP [46] to estimate their corresponding camera parameters. Then, we train the initial GS scene with the default hyper-parameters in the official 3DGS repository [49].\n' +
       '\n' +
-      '### 단계적 2D 개인화 전략의 세부사항\n' +
+      '### Details of the stepwise 2D personalization strategy\n' +
       '\n' +
-      '우리는 허깅 페이스에 제공된 공개적으로 이용 가능한 안정적인 확산 V2.1[43] 모델을 사용한다.\n' +
+      'We use the publicly available Stable Diffusion V2.1 [43] model provided on Hugging Face.\n' +
       '\n' +
-      '** 장면 개인화 단계** 미리 정의된 범위 내에서 (원본 장면 이미지의 시각적 범위에 따라) 30^{\\circ}\\(30^{\\circ}\\) 간격으로 모든 고각과 방위각을 커버하는 카메라 포즈로 장면 이미지를 샘플링한다. BLIP-2[26] 모델을 사용하여 초기 장면 텍스트 프롬프트를 구하고, 명사 앞에 특수 토큰 \\(V_{1}\\)을 삽입하여 이 특정 장면을 묘사하여 미세 조정 시 장면 특정 텍스트 프롬프트 \\(y\\)를 생성한다. 사전 보존 손실을 위해, 동일한 초기 장면 텍스트(y^{*}\\)를 입력으로 하여 해상도(512\\times 512\\)에서 200개의 이미지를 랜덤하게 생성한다. 미세조정을 위해 \\(lr=5\\cdot 10^{-6}\\), \\(beta1=0.9\\), \\(beta2=0.999\\), \\(weightdecay=10^{-2}\\), \\(epsilon=10^{-8}\\)의 AdamW 최적화기를 사용하였다. 장면 개인화 단계는 배치 크기가 1인 1K 반복(\\(\\sim 10\\) 분)으로 구성되며, \\(\\lambda=0.1\\)을 \\(\\mathcal{L}_{loc}\\) (식 4)로 설정한다.\n' +
+      '**The scene personalization step.** We sample scene images with the camera poses covering all elevation and azimuth angles with an interval of \\(30^{\\circ}\\) within a predefined range (varied according to the visual scope of the original scene images). We use BLIP-2 [26] model to obtain the initial scene text prompt, and insert a special token \\(V_{1}\\) in front of the noun to describe this specific scene, resulting in a scene-specific text prompt \\(y\\) during fine-tuning. For the prior preservation loss, we randomly generate 200 images at resolution \\(512\\times 512\\) using the same initial scene text \\(y^{*}\\) as input. We use the AdamW optimizer with \\(lr=5\\cdot 10^{-6}\\), \\(beta1=0.9\\), \\(beta2=0.999\\), \\(weightdecay=10^{-2}\\), and \\(epsilon=10^{-8}\\) for fine-tuning. The scene personalization step consists of 1K iterations (\\(\\sim 10\\) min.) with a batch size of 1. We set \\(\\lambda=0.1\\) in \\(\\mathcal{L}_{loc}\\) (Eq. 4).\n' +
       '\n' +
-      '**새로운 콘텐츠 개인화 단계** 참조영상에서 전경 객체를 Off-the-shelf segmentation 모델[40]을 이용하여 추출하고 512\\(\\times\\)512로 크기를 조정한다. 세밀한 조정을 위해 \\(lr=10^{-4}\\), \\(beta1=0.9\\), \\(beta2=0.999\\), \\(weightdecay=10^{-2}\\), \\(epsilon=10^{-8}\\)의 AdamW 최적화기를 사용한다. 장면 개인화 단계는 배치 크기가 1인 500회 반복(\\(\\sim 5\\)분)으로 구성된다.\n' +
+      '**The novel content personalization step.** We extract the foreground object in the reference image using an off-the-shelf segmentation model [40] and resize it into 512\\(\\times\\)512. We use the AdamW optimizer with \\(lr=10^{-4}\\), \\(beta1=0.9\\), \\(beta2=0.999\\), \\(weightdecay=10^{-2}\\), and \\(epsilon=10^{-8}\\) for fine-tuning. The scene personalization step consists of 500 iterations (\\(\\sim 5\\) min.) with a batch size of 1.\n' +
       '\n' +
-      '### 조잡한 편집 단계의 세부사항\n' +
+      '### Details of the coarse editing stage\n' +
       '\n' +
-      '우리는 파이토치에서 거친 편집 단계를 구현한다[34]. [63]과 같이 뷰의 샘플링 전략을 채택하였으며, 렌더링된 영상의 해상도는 512\\(\\times\\)512이다. 최적화 과정에서 \\(beta1=0.9\\), \\(beta2=0.999\\), \\(weightdecay=0\\), \\(epsilon=10^{-15}\\)의 Adam 최적화기를 사용하였다. 중심위치 \\(\\mu\\)에서 \\(10^{-3}\\)에서 \\(2\\cdot 10^{-5}\\)까지 학습속도를 최적화하기 위한 선형 감쇠전략을 채택하였다. 다른 속성들은 3차원 공분산 행렬 \\(\\Sigma\\)에 대해 불투명도 \\(\\alpha\\)의 경우 \\(10^{-1}\\), 색상 \\(c\\)의 경우 \\(10^{-2}\\), 그리고 \\(5\\cdot 10^{-2}\\)의 공식 GS 설정과 동일한 고정 학습률을 사용한다. 다양한 장면의 복잡도가 크게 다르기 때문에, 최적화 반복은 배치 크기가 2인 1K(\\(\\sim 5\\)분에서 5K(\\(\\sim 5\\)분)까지 다양하다. \\(\\mathcal{L}^{G}_{SDS}\\) 및 \\(\\mathcal{L}^{L}_{SDS}\\)을 계산하기 위해 CFG 가중치를 10으로 설정하고, 시간 스텝의 간단한 2단계 어닐링(t\\(t\\sim\\mathcal{U}(0.02,0.75)\\)을 사용하여 시간 스텝을 샘플링하고 \\(t\\sim\\mathcal{U}(0.02,0.25)\\)으로 어닐링한다.\n' +
+      'We implement the coarse editing stage in Pytorch [34]. We adopt a sampling strategy of views as in [63], the resolution of the rendered images is 512\\(\\times\\)512. We use the Adam optimizer with \\(beta1=0.9\\), \\(beta2=0.999\\), \\(weightdecay=0\\), and \\(epsilon=10^{-15}\\) during optimization. We adopt a linear decay strategy for the learning rate optimizing center position \\(\\mu\\) from \\(10^{-3}\\) to \\(2\\cdot 10^{-5}\\). As for the other attributes, we use a fixed learning rate the same as the official GS settings (i.e. \\(10^{-1}\\) for opacity \\(\\alpha\\), \\(10^{-2}\\) for color \\(c\\), and \\(5\\cdot 10^{-2}\\) for the 3D covariance matrix \\(\\Sigma\\)). Since the complexity of different scenes varies significantly, the optimization iterations are varied from 1K (\\(\\sim 5\\) min.) to 5K (\\(\\sim 5\\) min.) with batch size of 2. For calculating \\(\\mathcal{L}^{G}_{SDS}\\) and \\(\\mathcal{L}^{L}_{SDS}\\), we set the CFG weight to 10, and utilize simple two-stage annealing of time step \\(t\\): we sample time steps \\(t\\sim\\mathcal{U}(0.02,0.75)\\) and anneal into \\(t\\sim\\mathcal{U}(0.02,0.25)\\).\n' +
       '\n' +
-      '그림 A.1: 거친 3DGS로부터 렌더링된 이미지 \\(I_{c}\\)의 텍스처 세부사항들은 잡음제거 프로세스에 의해 더욱 강화된다.\n' +
+      'Figure A.1: The texture details of the rendered image \\(I_{c}\\) from the coarse 3DGS are further enhanced by the denoising process.\n' +
       '\n' +
-      '### 미세화 단계의 세부사항\n' +
+      '### Details of the refinement stage\n' +
       '\n' +
-      '초기화로 거친 편집 단계의 결과를 사용하여 렌더링된 이미지와 신중하게 생성된 의사 GT 이미지\\(I_{gt}\\)에 적용된 픽셀 수준의 이미지 재구성 손실로 GS를 계속 최적화한다. 도 B.1은 \\(I_{gt}\\)의 생성을 예시한다. 최적화기와 트레이닝 하이퍼-파라미터들은 더 적은 트레이닝 반복들(3K)을 제외하고 초기 GS 장면(Sec. B.1)을 트레이닝하는 것과 동일하다.\n' +
+      'Using results from the coarse editing stage as initialization, we continue optimizing the GS with pixel-level image reconstruction loss, which is applied to the rendered image and the carefully generated pseudo GT image \\(I_{gt}\\). Fig. B.1 illustrates the generation of \\(I_{gt}\\). The optimizer and training hyper-parameters are the same as those in training the initial GS scene (Sec. B.1) except for fewer training iterations (3K).\n' +
       '\n' +
-      '그림 A.2: 서로 다른 \\(\\gamma\\)으로 최적화된 조밀한 편집 결과. 우리는 편집된 가우시안(\\mathcal{G}^{\\mathcal{B}}\\)과 장면(\\mathcal{G}\\)에서 모든 가우시안(Gaussians)의 렌더링 이미지를 보여준다. 특히, 전역 SDS 손실(\\mathcal{L}^{\\mathcal{G}}_{SDS}\\)만을 사용하여 편집 가능한 영역에서 명백한 아티팩트를 생성한다. 서로 다른 \\(\\gamma\\)으로 최적화된 조밀한 편집 결과. 우리는 편집된 가우시안(\\mathcal{G}^{\\mathcal{B}}\\)과 장면(\\mathcal{G}\\)에서 모든 가우시안(Gaussians)의 렌더링 이미지를 보여준다. 또한, \\(\\gamma\\) 값이 증가함에 따라 전체 SDS 손실 \\(\\mathcal{L}^{\\mathcal{G}}_{SDS}\\)은 편집 가능한 영역에 더 많은 아티팩트를 생성한다. 반면에 \\(\\gamma\\)의 감소는 더 적은 아티팩트를 초래하지만, 최적화 과정에서 컨텍스트 정보가 누락되기 때문에 부정확한 객체 배치 및 배경과 새로운 콘텐츠 사이의 부자연스러운 색상 불일치의 위험을 증가시킨다. 일반적으로 \\(\\gamma=0.5\\)을 설정하면 \\(\\mathcal{L}^{G}_{SDS}\\)과 \\(\\mathcal{L}^{L}_{SDS}\\)의 균형을 효과적으로 맞출 수 있어 선글라스를 올바르게 놓으면서 잡음 가우시안 현상을 줄일 수 있다.\n' +
+      'Figure A.2: Coarse editing results optimized with different \\(\\gamma\\). We demonstrate the rendering images of the edited Gaussian \\(\\mathcal{G}^{\\mathcal{B}}\\) (top row) and all Gaussians in the scene \\(\\mathcal{G}\\) (bottom row). Specifically, only using global SDS loss \\(\\mathcal{L}^{\\mathcal{G}}_{SDS}\\) results in obvious artifacts in the editable region. Coarse editing results optimized with different \\(\\gamma\\). We demonstrate the rendering images of the edited Gaussian \\(\\mathcal{G}^{\\mathcal{B}}\\) (top row) and all Gaussians in the scene \\(\\mathcal{G}\\) (bottom row). As the \\(\\gamma\\) value increases, global SDS loss \\(\\mathcal{L}^{\\mathcal{G}}_{SDS}\\) obviously results in more artifacts in the editable region. On the contrary, the decreasing of \\(\\gamma\\) results in fewer artifacts, but increases the risk of inaccurate object placement and an unnatural color discrepancy between the background and the novel content since the context information is missing during optimization. Generally, setting \\(\\gamma=0.5\\) effectively balances \\(\\mathcal{L}^{G}_{SDS}\\) and \\(\\mathcal{L}^{L}_{SDS}\\), reducing the noise Gaussian while correctly placing the sunglasses.\n' +
       '\n' +
-      '## 부록 C 기준\n' +
+      '## Appendix C Baselines\n' +
       '\n' +
-      '**Instruct-NeRF2NeRF.**Instruct-NeRF2NeRF("I-N2N")는 감독용 GPT3[4]로 획득된 특수 텍스트 명령들에 따라 렌더링된 멀티뷰 이미지들을 업데이트하기 위해 Instruct-pix2pix[3]를 이용한다. 공식 코드를 사용하여 구현합니다.\n' +
+      '**Instruct-NeRF2NeRF.** Instruct-NeRF2NeRF ("I-N2N") utilizes Instruct-pix2pix [3] to update the rendered multi-view images according to special text instructions obtained with GPT3 [4] for supervision. We implement it using its official code.\n' +
       '\n' +
-      '우리는 BLIP-2 [26]을 사용하여 참조 이미지의 텍스트 설명을 얻은 다음 I-N2N에서와 같이 적절한 명령어로 변환한다. 다른 모든 설정은 3D 표현 방법(Nerfacto[62]), 명령어-pix2pix의 버전 및 훈련 하이퍼-파라미터를 포함하여 공식 코드의 기본 구성과 동일하다.\n' +
+      'We use BLIP-2 [26] to obtain the textual description of our reference image and then convert it into a suitable instruction as in I-N2N. All the other settings are the same as the default configurations in their official code, including the 3D representation method (Nerfacto [62]), the version of Instruct-pix2pix, and the training hyper-parameters.\n' +
       '\n' +
-      '**DreamEditor.** DreamEditor는 NeuS[54]로부터 증류된 명시적 NeuMesh[58] 표현을 채택하고 로컬 편집을 지원하기 위한 주의 기반 로컬화 동작을 포함한다. 공식 코드를 사용하여 구현하고 기본 훈련 하이퍼파라미터를 따른다. 공정한 비교를 위해 자동 로컬리제이션을 보다 정확한 수동 선택 편집 영역으로 대체합니다. 또한, 드림 에디터는 목표 장면을 개인화하기 위해 드림보스를 사용한다. 우리는 드림부스 프로세스를 확장하여 한 번에 두 개의 다른 특수 토큰을 사용하여 편집 장면과 참조 이미지를 동시에 개인화할 수 있다. 메소드와 동일한 텍스트 프롬프트를 사용하여 장면을 편집합니다.\n' +
+      '**DreamEditor.** DreamEditor adopts the explicit NeuMesh [58] representation distilled from a NeuS [54] and includes an attention-based localization operation to support local editing. We implement it using its official code and follow its default training hyperparameters. For fair comparisons, we replace its automatic localization with a more accurate manually selected editing area. Moreover, DreamEditor employs Dreambooth to personalize the target scene. We extend its Dreambooth process to simultaneously personalize both the editing scene and the reference image using two different special tokens in one step. We use the same text prompts as our method to edit the scenes.\n' +
       '\n' +
-      '## 부록 D 평가기준\n' +
+      '## Appendix D Evaluation Criteria\n' +
       '\n' +
-      '우리는 3개의 장면과 다양한 편집 유형을 포함하는 10개의 결과에 대해 앞서 언급한 기준선과 방법을 비교한다. 각 결과에 대해 동일한 카메라 궤적을 사용하여 모든 방법에 대해 편집된 장면을 렌더링하여 사용자 연구에 사용되는 비디오 데모를 얻는다. 모든 동영상이 이 보충에 포함되어 있습니다.\n' +
+      'We compare our method with the aforementioned baselines on 10 results, covering 3 scenes and different editing types. For each result, we render the edited scene for all methods using the same camera trajectory to obtain video demos, which are used for the user study. All the videos are included in this supplementary.\n' +
       '\n' +
-      '메트릭 계산을 위해 위의 비디오에서 5 프레임마다 1개의 이미지를 추출하고 CLIP 기반 유사도 메트릭(즉, CLIP Text-Image 방향성 유사도)과 DINO 유사도를 계산한다. 우리는 탭에서 그들의 평균값을 보고한다. 1은 본문에 나와 있습니다.\n' +
+      'For metric calculation, we extract 1 image every 5 frames from the above videos and calculate the CLIP-based similarity metric (i.e., CLIP Text-Image directional similarity) and DINO similarity. We report their mean values in Tab. 1 in our main paper.\n' +
       '\n' +
-      '### CLIP 텍스트-이미지 방향성 유사성\n' +
+      '### CLIP Text-Image directional similarity\n' +
       '\n' +
-      'CLIP Text-Image 방향성 유사성[14]은 두 이미지의 변화(즉, 편집 전-후)와 두 텍스트 프롬프트(즉, 초기 텍스트 설명 \\(t_{o}\\) 및 편집 텍스트 프롬프트 \\(t_{e}\\) 사이의 정렬 정도를 평가한다. 수학적으로, 그것은 다음과 같이 계산된다:\n' +
+      'CLIP Text-Image directional similarity [14] evaluates the degree of alignment between the change of two images (i.e. before-after editing) and two text prompts (i.e. initial text description \\(t_{o}\\) and the editing text prompt \\(t_{e}\\)). Mathematically, it is computed as follows:\n' +
       '\n' +
-      '{split}\\Delta T&=E_{T}(t_{e})-E_{T}(t_{o})\\\\Delta I&=E_{I}(i_{e})-E_{I}(i_{o})\\\\CLIP_{dir}&=1-\\frac{\\Delta I\\cdot\\Delta T}{| \\Delta I||\\Delta T|}\\end{split}\\] (D.1)\n' +
+      '\\[\\begin{split}\\Delta T&=E_{T}(t_{e})-E_{T}(t_{o})\\\\ \\Delta I&=E_{I}(i_{e})-E_{I}(i_{o})\\\\ CLIP_{dir}&=1-\\frac{\\Delta I\\cdot\\Delta T}{| \\Delta I||\\Delta T|}\\end{split}\\] (D.1)\n' +
       '\n' +
-      '여기서 \\(E_{I}\\) 및 \\(E_{T}\\)은 CLIP의 이미지와 텍스트 인코더이고, \\(i_{o}\\) 및 \\(i_{e}\\)은 원본 및 편집 장면 이미지이고, \\(t_{o}\\) 및 \\(t_{e}\\)은 원본 및 편집 장면 이미지를 설명하는 텍스트이다. 텍스트 설명은 참조 이미지에 대해 BLIP-2(i(i_{o}\\)에 대해 \\(t_{o}\\), \\(t_{r}\\)으로 얻는다. 그리고 \\(t_{o}\\)와 \\(t_{r}\\)에 따라 \\(t_{e}\\)을 수동으로 생성한다. 이러한 텍스트 설명은 최적화를 위해 사용된 것과 반드시 동일한 것은 아니며 특수 토큰을 포함하지 않는다는 점에 유의한다.\n' +
+      'where \\(E_{I}\\) and \\(E_{T}\\) are CLIP\'s image and text encoder, \\(i_{o}\\) and \\(i_{e}\\) are the original and edited scene image, \\(t_{o}\\) and \\(t_{e}\\) are the texts describing the original and edited scene image. The textual descriptions are obtained with BLIP-2 (i.e. \\(t_{o}\\) for \\(i_{o}\\), \\(t_{r}\\) for the reference image). And we manually generate \\(t_{e}\\) according to \\(t_{o}\\) and \\(t_{r}\\). Note that these text descriptions are not necessarily the same as those used for optimization and do not contain special tokens.\n' +
       '\n' +
       '### DINO similarity\n' +
       '\n' +
-      '[16]에 이어서, DINO[33] 유사도를 사용하여 편집된 장면과 서로 다른 뷰의 참조 이미지 사이의 유사도를 측정한다.\n' +
+      'Following [16], we use DINO [33] similarity measure the similarity between the edited scene and the reference image from different views.\n' +
       '\n' +
       '\\[DINO_{sim}=\\frac{E_{D}(i_{e})\\cdot E_{D}(i_{r})}{|E_{D}(i_{e})||E_{D}(i_{r})|}\\] (D.2)\n' +
       '\n' +
-      '여기서 \\(E_{D}\\)는 DINOv2[33]의 이미지 인코더이고, \\(i_{r}\\)는 기준 이미지이다.\n' +
+      'where \\(E_{D}\\) is the image encoder of DINOv2 [33], and \\(i_{r}\\) the Reference image.\n' +
       '\n';
   </script>
   <style>
