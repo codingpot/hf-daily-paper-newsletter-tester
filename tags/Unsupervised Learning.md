@@ -7,3 +7,4 @@
 - [Deconstructing Denoising Diffusion Models for Self-Supervised Learning](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/11/2024-01-26+Deconstructing+Denoising+Diffusion+Models+for+Self-Supervised+Learning.yaml) / 2024-01-26
 - [pix2gestalt: Amodal Segmentation by Synthesizing Wholes](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/11/2024-01-26+pix2gestalt%3A+Amodal+Segmentation+by+Synthesizing+Wholes.yaml) / 2024-01-26
 - [Taiyi-Diffusion-XL: Advancing Bilingual Text-to-Image Generation with Large Vision-Language Model Support](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/12/2024-01-29+Taiyi-Diffusion-XL%3A+Advancing+Bilingual+Text-to-Image+Generation+with+Large+Vision-Language+Model+Support.yaml) / 2024-01-29
+- [Learning Universal Predictors](https://github.com/deep-diver/hf-daily-paper-newsletter/blob/main/archive/13/2024-01-29+Learning+Universal+Predictors.yaml) / 2024-01-29
