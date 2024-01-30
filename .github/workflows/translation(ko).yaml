@@ -73,6 +73,7 @@ jobs:
             --github-token="${{ secrets.GH_TOKEN }}" \
             --hf-token="${{ secrets.HF_TOKEN }}" \
             --model-name="${{ secrets.MODEL_NAME }}" \
+            --worker-num=5 \
             --target-archive-github-repo="codingpot/hf-daily-paper-newsletter-tester" \
             --arxiv-ids $(cat ${{ steps.parameters.outputs.output_filename }})
 
