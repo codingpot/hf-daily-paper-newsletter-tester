@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true"><head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script>
+    const text = '' +
+      '[MISSING_PAGE_FAIL:1]\n' +
+      '\n' +
+      'this task poses significant challenges due to limited training samples and a general lack of specific objects in the model training set.\n' +
+      '\n' +
+      'In order to improve the effectiveness of object fine-tuning, current methods [3; 11; 19; 22; 29] employ a paradigm that involves optimizing a pre-trained synthesis model, or a text prompt [11; 22] representing the object using multiple training examples. The optimized prompt is then integrated with user prompts to create images with diverse styles and content. However, these methods usually rely on the availability of multiple images of the same object, which exacerbates the problem of object accuracy and model overfitting in one-shot scenarios.\n' +
+      '\n' +
+      'Focusing on the task of accurate implantation of a user specified object into a generative model using only one sample, while maintaining the model\'s generalization, we propose a novel fine-tuning framework. Unlike existing works [19; 22; 29; 35] that start from random initialization and iterative optimize a unique prompt representation of a target object, we propose a novel fine-tuning method. Based on stable diffusion, a prototypical embedding for the object is firstly initialized and then trained in the generation model with a class-characteristic regularization to balance object identity and generalization variations. And an object-specific loss function supervised by the object in the given image is proposed, to achieve both fidelity and generalization in later image synthesis.\n' +
+      '\n' +
+      'While seemingly simple, one-shot generation fine-tuning remains a non-trivial task that poses several challenges, including: 1) adapting text-to-image models with conditioned object embeddings, 2) designing a training process to improve object fidelity using only one image, and 3) enhancing editing capabilities to generate different object compositions using diverse text prompts. Given a target image and its class, the text embedding of the specific object is initialized by finding the best prototypical embedding between multi-modal representations of the object\'s class and its characteristics. For the fine-tuning quality, we insert additional attention modules[15] to the text-to-image network, and an object-specific mask loss is used to preserve fidelity in downstream image synthesis. However, directly fine-tuning the network with the object embedding results in model overfitting with deteriorated editing capability, i.e. high Kernel Inception Distance (KID) [1] in generation results, where the model generates solely with the user specific object but not the text instruction. We therefore propose a class-characterizing regularization to the object embedding for the generalization of the model. Our method essentially increases object fidelity and model generalization, leading to performance gain in terms of output quality, appearance diversity, and object fidelity.\n' +
+      '\n' +
+      'Generating personalized content based on one-shot samples requires an efficient algorithm to improve its applicability. In this work, we take a step forward and demonstrate how the fine-tuning process can help the model maintain object identity as long as generalization editability. Our method outperforms several existing methods, which generates high-fidelity photorealistic images and supports content-rich synthesis in one-shot generation. What\'s more, our method can also used in multi-object fine-tuning, as shown in Figure 2, which achieve better composing results of multi user specific objects.\n' +
+      '\n' +
+      '## 2. Related Work\n' +
+      '\n' +
+      '### Text-to-Image Synthesis\n' +
+      '\n' +
+      'In recent years, there has been significant progress in the development of text-to-image generative models that synthesize images based on unconditioned text prompts. Such models include Generative Adversarial Networks (GANs) [2; 12; 16; 31], Vector Quantization (VQs) approaches [4; 7; 9; 27; 36], and diffusion models [32; 33; 6; 14; 23; 34; 28; 30]. With the rise of large-scale text-image datasets, these models have been scaled up to produce high-quality and semantically rich image synthesis results. Examples of such large text-to-image models include StyleGAN-T [31], CogView2 [7], Imagen [30], DALL-E2 [26], and Stable Diffusion [28]. The introduction of text conditioning to the StyleGAN architecture in StyleGAN-T has showcased the effectiveness of GANs in text-to-image synthesis. In contrast, VQs utilize an autoencoder to learn a quantization codebook and predict text-to-image tokens through transformers for generating the final image. Likewise, diffusion models leverage a UNet module to iteratively denoise a noise image in a latent space, conditioned on the text prompt injected to the model via transformer layers, to synthesize images.\n' +
+      '\n' +
+      'While text-to-image models trained on a specific dataset can generate high-quality images, they often struggle to generate novel instances or user-specified objects with identity consistency [19]. This can be attributed to their training set limitation in representing new objects. Our work relates to the Stable Diffusion model and aims to enhance its ability to generate high-fidelity images of user-specified objects, thereby expanding the model\'s applicability to content creation tasks that require personalized text-to-image synthesis.\n' +
+      '\n' +
+      '### Personalized image Synthesis\n' +
+      '\n' +
+      'Fine-tuning method with a pre-trained synthesis model for personalized text-to-image generation purpos mainly includes the following four methods: parts of the network parameter tuning [19; 29], image augmentation based method [3; 9], prompt tuning or text encoder adapting [11; 22] and injecting additional module which adapts to the new objects, i.e., Low-Rank Adaptation (LoRA) [15]. Adapting the whole model or part of the parameters [29]\n' +
+      '\n' +
+      'Figure 2. Methodology overview. Our method takes an input image along with its corresponding masks and relevant class names as input, generating object-specific text embeddings and personalized LoRA weights. During inference, the text embedding and LoRA weight is combined with other features to generate a wide range of variations for the object.\n' +
+      '\n' +
+      ' using a one-shot image can easily lead to overfitting, as it modifies well-trained parameters and can cause catastrophic forgetting (Srivastava et al., 2017; Wang et al., 2018; Wang et al., 2019; Wang et al., 2020; Wang et al., 2021). While augmentation (Chen et al., 2018) or prompt tuning (Wang et al., 2018) based methods provide a wide variety of samples for regularization or text encoder fine-tuning in training process, they not only struggle to preserve object identity but also require additional training information. Methods by adding an extra module can ease the overfitting problem while sharing the same low fidelity problem. In this paper, a small number of parameters, which relates to text encoder and transformer cross attention module, is adapted for the new object and the model is fine-tuned with object-driven method to preserve fidelity and generalization ability of composing new object with the existing ones.\n' +
+      '\n' +
+      '### One-shot Synthesis\n' +
+      '\n' +
+      'Fine-tuning a diffusion model with only one sample is an extremely challenging task. While existing fine-tuning methods (Wang et al., 2018) or prompt-tuning approaches (Wang et al., 2018) suffer from overfitting issues in one-shot scenarios, additional training strategies need to be developed. To maintain generation controllability, Dong et al. (Dong et al., 2019) use positive and negative prompts to contrastively fine-tune the representation of a pseudo prompt, which had generation failures in multi-object compositions. Another method (Chen et al., 2018) considers the image background of the one-shot sample while implanting the object and uses a background-masked object embedding for fine-tuning. It trains the entire network and the text encoder with side information such as original training samples for regularization, which faces the problem of generation defects of the specific object.\n' +
+      '\n' +
+      'In contrast to the aforementioned paradigms, our method only requires one image and the object\'s region of interest, and focusing on the specific fidelity and generalization variations with specific object synthesis with. It differs from existing methods in several aspects. Firstly, we introduce an object-driven prototypical embedding initialization for the new object, which alleviates the difficulty of representing the object with only one image and improve the efficiency of object implantation. Secondly, we introduce an object-driven specific loss for precise object appearance learning, where (Wang et al., 2018) is used for the object mask. Thirdly, a LoRA (Lou et al., 2019) module where the main denoising UNet is maintained and a class-characteristic regularization to protect class prior information for semantic generalization with other objects and preventing catastrophic forgetting. Moreover, our method is capable of multiple object fine-tuning, which is challenging in existing methods (Wang et al., 2018; Wang et al., 2019).\n' +
+      '\n' +
+      '## 3. Method\n' +
+      '\n' +
+      '### Overview\n' +
+      '\n' +
+      'Our proposed method focuses on object-driven fine-tuning of single or multiple objects specified by the user in one image, as shown in Figure 3. To overcome the limitations of existing fine-tuning methods, we use prototypical embedding as the initialization embedding and propose a regularized loss function to increase the diversity of the generated images and effectively preserve the prior knowledge of the pre-trained model. In addition, we introduce an object-specific mask loss function to synthesize high-fidelity images, which can also be used for multi-object implantation. In this section, we explain the proposed method in detail.\n' +
+      '\n' +
+      '### Latent Diffusion Model\n' +
+      '\n' +
+      'In this work, we adopt the stable diffusion model, a well-established text-to-image diffusion model, as our synthetic network. Stable diffusion is a Latent Diffusion Model (LDM) (Wang et al., 2018), which performs denoising operations in the latent space instead of the image space. In simple terms, first, the RGB image \\(x\\) is encoded into the latent representation \\(z=\\epsilon(x)\\) by the encoder \\(\\epsilon\\) of an Variable Auto Encoder (VAE). In the latent space, the denoising U-Net of LDM employs the cross-attention mechanism for text-conditional image generation. The training loss of the conditional LDM is formulated as:\n' +
+      '\n' +
+      '\\[L_{LDM}=\\mathbb{E}_{\\mathcal{E}(x),y,\\epsilon\\sim\\mathcal{N}(0,1),t}\\left\\| \\left\\|\\epsilon-\\epsilon_{\\theta}\\left(z_{t},t,c\\right)\\right\\|_{2}^{2}\\right\\| \\tag{1}\\]\n' +
+      '\n' +
+      'where \\(c\\) is the text embedding, \\(\\epsilon\\) denotes standard Gaussian, and \\(\\epsilon_{\\theta}\\) is the model prediction. \\(z_{t}\\) is the noisy version of input \\(z\\) in timestep \\(t\\).\n' +
+      '\n' +
+      '### Prototypical Embedding\n' +
+      '\n' +
+      'When fine-tuning a diffusion model, the text embedding of the object is usually trained. However, when the training data is only one image, it sometimes causes overfitting, leading the network to generate output based only on the text embeddings of the objects, while other textual conditions are ignored. In practice, proper initialization of text embeddings can enable faster fitting of the network and alleviate overfitting, such as Textual Inversion (TI) (Wang et al., 2018) initializing text embeddings based on the class of objects. In this work, in order to achieve more efficient initialization, we find prototype embeddings based on the embedding of the input image and the text embedding of the class name (e.g., dog). Prior to commencing the training of the diffusion model, we compute prototypical embedding via:\n' +
+      '\n' +
+      '\\[L_{PE}=1-\\frac{\\mathcal{T}(\\epsilon_{p})\\theta_{m}(\\mathcal{I}(x),\\mathcal{I} (x_{m}),\\mathcal{T}(c_{c}))}{\\left\\|\\mathcal{T}(c_{p})\\right\\|\\left\\|\\theta_{ m}(\\mathcal{I}(x),\\mathcal{I}(x_{m}),\\mathcal{T}(c_{c}))\\right\\|} \\tag{2}\\]\n' +
+      '\n' +
+      'where \\(x\\) is the training image, the image encoder \\(\\mathcal{T}\\) and the text encoder \\(\\mathcal{T}\\) of CLIP (Wang et al., 2019) are used to obtain the whole image embedding \\(\\mathcal{I}(x)\\), the object mask image embedding \\(\\mathcal{I}(x_{m})\\), \\(\\mathcal{T}(c_{c})\\) is the class name text embedding of the object and \\(\\theta_{m}\\) is the way of embedding fusion e.g. averaging. We aim to obtain a prototype text embedding \\(\\mathcal{T}(c_{p})\\) similar to the target image embedding and the class text embedding as initialization by this loss function.\n' +
+      '\n' +
+      '### Class-characterizing Regularization\n' +
+      '\n' +
+      'Additionally, in order to preserve the synthesis ability of the class of objects in the pre-trained model, we adjust the text embedding using class-characterizing regularization during the training process. Class-characterizing loss is formulated as:\n' +
+      '\n' +
+      '\\[L_{CL}=\\begin{cases}1-\\alpha_{CL}\\frac{\\mathcal{T}(c_{p})\\mathcal{T}(c_{c})}{ \\left\\|\\mathcal{T}(c_{p})\\right\\|\\left\\|\\mathcal{T}(c_{c})\\right\\|}&\\text{ if }p<p_{cl}\\\\ 0&\\text{ otherwise}\\end{cases} \\tag{3}\\]\n' +
+      '\n' +
+      'where \\(\\mathcal{T}(c_{c})\\) is the class name text embedding of the object, \\(\\alpha_{cl}\\) represents the weight of the cosine loss, \\(p\\sim Uni(0,1)\\), and \\(p_{cl}\\) is an adjustable threshold. In this context, it is necessary to predetermine the class name of each object. Further experiments indicate that the introduction of this loss function leads to improved generalizability in synthesis.\n' +
+      '\n' +
+      '### Object-specific Loss\n' +
+      '\n' +
+      'Our task is to implant the selected objects into the output domain of the model and bind them with a unique identifier. Noted that the selected objects are often parts of the training image rather than the whole image, for this reason we propose object-specific loss for implantation of selected objects with improved fidelity. First, we use an image segmentation algorithm such as SAM(Nakir et al., 2017) to obtain the mask images \\(m\\) of the objects. The mask images are introduced into the latent space and the training process. For single-object implantation is trained as follow:\n' +
+      '\n' +
+      '\\[L_{SP}=\\left\\|\\bar{\\epsilon}-\\epsilon_{\\theta}\\left(\\bar{z}_{t},t,c_{m}\\right) \\right\\|_{2}^{2}+\\left\\|\\epsilon-\\epsilon_{\\theta}\\left(z_{t},t,c\\right)\\right\\| _{2}^{2} \\tag{4}\\]\n' +
+      '\n' +
+      'where \\(c_{m}\\) is the text condition of this object with mask, object target noise \\(\\bar{\\epsilon}=e\\otimes m+\\epsilon_{\\theta}\\otimes(1-m)\\), and mask latent representation \\(\\bar{z}=z\\otimes m\\). Our goal is to focus on the mask region when performing the loss calculation. Further, for multiple object implantation we make object-specific loss function combinations, assuming that there are a set of \\(r\\) objects to be implanted and a subset \\(S\\) of \\(k\\) distinct objects are taken at a time, the number of \\(k\\)-combinations is \\(c_{n}^{k}\\). So, in one step of training, the overall object-specific loss is:\n' +
+      '\n' +
+      '\\[L_{SP}=\\sum_{i\\in S}\\left\\|\\bar{\\epsilon}_{i}-\\epsilon_{\\theta}\\left(\\bar{z}_ {t,i},t,c_{m,i}\\right)\\right\\|_{2}^{2}+\\left\\|\\epsilon-\\epsilon_{\\theta}\\left( z_{t},t,c\\right)\\right\\|_{2}^{2} \\tag{5}\\]\n' +
+      '\n' +
+      'Note that the text condition \\(c_{m,i}\\) is different for each mask, and the global text condition \\(c\\) is based on unique identifiers for all objects.\n' +
+      '\n' +
+      '## 4. Experiments\n' +
+      '\n' +
+      '### Settings\n' +
+      '\n' +
+      'We use the pre-trained stable diffusion model as the text-to-image network. The CLIP image and text encoders are used to compute prototypical embeddings and take LoRA as the fine-tuned model. We use the images on unsplash as fine-tuning data and the mask images of the objects are obtained using SAM. In the object-driven fine-tuning, the learning rate is \\(10^{-4}\\) and the training is 100 steps with a batchsize of 1, on a v100 GPU. We did not over-tune the superparameter, \\(\\alpha_{cl}\\), \\(P_{cl}\\) are set to 1, and \\(k\\) is set to 2 for object-specific loss combinations. We use Dreambooth, TI and LoRA as three state-of-the-art methods for comparison, and use their publicly released implementation code. In addition, their learning rates and training steps are consistent in training.\n' +
+      '\n' +
+      '### Comparison\n' +
+      '\n' +
+      'As shown in Figure 4, we compare our results with existing fine-tuning methods. Because of the different fine-tuning strategies, the existing methods may overfit, or not be fidelity, when only one image is given as input. For action generation, the results of TI and LoRA align the actions in the prompt, but the generated objects differ significantly from the reference image. And DreamBooth overfits, resulting in the inability to generate actions. In contrast, our method is able to generate actions with higher fidelity. For\n' +
+      '\n' +
+      'Figure 3. Fine-tuning details. Given one image with single or multiple objects, our method fine-tunes a text-to-image diffusion model. Taking single object as an example, our method utilizes prototypical embedding for initialization and employs class-characterizing regularization to enhance generation diversity, along with a class-specific loss function to ensure fidelity of the synthesized images.\n' +
+      '\n' +
+      'human faces, all methods except ours cannot generate expressions and preserve identities at the same time. The same observation is made for animals and style transformation.\n' +
+      '\n' +
+      'Further, we compare other methods using quantitative metrics. We quantitatively evaluated 5 categories and 750 images, and the results are tabulated in Table 1. we used Text Alignment (TA) [13], Image Alignment (IA) [11] and kernel inception distance as metrics, where TA is the generalizability of the alignment ability to characterize the method on the new prompt, and IA characterizes the generalizability to the image similarity. Thus, it is a trade-off, as shown in Figure 6. It can be observed that our proposed method performs well in this trade-off, with both fidelity and generalization.\n' +
+      '\n' +
+      'Figure 4. Qualitative comparison. For one-shot tasks, existing methods face challenges in achieving both fidelity and generalizability with the given text. Our method generates images that better match the reference image and are consistent with the text semantics under multiple cue words. Note that the \\({}^{*}\\) symbol represents a unique identifier.\n' +
+      '\n' +
+      'Overall, our proposed method has both fidelity and generalizability, which indicates that it effectively mitigates the overfitting and learns the characterization of the object.\n' +
+      '\n' +
+      '### Ablation Study\n' +
+      '\n' +
+      '#### 4.3.1. Prototypical Embedding Initialization\n' +
+      '\n' +
+      'As indicated in Section 3.3, we propose prototypical embedding to mitigate the problem of overfitting for fine-tuning, and to demonstrate its importance we compare the results of random initialization embedding. Note that in all comparisons the initialization of the text embedding is based on four token vectors. As shown in Figure 5, without the prototypical embedding, the synthesized image has only the reference object and ignores other information in the prompt. On the contrary, when prototypical embedding is adopted, the model is able to generate elements other than objects (e.g., buckets). It demonstrates that prototypical embedding is effective in overcoming the limitations of overfitting and improving the diversity of image generation.\n' +
+      '\n' +
+      '#### 4.3.2. Class-characterizing Regularization\n' +
+      '\n' +
+      'Since prototypical embedding is only used as a way to initialize without involving the training process, the prior representations of object classes are sometimes lost during fine-tuning. As shown in Figure 7, when without class-characterizing regularization, the generated hats are not well integrated with the person, and customized styles cannot be generated. We observe that with class-characterizing regularization, the prior knowledge of the object\'s class (e.g., hat) is preserved\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c c} \\hline \\hline Methods & TI & DreamBooth & LoRA & Ours \\\\ \\hline IA \\(\\uparrow\\) & 0.6084 & 0.6216 & 0.6284 & **0.6431** \\\\ TA \\(\\uparrow\\) & 0.2609 & 0.2434 & 0.2774 & **0.2800** \\\\ KID \\(\\downarrow\\) & 0.1322 & 0.2630 & **0.1222** & 0.1882 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      'Table 1. Quantitative comparison. We use three metrics to evaluate the generalization and fidelity of the fine-tuning method.\n' +
+      '\n' +
+      'Figure 5. Prototypical embedding initialization. Our proposed method, utilizing prototypical embedding as the initialization, ensures the generation of images that are more contextually relevant.\n' +
+      '\n' +
+      'Figure 6. Quantitative assessment. We visualize the metrics for each method, the point towards the lower right, the better performance of the method.\n' +
+      '\n' +
+      'Figure 7. Class-characterizing regularization. Class-characterizing regularization preserves the prior representation of object classes during fine-tuning, resulting in a more natural and diverse synthesis of objects.\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:7]\n' +
+      '\n' +
+      '* Dhariwal and Nichol (2021) Prafulla Dhariwal and Alexander Nichol. 2021. Diffusion models beat gans on image synthesis. _Advances in Neural Information Processing Systems_ 34 (2021), 8780-8794.\n' +
+      '* Ding et al. (2022) Ming Ding, Wendi Zheng, Wenyi Hong, and Jie Tang. 2022. Cogview2: Faster and better text-to-image generation via hierarchical transformers. _arXiv preprint arXiv:2204.12417_ (2022).\n' +
+      '* Dong et al. (2022) Ziyi Dong, Pengwei Wei, and Liang Lin. 2022. Dreamartist: Towards controllable one-shot text-to-image generation via contrastive prompt-tuning. _arXiv preprint arXiv:2211.11337_ (2022).\n' +
+      '* Esser et al. (2021) Patrick Esser, Robin Rombach, and Bjorn Ommer. 2021. Taming transformers for high-resolution image synthesis. In _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_. 12873-12883.\n' +
+      '* French (1999) Robert M French. 1999. Catastrophic forgetting in connectionist networks. _Trends in cognitive sciences_ 3, 4 (1999), 128-135.\n' +
+      '* Gil et al. (2022) Himon Gil, Yuval Alaluf, Yuval Atzmon, Or Patashnik, Amit H Bermano, Gal Chechik, and Daniel Cohen-Or. 2022. An image is worth one word: Personalizing text-to-image generation using textual inversion. _arXiv preprint arXiv:2208.01618_ (2022).\n' +
+      '* Goodfellow et al. (2020) Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Osair, Aaron Courville, and Yoshua Bengio. 2020. Generative adversarial networks. _Commun. ACM_ 63, 11 (2020), 139-144.\n' +
+      '* Hessel et al. (2021) Jack Hessel, At Holtzman, Maxwell Forbes, Roman Le Bras, and Yejin Choi. 2021. Cipscore: A reference-free evaluation metric for image captioning. _arXiv preprint arXiv:2104.08718_ (2021).\n' +
+      '* Ho et al. (2020) Jonathan Ho, Ajay Jain, and Pieter Abbeel. 2020. Denoising diffusion probabilistic models. _Advances in Neural Information Processing Systems_ 33 (2020), 6840-6851.\n' +
+      '* Hu et al. (2021) Edward Ji Hu, Kolong Shen, Phillip Walls, Zeyeyuan Allen-Zhu, Tuunnell Li, Shen Wang, Lian Wang, and Wei Weiichu Chen. 2021. Icara: Low-rank adaptation of large language models. _arXiv preprint arXiv:2106.09685_ (2021).\n' +
+      '* Karras et al. (2021) Tero Karras, Mika Aittala, Samuli Laine, Erik Harkonen, Jaune Hellsten, Jaakko Lehtinen, and Timo Aila. 2021. All-free generative adversarial networks. _Advances in Neural Information Processing Systems_ 34 (2021), 852-863.\n' +
+      '* Kirillov et al. (2023) Alexander Kirillov, Eric Mitmuth, Nikhilai Nair, Hanao Ma, Chole Rolland, Laura Gustafson, Tete Xiao, Spencer Whitehead, Alexander C Berg, Wan-Yen Lo, et al. 2023. Segment anything. _arXiv preprint arXiv:2304.02643_ (2023).\n' +
+      '* Kirkpatrick et al. (2017) James Kirkpatrick, Ravora Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andreis A Rusu, Kieran Milan, John Quant, Tiago Romaillo, Agnieska Grabska-Barwinska, et al. 2017. Overcoming catastrophic forgetting in neural networks. _Proceedings of the national academy of sciences_ 114, 13 (2017), 3521-3526.\n' +
+      '* Kumar et al. (2022) Nupur Kumar, Bingliang Zhang, Richard Zhang, Eli Shechtman, and Jun-Yan Zhu. 2022. Multi-Concept Customization of Text-to-Image Diffusion. _arXiv preprint arXiv:2212.04488_ (2022).\n' +
+      '* Li et al. (2022) Dingcheng Li, Zheng Chen, Eunah Cho, Jie Hao, Xiahou Liu, Fan Xing, Chenlei Guo, and Yang Liu. 2022. Overcoming catastrophic forgetting during domain adaptation of seq2seq language generation. In _Proceedings of the 2022 Conference of the North American Chapter of the Association for Computational Linguistics: Human Language Technologies_. 5441-5454.\n' +
+      '* Li and Hoiem (2017) Zhihong Li and Derek Hoiem. 2017. Learning without forgetting. _IEEE transactions on pattern analysis and machine intelligence_ 40, 12 (2017), 2935-2947.\n' +
+      '* Mokhay et al. (2022) Ron Mokhay, Amit Herts, Krik Abraman, Yael Priich, and Daniel Cohen-Or. 2022. Null-text Inversion for Editing Real Images using Guided Diffusion Models. _arXiv preprint arXiv:2212.07949_ (2022).\n' +
+      '* Nichol et al. (2021) Alex Nichol, Prafulla Dhariwal, Aditya Ramesh, Pranav Shyam, Pamela Mishkin, Bob McGrew, Ilya Sutskever, and Mark Chen. 2021. Glide: Towards photorealistic image generation and editing with text-guided diffusion models. _arXiv preprint arXiv:2112.10741_ (2021).\n' +
+      '* Radford et al. (2021) Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Grishi Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. 2021. Learning transferable visual models from natural language supervision. In _International conference on machine learning_. PMLR, 8748-8763.\n' +
+      '* Venkatesh Ramaschi et al. (2022) Vinay Venkatesh Ramaschi, Aitor Lewkowycz, and Elhan Dyer. 2022. Effect of scale on catastrophic forgetting in neural networks. In _International Conference on Learning Representations_.\n' +
+      '* Ramesh et al. (2022) Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. 2022. Hierarchical text-conditional image generation with clip latents. _arXiv preprint arXiv:2204.06125_ (2022).\n' +
+      '* Razavi et al. (2019) Ali Razavi, Aaron Van den Oord, and Oriol Vinyals. 2019. Generating diverse high-fidelity images with vq-vae-2. _Advances in neural information processing systems_ 32 (2019).\n' +
+      '* Rombach et al. (2022) Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bjorn Ommer. 2022. High-resolution image synthesis with latent diffusion models. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition_. 10684-10695.\n' +
+      '* Ruiz et al. (2022) Nataniel Ruiz, Yuanzhen Li, Varun Jampani, Yael Priich, Michael Rubinstein, and Kfir Abraman. 2022. Dreamoobtit: Fine tuning text-to-image diffusion models for subject-driven generation. _arXiv preprint arXiv:2208.12234_ (2022).\n' +
+      '* Saharia et al. (2022) Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily L. Denton, Kamyar Ghasempiour, Raphael Gontijo Lopes, Burcu Karagol Ayan, Tim Salimans, et al. 2022. Photorealistic text-to-image diffusion models with deep language understanding. _Advances in Neural Information Processing Systems_ 35 (2022), 36479-36494.\n' +
+      '* Sauer et al. (2023) Axel Sauer, Tero Karras, Samuli Laine, Andreas Geiger, and Timo Aila. 2023. Stylegan+: Unlocking the power of gans for fast large-scale text-to-image synthesis. _arXiv preprint arXiv:2301.09515_ (2023).\n' +
+      '* Sheygin et al. (2022) Shelly Sheygin, Oron Ashual, Adam Polvajk, Uriel Singer, Ornaf Gaffisi, Eliya Nachmani, and Yanir Tajim. 2022. Znn-diffusion: Image generation via large-scale retrieval. _arXiv preprint arXiv:2204.02849_ (2022).\n' +
+      '* Sohl-Dickstein et al. (2015) Jascha Sohl-Dickstein, Eric Weiss, Niru Mabeswaranathan, and Surya Ganguli. 2015. Deep unsupervised learning using nonequilibrium thermodynamics. In _International Conference on Machine Learning_. PMLR, 2256-2265.\n' +
+      '* Song et al. (2020) Jiaming Song, Chenlin Meng, and Stefafano Ermon. 2020. Denoising diffusion implicit models. _arXiv preprint arXiv:2004.05202_ (2020).\n' +
+      '* Wen et al. (2023) Yuxin Wen, Neel Jain, John Kirchenbauer, Micah Goldblum, Jonas Geiging, and Tom Goldstein. 2023. Hard prompts made easy: Gradient-based discrete optimization for prompt tuning and discovery. _arXiv preprint arXiv:2302.03688_ (2023).\n' +
+      '* Yu et al. (2022) Jiahui Yu, Yuanhong Xu, Jing Yu Koh, Thang Luong, Gunjian Baid, Zirui Wang, Vijay Vasudevan, Alexander Ku, Yinfei Yang, Burcu Karagol Ayan, et al. 2022. Scaling autoregressive models for content-rich text-to-image generation. _arXiv preprint arXiv:2206.10789_ (2022).\n' +
+      '\n';
+  </script>
+  <style>
+    #content {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+  <script>
+    let script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/mathpix-markdown-it@1.0.40/es5/bundle.js";
+    document.head.append(script);
+
+    script.onload = function() {
+      const isLoaded = window.loadMathJax();
+      if (isLoaded) {
+        console.log('Styles loaded!')
+      }
+
+      const el = window.document.getElementById('content-text');
+      if (el) {
+        const options = {
+          htmlTags: true
+        };
+        const html = window.render(text, options);
+        el.outerHTML = html;
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="content"><div id="content-text"></div></div>
+</body>
+</html>

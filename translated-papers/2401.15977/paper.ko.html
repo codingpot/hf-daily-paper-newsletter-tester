@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true"><head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script>
+    const text = '' +
+      '# Motion-I2V: 명시적 모션 모델링을 이용한 일관성 있고 제어 가능한 영상 대 영상 생성\n' +
+      '\n' +
+      'Xiaoyu Shi\\({}^{1*}\\)\n' +
+      '\n' +
+      'Zhaoyang Huang\\({}^{7*\\in\\mathbb{Z}}\\)\n' +
+      '\n' +
+      'Fu-Yun Wang\\({}^{1*}\\)\n' +
+      '\n' +
+      'Weikang Bian\\({}^{1*}\\)\n' +
+      '\n' +
+      'Dasong Li\\({}^{1}\\)\n' +
+      '\n' +
+      'Yi Zhang\\({}^{3}\\)\n' +
+      '\n' +
+      'Manyuan Zhang\\({}^{1}\\)\n' +
+      '\n' +
+      '가천청\\({}^{2}\\)\n' +
+      '\n' +
+      'Simon See\\({}^{2}\\)\n' +
+      '\n' +
+      'Hongwei Qin\\({}^{3}\\)\n' +
+      '\n' +
+      'Jifeng Dai\\({}^{4}\\)\n' +
+      '\n' +
+      'Hongsheng Li\\({}^{1,5,68}\\)\n' +
+      '\n' +
+      '###### Abstract\n' +
+      '\n' +
+      '본 논문에서는 일관되고 제어 가능한 영상 대 영상 생성을 위한 새로운 프레임워크인 Motion-I2V를 소개한다. 복잡한 영상-비디오 매핑을 직접 학습하는 기존의 방법과 달리 Motion-I2V는 명시적 모션 모델링으로 I2V를 두 단계로 인수분해한다. 첫 번째 단계에서는 참조 영상의 픽셀의 궤적을 추론하는 데 초점을 맞춘 확산 기반 움직임장 예측기를 제안한다. 두 번째 단계에서는 비디오 잠재 확산 모델에서 제한된 1차원 시간 주의를 향상시키기 위해 움직임 증강 시간 주의를 제안한다. 이 모듈은 첫 번째 단계에서부터 예측된 궤적의 안내와 함께 참조 이미지의 특징을 합성 프레임에 효과적으로 전파할 수 있다. 기존의 방법들과 비교하여 Motion-I2V는 큰 움직임과 시점 변화가 있는 경우에도 보다 일관된 비디오를 생성할 수 있다. 모션-I2V는 첫 번째 단계에 대한 희소 궤적 컨트롤넷을 학습함으로써 사용자가 희소 궤적과 영역 주석을 사용하여 모션 궤적과 모션 영역을 정밀하게 제어할 수 있도록 지원할 수 있다. 이것은 텍스트 지침에만 의존하는 것보다 I2V 프로세스의 더 많은 제어 가능성을 제공한다. 또한 Motion-I2V의 두 번째 단계는 자연스럽게 제로 샷 비디오 대 비디오 번역을 지원한다. 정성적 및 정량적 비교 모두 일관되고 제어 가능한 이미지 대 비디오 생성에서 이전 접근법에 비해 Motion-I2V의 이점을 보여준다._\n' +
+      '\n' +
+      '## 1 Introduction\n' +
+      '\n' +
+      '이미지-투-비디오 생성(Image-to-video generation, I2V)은 시각적 외관을 보존하면서, 자연스러운 역동성을 갖는 비디오 클립에 주어진 이미지를 애니메이팅하는 것을 목표로 한다. 그것은 영화 산업, 증강 현실, 소셜 미디어 플랫폼을 위한 자동 광고 및 콘텐츠 생성 분야에서 널리 응용되고 있다. 그러나 전통적인 I2V 방법은 특정 범주(예: 인간 모발[71], 유체[20, 37, 38, 43], 초상화[13, 65, 66, 67, 14])에 초점을 맞춘다. 결과적으로 이러한 전문화는 보다 다양한 개방형 도메인 시나리오에서 그 유용성을 제한한다.\n' +
+      '\n' +
+      '최근, 웹-스케일 이미지 데이터세트에 대해 훈련된 확산 모델 [49, 51, 41]은 고품질 및 다양한 이미지를 생산하는 데 인상적인 발전을 이루었다. 이러한 성공에 고무된 연구자들은 강력한 이미지 생성 이전을 활용하는 것을 목표로 이러한 모델을 I2V의 영역으로 확장하기 시작했다. 이들 작업[80, 6, 72, 64, 77]은 전형적으로 텍스트-투-이미지(T2I) 모델들을 비디오 베이스 모델들을 생성하기 위해 1-D 시간적 주의 모듈들을 구비한다. 그러나 I2V는 정적 이미지 생성에 비해 더 많은 문제를 제기한다. 복잡한 시공간 전적을 모델링해야 합니다. 1-D 시간적 주의의 좁은 시간적 수용 필드는 특히 큰 모션이 있는 경우 생성된 비디오의 시간적 일관성을 보장하기 어렵게 한다. 전류 I2V 작업의 또 다른 주목할 만한 부족은 제한된 제어 가능성이다. 이러한 모델들은 주로 기준 이미지와 텍스트 명령어를 생성 조건으로 활용하지만, 생성된 모션에 대한 정확하고 심지어 상호작용적인 제어가 부족하다. 이는 드래그 기반 [54, 40, 44] 및 영역별 [22, 70] 컨트롤과 같은 기술이 실질적인 효능을 입증한 이미지 조작 분야와 극명한 대조를 이룬다.\n' +
+      '\n' +
+      '앞서 언급한 문제들을 해결하기 위해, 우리는 이미지-비디오 생성을 두 단계로 분해하는 프레임워크인 Motion-I2V를 제시한다. 첫 번째 단계는 픽셀 단위의 궤적 형태로 그럴듯한 움직임을 예측하는 데 중점을 둔다. 이러한 명시적 모션 모델링으로, 두 번째 단계는 첫 번째 단계에서부터 예측된 동역학과 일치하는 애니메이션을 생성하는 역할을 한다. 구체적으로, 첫 번째 단계에서는 모션 필드 예측을 위해 미리 훈련된 비디오 확산 모델을 튜닝한다. 기준 이미지와 텍스트 명령을 조건으로 하고, 기준 이미지 내의 모든 픽셀의 궤적을 예측한다. 두 번째 단계에서는 비디오 확산 모델을 향상시키기 위해 모션 증강 시간 주의를 제안한다. 기준 영상의 잠재 특징은 모든 픽셀의 예측 궤적에 따라 왜곡되며, 합성된 프레임에 다중 스케일로 적응적으로(교차 주의를 통해) 주입함으로써 안내 역할을 한다. 이러한 와핑 연산은 동적 시간 수용 필드를 가져오며, 1차원 시간 주의력만으로 복잡한 시공간 패턴을 학습해야 하는 부담을 덜어준다.\n' +
+      '\n' +
+      '사전 훈련된 대규모 모델[12, 76, 10, 11]의 이전 성공에서 영감을 받아, 우리는 첫 번째 단계에서 모션 예측을 위한 컨트롤넷[75]을 훈련하는데, 이 컨트롤넷은 희소 궤적을 조건으로 하고 그럴듯한 조밀한 궤적을 생성한다. 이 설계는 사용자가 매우 희박한 궤적 주석으로 객체 모션을 조작할 수 있도록 합니다. 또한 본 프레임워크는 지역별 애니메이션(_모션 브러시_라고 명명됨)을 자연스럽게 지원하여 사용자가 맞춤형 모션 마스크로 선택한 이미지 영역을 애니메이션화할 수 있습니다. 또한, Motion-I2V의 두 번째 단계는 비디오 대 비디오 번역을 달성할 수 있으며, 여기서 궤적들은 소스 비디오로부터 획득된다. 사용자는 기존의 이미지-투-이미지 툴로 제1 프레임을 변형할 수 있고, Motion-I2V의 제2 스테이지를 사용하여 변형된 제1 프레임을 일관되게 전파할 수 있다. 이러한 특성은 사용자에게 I2V 프로세스에 대한 향상된 제어성을 부여한다.\n' +
+      '\n' +
+      '##2 관련 업무\n' +
+      '\n' +
+      '### Image Animation\n' +
+      '\n' +
+      '단일 이미지를 애니메이션하는 것은 연구 분야에서 많은 관심을 끌었다. 이전의 접근법들은 자연 역학[20, 32, 37, 43, 73, 50, 27], 인간의 얼굴[66, 67, 14] 및 신체[69, 67, 55, 29, 3]에 대한 모션을 시뮬레이션한다. 이전의 방법 중 일부는 움직임을 모델링하기 위해 광학 흐름을 사용하고 와핑 기반 렌더링 기술을 사용한다. 우리는 이 연구 분야에서 영감을 얻고 현대적 생성 모델에 명시적인 모션 모델링을 도입한다. 이미지 애니메이션에 대한 최근의 발전은 확산 모델[49, 19, 57]에 의해 주도된다. 마하파트라 _et al._[38]는 사전 훈련된 텍스트-이미지 확산 모델을 사용하여 추정된 광학 흐름을 예술 그림에 이식한다. Li_et al._[33]은 자연 진동 운동을 처리하기 위해 확산 모델을 사용한다. 이러한 애니메이션 접근법은 타임 랩스 비디오 및 바디 애니메이션과 같은 특정 유형의 콘텐츠 및 모션만을 합성할 수 있다. 이러한 문제를 해결하기 위해, 오픈 도메인 영상 애니메이션의 영상에서 움직임의 움직임을 다루는 확산 기반 방법[72, 77, 64, 80, 6]이 제안되었다. 그들은 사전 훈련된 확산 모델의 강력한 생성 이전을 활용하고 전례 없는 오픈 도메인 애니메이션 성능을 달성했다. 그러나, 이들은 일반적으로 복잡한 이미지를 비디오 매핑으로 학습하기 위해 바닐라 1-D 시간적 주의에 의존한다. 우리는 명시적인 움직임 예측을 통해 수용 필드를 확대할 것을 제안한다.\n' +
+      '\n' +
+      '### Diffusion Models\n' +
+      '\n' +
+      '확산 모델(DM)[19, 57]은 최근 VAE[31], GAN[15] 및 FLow 모델[7]보다 더 안정적인 훈련, 더 나은 샘플 품질 및 유연성을 보여주었다. DALL-E[24], GLIDE[41] 및 Imagen[51]은 언어 모델[45, 46] 또는 분류기 없는 접근법에 의해 안내되는 픽셀 공간에서 확산 프로세스를 수행함으로써 텍스트-이미지 생성을 위한 확산 모델을 채용한다. 안정적 확산[49]은 잠재 공간에 대한 잡음 제거 확산을 수행함으로써 텍스트-이미지 생성에 전례 없는 전력을 보여주고 많은 다운스트림 애플리케이션[79, 78]을 지원한다.\n' +
+      '\n' +
+      '최근 비디오 합성을 위한 확산 모델[49]을 채용하는 것에도 관심이 집중되고 있다. 특히, Imagen-Video[18]와 Make-A-Video[56]은 비디오 픽셀 공간에서 디노이징 확산을 수행하는 반면, MagicVideo[82]는 잠재 공간에서의 비디오 분포를 모델링한다. 비디오-P2P[35] 및 vid2vid-zero[63]은 교차-어텐션 맵 조작을 통해 비디오를 편집할 것을 제안한다. 텍스트-투-비디오 제로[30]는 비디오 생성을 위해 안정적인 확산 모델[49]을 사용하기 위해 모델 역학에 잠재 코드를 구성한다. Wang _et al._는 비디오 생성 길이를 확장하기 위한 다목적 파이프라인을 제안한다[62]. 비디오 합성기[64]는 비디오 확산 모델 상에서 텍스트 조건, 공간 조건 및 시간 조건을 채택한다. Zhang _et al._는 의미적 및 질적으로 우수한 비디오 생성을 보장하기 위해 캐스케이드 i2vgen-XL[77]을 제안한다. Dynamicrafter[72]는 텍스트-비디오 확산 모델 이전의 움직임을 활용하기 위한 듀얼 스트림 이미지 주입 메커니즘을 제안한다. 이러한 방법[64, 72, 77]은 일반적으로 확산 모델이 모션 모델링 및 비디오 생성을 시뮬레이션으로 처리할 수 있게 하며, 이는 비현실적인 모션 및 시간적으로 일관되지 않은 시각적 세부 사항으로 이어진다. 제안하는 방법은 모션 모델링과 비디오 디테일 생성을 분리하여 사실적인 모션을 구현하고 쾌적한 디테일을 보존한다.\n' +
+      '\n' +
+      '### Motion Modeling\n' +
+      '\n' +
+      '모션 모델링은 객체의 움직임을 이해하고 예측하는 것을 목표로 한다. 광학 흐름은 움직임을 나타내기 위한 일반적인 접근법이며, 이는 연속적인 두 프레임 사이의 변위 필드를 추정한다. 초기 작업은 이미지 쌍[21, 2, 5, 58] 간의 시각적 유사성을 최대화하기 위해 손으로 만든 피쳐를 활용한 최적화 문제로 광학 흐름 추정을 공식화했다. 딥러닝 기반 방법은 최근 광학 흐름 추정 분야에 혁명을 일으켰다. FlowNet[9]은 이 도메인에서 딥 러닝의 잠재력을 입증한 엔드 투 엔드 옵티컬 플로우 추정에 딥 러닝을 최초로 도입하였다. 그 후, 잘 설계된 신경망 아키텍처와 합성 데이터 세트는 광학 흐름 추정의 진행을 촉진했다[26, 48, 59, 60, 24, 25, 74]. RAFT [61]은 상관 볼륨과 함께 반복적인 개선을 채택하여 성능을 크게 향상시켰다. Flow former [23, 53]은 주의 메커니즘을 성공적으로 적용했다. 최근 VideoFlow[52]는 여러 프레임 사이의 시간 정보를 탐색하여 최첨단 정확도를 달성하였다. 점 추적은 비디오 프레임 전체에 걸쳐 쿼리 점의 궤적을 계산하는 또 다른 모션 모델링 방법이다[17, 8, 81]. Context-PIPs[68]와 CoTracker[28]를 더욱 개선하여\n' +
+      '\n' +
+      '도 2: ** Motion-I2V 개요. Motion-I2V의 첫 번째 단계는 기준 이미지를 그럴듯하게 애니메이션화할 수 있는 동작을 추론하는 것을 목표로 한다. 기준 이미지 및 텍스트 프롬프트에 조건화되고, 기준 프레임과 모든 미래 프레임 사이의 모션 필드 맵을 예측한다. 두 번째 단계는 참조 이미지의 콘텐츠를 전파하여 프레임을 합성한다. 새로운 움직임-증강 시간적 계층은 뒤틀린 특징들로 1-D 시간적 주의를 향상시킨다. 이 동작은 시간적 수용 필드를 확대하고 복잡한 시공간 패턴을 직접 학습하는 복잡성을 완화한다.**\n' +
+      '\n' +
+      '상기 컨텍스트 정보를 이용한 포인트 추적의 정확성. 최근 연구에서 DOT[39]는 임의의 거리 옵티컬 플로우 추정을 초기화하기 위해 희소점 추적을 사용하는 것이 합리적인 계산 오버헤드로 높은 정확도를 유지할 수 있음을 입증했다.\n' +
+      '\n' +
+      '## 3 Method\n' +
+      '\n' +
+      '참조 이미지\\(I_{0}\\)와 텍스트 프롬프트\\(c\\)이 주어지면, 이미지-비디오 합성(I2V)은 후속 비디오 프레임들의 시퀀스를 생성할 때 타겟팅된다\\(\\tilde{I}_{1},\\hat{I}_{2},\\ldots,\\hat{I}_{N}\\}\\). 주요 목적은 생성된 비디오 클립이 그럴듯한 움직임을 나타낼 뿐만 아니라 기준 이미지의 시각적 외관을 충실하게 보존하도록 하는 것이다. 확산 모델의 강력한 생성 이전을 활용하여 최근 방법은 유망한 오픈 도메인 I2V 일반화 능력을 보여주었다. 그러나 기존의 방법들은 제한된 1차원 시간 주의 메커니즘으로 인해 시간적 일관성을 유지하는데 어려움을 겪고 있다. 한편, 그들은 생성 결과에 대한 제한된 통제를 제공합니다. 이러한 한계를 고려하여 그림 2와 같이 이미지 대 비디오 생성을 두 단계로 인수분해하는 새로운 프레임워크인 Motion-I2V를 제안한다. Sec. 3.2에 자세히 설명된 첫 번째 단계는 픽셀별 궤적 형태로 그럴듯한 움직임을 예측하는 데 중점을 둔다. 예측된 움직임 필드를 기반으로 섹션 3.3에 설명된 두 번째 단계는 미래의 프레임을 합성하기 위해 제안된 워핑 증강 시간 주의를 활용한다. 우리는 Sec. 3.1에서 잠재 확산 모델[49]과 비디오 확산 모델에 대한 예비 지식을 소개하는 것으로 시작한다.\n' +
+      '\n' +
+      '### Preliminaries\n' +
+      '\n' +
+      '**잠재 확산 모델.** 백본 생성 모델로 잠재 확산 모델 [49] (LDM)을 선택한다. 이는 Variational Autoencoder(VAE)의 잠재 공간에서 잡음 제거 과정을 수행한다. 학습 중에 입력영상 \\(x_{0}\\)을 먼저 잠재표현 \\(z_{0}=\\mathcal{E}(x_{0})\\)으로 인코딩하고, 냉동인코딩 \\(\\mathcal{E}(\\cdot)\\)으로 인코딩한다. 이 잠재 코드 \\(z_{0}\\)는 이후 다음과 같이 교란된다:\n' +
+      '\n' +
+      '\\[z_{t}=\\sqrt{\\overline{\\alpha}_{t}}z_{0}+\\sqrt{1-\\overline{\\alpha}_{t}}\\epsilon,\\epsilon\\sim\\mathcal{N}(0,I), \\tag{1}\\]\n' +
+      '\n' +
+      '여기서 \\(\\beta_{t}\\)을 갖는 \\(\\overline{\\alpha}_{t}=\\prod_{i=1}^{t}(1-\\beta_{t})\\)는 단계 \\(t\\)에서의 잡음 강도 계수이고, \\(t\\)은 타임스텝 인덱스 집합 \\(\\{1,\\ldots,T\\}\\)으로부터 균일하게 샘플링된다. 이 과정은 잠재코드 \\(z_{0}\\)에 가우시안 잡음을 점진적으로 부가하는 마르코프 체인으로 간주할 수 있다. 잡음제거 모델 \\(\\epsilon_{\\theta}\\)은 \\(z_{t}\\)을 입력으로 받아 목적함수로 잠재공간 분포를 학습하는데 최적화된다.\n' +
+      '\n' +
+      '\\[l_{\\epsilon}=||\\epsilon-\\epsilon_{\\theta}(z_{t},t,c)||_{2}^{2}, \\tag{2}\\]\n' +
+      '\n' +
+      '여기서 \\(c\\)는 조건을 나타내며, 우리의 경우 사용자 제공 텍스트 프롬프트이다. 본 논문에서는 잡음 제거 모델 \\(\\epsilon_{\\theta}\\)을 U-Net 구조로 구현한 Stable Diffusion 1.5를 기본 LDM으로 선택한다.\n' +
+      '\n' +
+      '**비디오 잠재 확산 모델.** 비디오 잠재 확산 모델(VLDM)을 생성하기 위해 시간 모듈을 통합하여 이미지 LDM을 확장하는 이전 작업 [16, 4, 72]를 따른다. 구체적으로, 원본 이미지 LDM으로부터의 공간 모듈들은 미리 트레이닝된 가중치들로 초기화되고 트레이닝 동안 동결된다. 이것은 이미지 LDM에서 생성 이전을 상속하기 위한 것이다. 각 공간 주의 블록(l_{\\theta}^{i}\\) 뒤에 효율적인 1차원 시간 주의로 구성된 시간 모듈(l_{\\phi}^{i}\\)을 삽입한다. 시간 모듈을 통과한 5차원 비디오 텐서 모양\\(batch\\times channels\\times frames\\times height\\times width\\)이 주어지면 공간 차원\\(height\\)과 \\(width\\)이 배치 차원으로 재형성되어 길이\\(batch\\times height\\times width\\)의 1차원 특징 시퀀스가 생성되며, 자기 주의 블록에 의해 변환된다. 이러한 시간 모듈들은 상이한 프레임들에 걸쳐 동일한 공간 위치의 특징들 사이의 시간 종속성을 캡처하는 것을 담당한다. 명확성과 논의의 용이성을 위해 우리는 1차원 시간적 주의를 갖는 이러한 VLDM 변이체를 바닐라 VLDM이라고 지칭한다.\n' +
+      '\n' +
+      '비디오 확산 모델을 이용한### 움직임 예측\n' +
+      '\n' +
+      '제안된 이미지-비디오 생성 프레임워크의 첫 번째 단계는 참조 이미지를 그럴듯하게 애니메이션화할 수 있는 움직임을 추론하는 것을 목표로 한다. 최신 대규모 확산 모델은 웹 규모의 텍스트 이미지 데이터에 대해 훈련되었기 때문에 시각적 의미에 대한 풍부한 지식을 포함하고 있다. 그러한 의미론적 지식은 일단 모델이 모션 분포들을 대응하는 객체들과 연관시키도록 트레이닝되면 모션 예측에 크게 도움이 될 수 있다. 따라서, 비디오 모션 필드 예측을 위해 사전 훈련된 안정 확산 모델을 적용하여 강한 생성 전을 활용하도록 한다.\n' +
+      '\n' +
+      '모션 필드 모델링.** 첫 번째 단계의 예측 대상인 참조 영상을 애니메이션하는 모션 필드를 2D 변위 맵 \\(\\{f_{0\\to i}|i=1,\\ldots,N\\}\\)의 시퀀스로 나타낸다. 여기서 각 \\(f_{0\\to i}\\inmathbb{R}^{2\\times H\\times W}\\)은 타임스텝 \\(i\\)에서 참조 프레임과 미래 프레임 사이의 광학 흐름이다. 이러한 모션 필드 표현으로 기준 영상(I_{0}\\)의 각 소스 픽셀(\\mathbf{p}\\in\\mathbb{I}^{2}\\)에 대해, 목표 영상(I_{i}\\(i\\) 상의 해당 좌표(\\mathbf{p}_{i}^{\\prime}=\\mathbf{p}+f_{0\\to i}(\\mathbf{p})\\)를 timestep \\(i\\)에서 쉽게 결정할 수 있다.\n' +
+      '\n' +
+      '**운동장 예측기 훈련**운동장 예측 VLDM을 학습하기 위해 3단계 미세 조정 전략을 제안한다. 초기에는 미리 훈련된 LDM을 조정하여 기준 이미지와 텍스트 프롬프트에 조정된 단일 변위 필드를 예측한다. 이어서, 튜닝된 LDM 파라미터를 동결하고 바닐라 시간 모듈(Sec. 3.1에 설명된 대로)을 통합하여 훈련을 위한 VLDM을 생성한다. 이러한 통합은 모델이 모션 필드들의 전체 시퀀스를 공동으로 잡음제거함으로써 비디오의 시간적 모션 분포를 학습할 수 있게 한다. 시간 모듈을 학습한 후 전체 VLDM 모델을 미세 조정하여 최종 모션 필드 예측기를 얻는다. FlowFormer++[53]와 DOT[39]를 사용하여 훈련 중 광학 흐름과 다중 프레임 궤적을 각각 지상 진리로 추정한다.\n' +
+      '\n' +
+      '모션 필드 및 콘디토날 영상을 부호화한다. 또한, 계산 효율을 위해 각 플로우 맵 \\(f_{0\\to i}\\mathbb{R}^{2\\times H\\times W}\\)을 광학 흐름 VAE 인코더를 사용하여 잠재 표현 \\(z_{0\\to i,0}=\\mathcal{E}_{flow}(f_{i})\\in\\mathbb{R}^{4\\times h\\times w}\\)으로 부호화한다. 광류 오토인코더는 3채널 RGB 영상이 아닌 2채널 광류 맵을 수신하여 출력하는 것을 제외하고는 LDM 영상 오토인코더의 구조를 반영한다. 영상컨디셔닝을 지원하기 위해 채널 차원을 따라 깨끗한 참조영상(\\(\\mathcal{E}(I_{0})\\in\\mathbb{R}^{4\\times h\\times w}\\)의 잠재코드를 연결한다. SD 1.5 체크포인트에서 사용 가능한 모든 LDM 가중치를 초기화하고 새로 추가된 \\(4\\) 입력 채널에 대한 가중치를 0으로 설정한다. 또한 프레임 스트라이드 \\(i\\)는 2-layer \\(MLP\\)을 사용하여 임베딩되며, 시간 임베딩에 추가되어 모션 강도 조건이 된다.\n' +
+      '\n' +
+      '예측된 움직임을 이용한 비디오 렌더링\n' +
+      '\n' +
+      'Motion-I2V의 두 번째 단계는 1단계부터 합성 프레임까지 예측 움직임 필드에 따라 참조 영상의 콘텐츠를 전파할 때, 충실도와 시간적 일관성을 유지한다. 첫 번째 단계에서부터 예측된 움직임 필드들에 의해 유도되는 바닐라 1-D 시간적 주의를 향상시키기 위해 움직임 증강 시간적 주의를 제안한다. 이 작업은 시간적 수용 필드를 확대하고 단일 이미지로부터 복잡한 시공간 패턴을 직접 예측하는 압력을 완화한다.\n' +
+      '\n' +
+      '**움직임-증강 시간적 주의력.** 제안된 움직임-증강 시간적 주의력으로 바닐라 VLDM의 1-D 시간적 주의력을 향상시키고 다른 모듈을 그대로 유지한다. (l-th\\) 시간적 계층 \\(l_{\\phi}^{i}\\)에서 잠재 특징 \\(z\\in\\mathbb{R}^{(1+N)\\times C_{l}\\times h_{l}\\times w_{l}\\)을 고려하며, 여기서 \\(c_{l}\\), \\(h_{l}\\), \\(w_{l}\\)은 각각 채널의 차원, 특징의 높이 및 폭을 나타낸다. 간결함을 위해 배치 치수를 생략합니다. 여기서 우리는 참조 프레임에 대응하는 특징 맵을 나타내기 위해 \\(z[0]\\in\\mathbb{R}^{1\\times C_{l}\\times h_{l}\\times w_{l}\\)과 후속 프레임에 \\(z[1:N]\\in\\mathbb{R}^{N\\times C_{l}\\times h_{l}\\times w_{l}\\)을 사용한다. 예측된 운동장 \\(\\{f_{0\\to i}|i=1,\\dots,N\\}\\)(공간 형상을 정렬하기 위해 크기를 조정한다고 가정함)을 가지고, 각 운동장 \\(f_{0\\to i}\\)에 따라 전진왜곡[42]\\(z[0]\\)을 다음과 같이 한다.\n' +
+      '\n' +
+      '\\[z[i]^{\\prime}=\\mathcal{W}(z[0],f_{0\\to i}). \\tag{3}\\\n' +
+      '\n' +
+      '이러한 와핑된 특징맵(z[i]^{\\prime}\\)은 시간 차원을 따라 원래의 특징맵과 인터리빙되어 증강된 특징(z_{aug}=[z[0],z[1]^{\\prime},z[1],...,z[N]^{\\prime},z[N]]\\in\\mathbb{R}^{(1+2\\times N)\\times C_{l}\\times h_{l}\\times w_{l}\\times w_{l}\\times c_{l}\\times w_{l}\\times c_{l}\\times c_{l}\\times w_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\times c_{l}\\ 그리고 나서 \\(z\\)와 \\(z_{aug}\\)을 \\(z^{\\prime}\\in\\mathbb{R}^{(h_{l}\\times w_{l})\\times(1+N)\\times C_{l}\\)과 \\(z_{aug}\\in\\mathbb{R}^{(h_{l}\\times w_{l})\\times(1+2\\times N)\\times C_{l}\\)으로 각각 재형성한다. 즉, 공간 차원이 배치 축으로 이동되어 1-D 토큰으로 취급된다. 재성형된 특징 맵들은 투영될 것이고 1-D 시간적 주의 계층을 통과할 것이다:\n' +
+      '\n' +
+      '\\[z^{\\prime\\prime}=\\mathrm{Attention(Q,K,V)=Softmax(QK^{T})V,} \\tag{4}\\]\n' +
+      '\n' +
+      '여기서 \\(Q=W^{Q}z^{\\prime}\\), \\(K=W^{K}z_{aug}^{\\prime}\\) 및 \\(V=W^{V}z_{aug}^{\\prime}\\)은 세 개의 투영이다. 특히, 휘어진 피쳐 맵은 키 및 값 피쳐로만 사용됩니다. 또한, 네트워크의 시간적 순서를 인식하기 위해 \\(z\\)과 \\(z_{aug}\\)에 정현파 위치 부호화를 추가한다. 이 동작은 1단계부터 예측된 모션 필드들에 의해 안내되는 시간 모듈들의 수용 필드들을 확대한다.\n' +
+      '\n' +
+      '노이즈 제거 과정의 각 타임스텝(t\\)에서, 우리는 항상 _clean_ 참조 이미지의 잠재 코드 \\(z_{ref}\\in\\mathbb{R}^{1\\times 4\\times h\\times w\\)와 시간 축을 따라 다른 잡음 잠재 코드 \\(z_{0:N,t}\\in\\mathbb{R}^{N\\times 4\\times h\\times w\\)를 연결한다. 이는 기준 이미지의 내용이 생성 과정에서 충실하게 보존되는 것을 보장한다.\n' +
+      '\n' +
+      '##4 Motion-I2V Generation의 미세제어\n' +
+      '\n' +
+      '텍스트 프롬프트에만 의존하면 생성 결과에 대한 세밀한 제어가 부족할 수 있다. 이러한 제한으로 인해 사용자는 원하는 생성을 달성하기 위해 여러 번의 시행착오를 겪게 되는 경우가 많다. 이 섹션에서는 명시적인 모션 모델링 덕분에 모션-I2V가 자연스럽게 I2V 프로세스에 대한 세밀한 제어를 지원한다는 것을 보여준다.\n' +
+      '\n' +
+      '희박한 궤적 유도 I2V\n' +
+      '\n' +
+      '본 논문에서는 모션-I2V 프레임워크의 확장으로 희소 궤적 유도 I2V를 제안한다. 구체적으로, 이미지가 주어지면, 사용자는 타겟 픽셀들의 원하는 모션을 정밀하게 특정하기 위해 하나 또는 다수의 픽셀별 궤적을 그릴 수 있다. 우리의 네트워크는 이러한 희박한 궤적 입력을 해석하고 생성 전과가 있는 그럴듯한 밀집 변위 필드로 변환하도록 설계되었다. 이어서, 이러한 밀집된 모션 필드들은 모션-I2V의 제2 스테이지에 대한 입력들로서 활용된다. 이 전략을 통해 사용자는 그림 4와 같이 I2V 프로세스를 대화식으로 제어할 수 있다.\n' +
+      '\n' +
+      '이 직관적인 설정을 달성하기 위해 그림 3과 같이 첫 번째 단계에 대한 ControlNet을 훈련한다. 구체적으로 첫 번째 단계에서 3D-Unet의 다운 샘플 및 중간 블록을 ControlNet 분기로 복제한다. 이 훈련가능한 ControlNet 브랜치는 [75]에 이어서 제로-초기화 컨볼루션 층들을 갖는 동결된 메인 브랜치에 연결된다. 또한 제어넷은 희소 변위장\\(f_{sparse}\\in\\mathbb{R}^{N\\times 2\\times H\\times W}\\)과 이진 마스크\\(m\\in\\{0,1\\}^{H\\times W}\\)을 조건으로 사용하며, 여기서 \\(1\\)은 주어진 움직임의 픽셀을 나타낸다. 얕은 3차원 Conv 네트워크를 이용하여 \\(f_{sparse}\\)와 \\(m\\)의 연접을 4차원 특징맵으로 부호화하고 잡음레이턴트를 잔차로 추가한다. 자세한 교육 내용은 보충을 참조하십시오.\n' +
+      '\n' +
+      '### Region-Specific I2V\n' +
+      '\n' +
+      '우리의 프레임워크는 또한 그림 5와 같이 참조 이미지의 사용자 지정 영역만 애니메이션되는 영역별 I2V를 자연스럽게 지원한다. 또한 그림 5와 같이 희소 궤적 안내와 함께 사용할 수 있다. 6, 보다 제어성을 위한 것이다.\n' +
+      '\n' +
+      '이는 앞서 언급한 희소 궤적 유도 I2V의 자연스러운 확장이다. 구체적으로, 입력 \\(f_{sparse}\\)는 올-제로 맵으로 설정된다. 마스크 \\(m\\)은 사용자가 지정한 영역을 \\(0\\)으로 설정하고 다른 영역을 \\(1\\)으로 설정한다. 직관적으로 이 설정은 사용자 지정 영역에 대해 그럴듯한 움직임을 추론하는 동안 제어넷이 지정되지 않은 영역을 정적 상태로 유지해야 합니다.\n' +
+      '\n' +
+      '### Zero Shot Video-to-Video Translation\n' +
+      '\n' +
+      '우리의 프레임워크는 또한 비디오 대 비디오 번역(V2V)을 자연스럽게 지원하며, 여기서 주어진 비디오는 그림 7과 같이 텍스트 프롬프트에 의해 지정된 또 다른 예술적 표현의 새로운 비디오로 렌더링된다. 구체적으로, 사용자는 첫 번째 프레임을 목표 스타일로 변환하기 위해 기존의 이미지 대 이미지 도구를 활용할 수 있다. 그런 다음, 소스 비디오의 변위 필드들은 Off-the-shelf dense point tracker를 사용하여 예측될 수 있고, 모션-I2V의 두 번째 스테이지로 변환된 첫 번째 프레임을 애니메이션하는데 사용된다.\n' +
+      '\n' +
+      '## 5 Experiments\n' +
+      '\n' +
+      '### Experimental Setup\n' +
+      '\n' +
+      '**Training.** 첫 번째 단계에서는 Stable Diffusion v1.5를 기본 LDM 모델로, 두 번째 단계에서는 AnimateDiff v2를 기본 VLDM 모델로 선택한다. 모든 모델은 대규모 텍스트-비디오 데이터세트인 WebVid-10M [1]에서 학습된다. 학습하는 동안 16 프레임 비디오 클립을 8의 보폭으로 무작위로 샘플링하고, 모든 모델을 학습하기 위해 일정한 학습률(3\\times 10^{-5}\\)을 갖는 AdamW[36] 최적화기를 사용한다. 1단계는 해상도(320\\times 512\\)의 비디오로 학습되고 2단계는 해상도(320\\times 320\\)의 비디오로 학습된다. 모든 실험은 32개의 NVIDIA A100 GPU에서 수행된다. 자세한 교육 내용은 보충을 참고하시기 바랍니다.\n' +
+      '\n' +
+      '도 4: **희박 궤적 안내 I2V의 예. 사용자는 하나 또는 여러 개의 궤적(빨간색 곡선 화살표)을 그려 합성 동작을 정밀하게 제어할 수 있습니다.**\n' +
+      '\n' +
+      '도 5: **영역별 I2V의 예시. 사용자는 모션 브러시(보라색 마스크)로 애니메이션 영역을 정확하게 지정할 수 있습니다. 마스크가 없는 영역은 고정 상태로 유지됩니다.**\n' +
+      '\n' +
+      '도 3: **궤적 제어넷의 개요. Motion-I2V의 사전 학습된 1단계를 기반으로 Trajectory ControlNet을 학습한다. 희소 궤적과 해당 이진 마스크를 추가 조건으로 사용하고 조밀한 광학 흐름 맵을 출력한다.**\n' +
+      '\n' +
+      '그림 6: **움직임 궤적과 움직임 브러쉬의 조합. 모션-I2V는 모션 브러시와 궤적 안내의 결합된 사용을 지원합니다.**\n' +
+      '\n' +
+      '**평가.** 몇 개의 이미지-대-비디오 벤치마크들이 있지만, 이들은 특정 도메인들로 제한된다. 광범위한 평가를 위해 인간 활동, 동물, 차량, 자연 장면 및 AI 생성 이미지와 같은 다양한 범주를 포함하는 테스트 세트를 구축한다. 그것은 저작권 없는 웹사이트 픽사베이에서 다운로드 받은 \\(80\\) 이미지를 담고 있다. 우리는 ChatGPT-4V를 사용하여 이미지 콘텐츠와 가능한 모션에 대한 프롬프트를 생성한다. 우리는 CLIP 텍스트 이미지 로짓들을 사용하여 프롬프트와 생성된 프레임들 사이의 프롬프트 일관성을 측정한다. CLIP 임베딩 공간에서 연속적으로 생성된 프레임들 간의 코사인 유사도를 계산하여 시간적 일관성을 측정한다. 움직임 크기를 나타내기 위해 첫 번째 프레임과 이후 생성된 프레임 사이의 광학 흐름을 추가로 추정한다.\n' +
+      '\n' +
+      '### 다른 방법과의 비교\n' +
+      '\n' +
+      '정량적 평가를 위해 공개 소스 최신 방법 VideoComposer[64], I2VGen-XL[77] 및 DynamiCrafter[72]와 방법을 비교한다. 자세한 결과는 표 1에 나와 있다. 1. 모션-I2V는 프롬프트 팔로우 메트릭에서 다른 방법보다 우수하다. 또한, 모션-I2V는 더 큰 모션으로도 더 일관된 비디오를 생성할 수 있다.\n' +
+      '\n' +
+      '정성적 비교를 위해 제한된 공간으로 인해 두 가지 상용 제품인 Pika1.0 및 Gen2와 함께 정량적 두 번째로 좋은 방법 DynamiCrafter와 비교했으며 결과는 그림 8에 나와 있으며 DynamiCrafter는 모션 프롬프트에 민감하지 않고 작은 모션으로 비디오를 생성하는 경향이 있음을 관찰한다. 이 관찰은 정량적 결과와 일치한다. Pika 1.0은 비슷한 제한된 동작을 공유하지만 더 나은 시각적 품질을 제공합니다. Gen2는 Motion-I2V에 의해 생성된 움직임만큼 큰 움직임을 생성할 수 있지만 심각한 왜곡을 겪는다. 이러한 결과는 모션-I2V가 큰 모션이 존재하는 경우에도 일관된 결과를 생성하는데 우수한 성능을 가짐을 입증한다.\n' +
+      '\n' +
+      '### Ablation Study\n' +
+      '\n' +
+      '우리는 중요한 설계 선택의 영향을 평가하기 위해 절제 연구를 수행한다. 우리는 먼저 1단계(표 2의 첫 번째 행)가 없는 모델을 훈련시킨다. 시간 종속성은 1-D 시간 모듈에 의해서만 학습되는, 방법. 우리는 이 모델이 추론 중에 불안정하고 충돌 결과를 생성하기 쉽다는 것을 관찰한다. 이는 낮은 일관성 점수와 매우 큰 움직임과 일맥상통한다. 그런 다음 단계 1을 추가하되 예측된 움직임 필드를 순진하게 활용한다. 즉, 다음 프레임에 적응적으로 와핑된 특징을 주입하기 위해 주의를 기울이지 않고 와핑된 특징 맵 \\(z[i]^{\\prime}\\)을 \\(z[i]\\)에 직접 추가하는 것이다. 표의 두 번째 행에 표시된 대로입니다. 도 2를 참조하면, 이러한 추가적인 모션 정보는 예측을 안정화시켜 더 높은 일관성 스코어와 더 생생한 모션으로 이어진다. 융합 유형을 식 3.3과 같이 주의 집중으로 추가 변경함으로써 일관성 점수가 가장 높은 최종 모델을 얻는다.\n' +
+      '\n' +
+      '##6 한계와 결론\n' +
+      '\n' +
+      '이 방법은 중간 밝기의 비디오를 생성하는 경향이 있음을 관찰한다. 이는 잡음 스케줄이 [34]에서 논의된 바와 같이 제로 신호 대 잡음(SNR) 비율을 갖도록 마지막 타임스테프를 강제하지 않기 때문일 가능성이 있다. 이 잘못된 일정은 훈련-테스트 불일치로 이어지며 모델의 일반화를 제한한다. 우리는 최신 Zero-SNR 스케줄러를 사용하면 이 문제를 완화할 수 있다고 믿는다. 결론적으로, 본 논문에서는 비디오 생성 작업에서 어려운 이미지를 두 단계로 분해하는 새로운 I2V 프레임워크를 제안한다. 첫 번째 단계에서, 우리는 그럴듯한 움직임을 추론하는 데 초점을 맞춘 확산 기반 움직임 필드 예측기를 훈련한다. 대단히 잘 보여\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c} \\hline Method & Prompt Consistency \\(\\uparrow\\) Frame Consistency \\(\\uparrow\\) Average Displacement \\\\ \\hline VideoComposer & 32.62 & 0.9393 & 67.15 \\\\ I2VGen-XL & 33.69 & 0.9650 & 17.70 \\\\ DynamiCrafter & 34.60 & 0.9860 & 3.31 \\\\ Ours & 34.86 & 0.9871 & 20.06 \\\\ \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 1: **정량적 비교.** Motion-I2V는 가장 우수한 지시-추종 능력과 시간적 일관성을 보여준다. 한편, Motion-I2V는 상대적으로 큰 모션을 생성한다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c c} \\hline Stage 17 Fusion Type Prompt Consis. \\(\\uparrow\\) Frame Consis. \\(\\uparrow\\) Average Displacement \\\\ \\hline \\hline ✗ & - & 32.95 & 0.9505 & 66.44 \\\\ ✓ & Addition & 33.99 & 0.9542 & 48.91 \\\\ ✓ & Attention & 34.86 & 0.9871 & 20.06 \\\\ \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 2: **절제 연구.** 단계 1로부터의 모션 필드를 활용하는 것은 예측을 상당히 안정화시킬 수 있다. 또한, 적응적으로 왜곡된 특징들을 합성 프레임들에 주입하기 위해 주의를 사용하는 것은 일관성을 더욱 증가시키고 극단적인 왜곡을 피할 수 있다.\n' +
+      '\n' +
+      '도 7: **비디오-대-비디오 번역의 예.** Motion-I2V의 두번째 스테이지는 제로-샷 비디오-대-비디오 번역에 사용될 수 있다. 소스 비디오의 첫 번째 프레임은 기존의 이미지 투 이미지 도구를 사용하여 목표 스타일로 변환된다. 그런 다음, 변환된 이미지는 소스 비디오로부터의 모션에 의해 안내되는 Motion-I2V의 제2 스테이지를 사용하여 애니메이션화될 수 있다.\n' +
+      '\n' +
+      '운동 생성 능력. 비디오 렌더링의 두 번째 단계에서, 우리는 순진한 1-D 시간적 주의가 시간적 모델링 능력을 제한한다는 것을 식별한다. 시간 수용 필드를 효과적으로 확대하기 위해 움직임 유도 시간 주의를 제안한다. 우리는 또한 첫 번째 단계에 대한 ControlNet을 훈련함으로써 I2V 생성 프로세스에 대한 더 많은 제어를 제공하기 위해 탐색한다. 우리는 I2V의 제어 가능성이 향후 커뮤니티의 더 많은 관심을 얻을 것이라고 믿는다.\n' +
+      '\n' +
+      '그림 8: **정성적 비교.** DynamiCrafter와 Pika 1.0은 매우 작은 동작의 비디오를 생성하는 경향이 있다. Gen2는 우리의 방법만큼 큰 움직임을 생성할 수 있지만 참조 이미지의 동일성을 보존하지 못한다. 모션-I2V는 큰 모션이 있는 상태에서 시간적으로 일관된 비디오를 합성할 수 있습니다.\n' +
+      '\n' +
+      'future.\n' +
+      '\n' +
+      '## 7 Acknowledgements\n' +
+      '\n' +
+      '이 프로젝트는 부분적으로 중국 프로젝트의 국가 핵심 R&D 프로그램 2022ZD0161100, 부분적으로 홍콩 RGC 프로젝트 14204021의 일반 연구 기금이 자금을 지원한다.\n' +
+      '\n' +
+      '## References\n' +
+      '\n' +
+      '*[1]M. Bain, A. Nagrani, G. Varol, and A. Zisserman(2021) Frozen in time: joint video and image encoder for end-to-end retrieval. IEEE International Conference on Computer Vision, Cited by: SS1, SS2.\n' +
+      '*[2]M. J. Black and P. Anandan (1993) A framework for the robust estimation of optical flow. 1993년 (4th International Conference on Computer Vision, pp. 231-236. Cited by: SS1, SS2).\n' +
+      '*[3]A. 블랫만 밀비치 Dorkenwald, and B. Ommer (2021) Understanding object dynamics for interactive image-to-video synthesis. 2021년 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pp. 5167-5177. Cited by: SS1, SS2.\n' +
+      '*[4]A. R. 블랫만 롬바흐 H. 링, T. 도크혼, 김승원 피들러와 K Kreis(2023) 잠복기를 정렬: 잠재 확산 모델과 고해상도 비디오 합성 In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition, pp. 22563-22575. Cited by: SS1, SS2.\n' +
+      '*[5]A. Bruhn, J. Weickert, and C. Schnorr (2005) Lucas/kanade meets horn/schunck: combining local and global optic flow methods. International journal of computer vision61(3), pp. 211-231. Cited by: SS1, SS2.\n' +
+      '*[6]Z. 다이자 장영 야오비추 주룡 진, W. Wang(2023) Motion Guide가 있는 Fine-grained open domain image animation. 인용: SS1, SS2.\n' +
+      '*[7]L. Dinh, D. Krueger, Y. Bengio (2015) NICE: 비선형 독립 성분 추정. 제3차 International Conference on Learning Representations, ICLR 2015, San Diego, CA, USA, May 7-9, 2015, Workshop Track Proceedings, Cited by: SS1, SS2.\n' +
+      '*[8]C. 도어쉬, A. 굽타, L. 마키바, A. 레카센스, L. 스마이라 Aytar, J. Carreira, A. Zisserman, Y. Yang(2022) Tap-vid: 비디오의 임의의 지점을 추적하기 위한 벤치마크. ArXiv:2211.03726. 인용: SS1, SS2.\n' +
+      '*[9]A. 도소비츠키, P. 피셔, E. 일그, P. 하우저, C. 하지르바스, V. Golkov, P. Van Der Smagt, D. Cremers, T. Brox(2015) Flownet: 컨벌루션 네트워크를 이용한 옵티컬 플로우 학습. In Proceedings of the IEEE international conference on computer vision, pp. 2758-2766. Cited by: SS1, SS2.\n' +
+      '*[10]R. 팽평가오 아주영 채승 Liu, J. Dai, 및 H. Li (2023) Feataug-detr: 특징 증강을 갖는 디터들을 위한 일대다 매칭을 풍부하게 한다. ArXiv:2303.01503. 인용: SS1, SS2.\n' +
+      '*[11]R. 팽승 양종 Huang, J. Zhou, H. Tian, J. Dai, and H. Li(2023) InstructSeq: Unifying vision tasks with instruction-conditioned multi-modal sequence generation. ArXiv:2311.18835. 인용: SS1, SS2.\n' +
+      '*[12]P. 가오성 겅락 장태 마래 팽영 장홍리, 및 Y Qiao(2023) 클립 어댑터: 기능 어댑터가 있는 더 나은 비전 언어 모델입니다. International Journal of Computer Vision, pp. 1-15. Cited by: SS1, SS2.\n' +
+      '*[13]J. 갱태 샤오영 정영 웡과 케이 단일 사진 얼굴 애니메이션을 위한 Zhou (2018-12) Warp-guided gans. ACM Trans. Graph.37(6). 인용: SS1, SS2.\n' +
+      '*[14]J. 갱태 샤오영 정영 웡과 케이 단일 사진 얼굴 애니메이션을 위한 Zhou (2018-12) Warp-guided gans. ACM Trans. Graph.37(6). 인용: SS1, SS2.\n' +
+      '*[15]I. 좋은 친구, J. Pouget-Abadie, M. Mirza, B. Xu, D. Warde-Farley, S. Ozair, A. Courville, Y. Bengio (2014) Generative Adversarial net. 신경 정보 처리 시스템의 발전에 있어서, M. 웰링, C 코르테스, N. Lawrence, and K.Q. Weinberger(Eds.), Vol. 27, pp. 인용: SS1, SS2.\n' +
+      '*[16]Y. 곽철양 왕영 Qiao, D. Lin, and B. Dai(2023) Animatediff: 특정 튜닝 없이 개인화된 텍스트 대 이미지 확산 모델을 애니메이션화합니다. ArXiv:2307.04725. 인용: SS1, SS2.\n' +
+      '*[17]A. W. 할리, Z. 팽과 K Fragkiadaki (2022) Particle video 재방문: 점 궤적을 이용한 폐색을 통한 추적. In Computer Vision-ECCV 2022: 17th European Conference, Tel Aviv, Israel, October 23-27, 2022, Proceedings, Part XXII, pp. 59-75. Cited by: SS1, SS2.\n' +
+      '*[18]J. 호원 찬찬사하리아 J.황 가오, A. A. 그리센코, D. P. 킹마, B. 풀, M. 노루지, D. J. 함대, T. Salimans (2022) Imagen 비디오: 확산 모델을 갖는 고화질 비디오 생성. ArXivabs/2210.02303. 인용: SS1, SS2.\n' +
+      '*[19]J. Ho, A. Jain, and P. Abbeel (2020) Denoising diffusion probability model. Arxiv:2006.11239. 인용: SS1, SS2.\n' +
+      '*[20]A. 홀린스키, B. L. 커리스, S. M. 자이츠, R. Szeliski (2021-02) Animating pictures with eulerian motion fields. In Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR), pp. 5810-5819. Cited by: SS1, SS2.\n' +
+      '*[21]B. K. Horn and B. G. Schunck (1981) 결정 광학 흐름. 인공지능17(1-3), pp. 185-203. Cited by: SS1, SS2.\n' +
+      '*[22]Z. 황철 시창창 Wang, K. C. Cheung, H. Qin, J. Dai, and H. Li(2022) Flowformer: optical flow를 위한 transformer architecture. ArXiv:2203.16194. 인용: SS1, SS2.\n' +
+      '*[23]T. 희 X. Tang, and C. C. Loy(2018) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[24]T. 희 X. Tang, and C. C. Loy(2018) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[25]T. 희 X. Tang, and C. C. Loy(2018) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[26]T. 희 X. Tang, and C. C. Loy(2018) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[27]T. 희 X. Tang, and C. C. Loy(2018) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[28]T. 희 X. Tang, and C. C. Loy(2018) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[29]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[30]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[31]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[32]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[33]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[34]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[35]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[36]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[37]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[38]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[39]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[40]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[41]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS1, SS2.\n' +
+      '*[42]T. 희 X. Tang, and C. C. Loy(2022) Lite-flownet: optical flow estimation을 위한 경량 컨볼루션 신경망. In Proceedings of the IEEE conference on computer vision and pattern recognition, pp. 8981-8989. Cited by: SS*[25] Tak-Wai Hui, Xiaoou Tang, and Chen Change Loy. 경량 광학 흐름 cnn - 데이터 충실도 및 정규화를 재방문합니다. _ IEEE transaction on pattern analysis and machine intelligence_, 43(8):2555-2569, 2020.\n' +
+      '* [26] Eddy Ilg, Nikolaus Mayer, Tonmoy Saikia, Margret Keuper, Alexey Dosovitskiy, and Thomas Brox. Flownet 2.0: Evolution of optical flow estimation with deep networks. In _Proceedings of the IEEE conference on computer vision and pattern recognition_, pages 2462-2470, 2017.\n' +
+      '* [27] Wei-Cih Jhou and Wen-Huang Cheng. Animating still landscape photographs through cloud motion creation. _IEEE Transactions on Multimedia_, 18(1):4-13, 2016.\n' +
+      '* [28] Nikita Karaev, Ignacio Rocco, Benjamin Graham, Natalia Neverova, Andrea Vedaldi, and Christian Rupprecht. Co-tracker: It is better to track together. _arXiv preprint arXiv:2307.07635_, 2023.\n' +
+      '* [29] Johanna Karras, Aleksander Holynski, Ting-Chun Wang, and Ira Kemelmacher-Shlizerman. Dreampose: Fashion image-to-video synthesis via stable diffusion, 2023.\n' +
+      '* [30] Levon Khachatryan, Andranik Movsisyan, Vahram Tadevosyan, Roberto Henschel, Zhangyang Wang, Shant Navasardyan, and Humphrey Shi. Text2video-zero: Text-to-image diffusion models are zero-shot video generators. _arXiv preprint arXiv:2303.13439_, 2023.\n' +
+      '* [31] Diederik P. Kingma and Max Welling. Auto-encoding variational bayes. In Yoshua Bengio and Yann LeCun, editors, _2nd International Conference on Learning Representations, ICLR 2014, Banff, AB, Canada, April 14-16, 2014, Conference Track Proceedings_, 2014.\n' +
+      '* [32] Xingyi Li, Zhiguo Cao, Huiqiang Sun, Jianming Zhang, Ke Xian, and Guosheng Lin. 3d cinemagraphy from a single image. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)_, pages 4595-4605, June 2023.\n' +
+      '* [33] Zhengqi Li, Richard Tucker, Noah Snavely, and Aleksander Holynski. Generative image dynamics, 2023.\n' +
+      '* [34] Shanchuan Lin, Bingchen Liu, Jiashi Li, and Xiao Yang. Common diffusion noise schedules and sample steps are flawed. In _Proceedings of the IEEE/CVF Winter Conference on Applications of Computer Vision_, pages 5404-5411, 2024.\n' +
+      '* [35] Shaoteng Liu, Yuechen Zhang, Wenbo Li, Zhe Lin, and Jiaya Jia. Video-p2p: Video editing with cross-attention control, 2023.\n' +
+      '* [36] Ilya Loshchilov and Frank Hutter. Decoupled weight decay regularization. _arXiv preprint arXiv:1711.05101_, 2017.\n' +
+      '* [37] Aniruddha Mahapatra and Kuldeep Kulkarni. Controllable animation of fluid elements in still images. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)_, 2022.\n' +
+      '* [38] Aniruddha Mahapatra, Aliaksandr Siarohin, Hsin-Ying Lee, Sergey Tulyakov, and Jun-Yan Zhu. Text-guided synthesis of eulerian cinemagraphs. _arXiv preprint arXiv:2307.03190_, 2023.\n' +
+      '* [39] Guillaume Le Moing, Jean Ponce, and Cordelia Schmid. Dense optical tracking: Connecting the dots. _arXiv preprint arXiv:2312.00786_, 2023.\n' +
+      '* [40] Chong Mou, Xintao Wang, Jiechong Song, Ying Shan, and Jian Zhang. Dragondiffusion: Enabling drag-style manipulation on diffusion models. _arXiv preprint arXiv:2307.02421_, 2023.\n' +
+      '* [41] Alex Nichol, Prafulla Dhariwal, Aditya Ramesh, Pranav Shyam, Pamela Mishkin, Bob McGrew, Ilya Sutskever, and Mark Chen. GLIDE: towards photorealistic image generation and editing with text-guided diffusion models. _CoRR_, abs/2112.10741, 2021.\n' +
+      '* [42] Simon Niklaus and Feng Liu. Softmax splatting for video frame interpolation. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition_, pages 5437-5446, 2020.\n' +
+      '* [43] Makoto Okabe, Ken ichi Anjyo, Takeo Igarashi, and Hans-Peter Seidel. Animating pictures of fluid using video examples. _Computer Graphics Forum_, 28, 2009.\n' +
+      '* [44] Xingang Pan, Ayush Tewari, Thomas Leimkuhler, Lingjie Liu, Abhimitra Meka, and Christian Theobalt. Drag your gan: Interactive point-based manipulation on the generative image manifold. In _ACM SIGGRAPH 2023 Conference Proceedings_, SIGGRAPH \'23, New York, NY, USA, 2023. Association for Computing Machinery.\n' +
+      '* [45] Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, Gretchen Krueger, and Ilya Sutskever. Learning transferable visual models from natural language supervision. In _International Conference on Machine Learning_, 2021.\n' +
+      '* [46] Colin Raffel, Noam Shazeer, Adam Roberts, Katherine Lee, Sharan Narang, Michael Matena, Yanqi Zhou, Wei Li, and Peter J. Liu. Exploring the limits of transfer learning with a unified text-to-text transformer. _J. Mach. Learn. Res._, 21(1), jan 2020.\n' +
+      '* [47] Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. Hierarchical text-conditional image generation with clip latents. _ArXiv_, abs/2204.06125, 2022.\n' +
+      '* [48] Anurag Ranjan and Michael J Black. Optical flow estimation using a spatial pyramid network. In _Proceedings of the IEEE conference on computer vision and pattern recognition_, pages 4161-4170, 2017.\n' +
+      '* [49] Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bjorn Ommer. High-resolution image synthesis with latent diffusion models, 2021.\n' +
+      '* [50] Tamar Rott Shaham, Tali Dekel, and Tomer Michaeli. Singan: Learning a generative model from a single natural image. In _Computer Vision (ICCV), IEEE International Conference on_, 2019.\n' +
+      '* [51] Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily Denton, Seyed Kamyar Seyed Ghasemipour, Raphael Gontijo-Lopes, Burcu Karagol Ayan, Tim Salimans, Jonathan Ho, David J. Fleet, and Mohammad Norouzi. Photorealistic text-to-image diffusion models with deep language understanding. In Alice H. Oh, Alekh Agarwal, Danielle Belgrave, and Kyunghyun Cho, editors, _Advances in Neural Information Processing Systems_, 2022.\n' +
+      '* [52] Xiaoyu Shi, Zhaoyang Huang, Weikang Bian, Dasong Li, Manyuan Zhang, Ka Chun Cheung, Simon See, HongweiQin, Jifeng Dai, and Hongsheng Li. Videoflow: Exploiting temporal cues for multi-frame optical flow estimation. _arXiv preprint arXiv:2303.08340_, 2023.\n' +
+      '* [53] Xiaoyu Shi, Zhaoyang Huang, Dasono Li, Manyuan Zhang, Ka Chun Cheung, Simon See, Hongwei Qin, Jifeng Dai, and Hongsheng Li. Flowformer++: Masked cost volume autoencoding for pretraining local flow estimation. _arXiv preprint arXiv:2303.01237_, 2023.\n' +
+      '* [54] Yujun Shi, Chuhui Xue, Jiachun Pan, Wenqing Zhang, Vincent YF Tan, and Song Bai. Dragdiffusion: Harnessing diffusion models for interactive point-based image editing. _arXiv preprint arXiv:2306.14435_, 2023.\n' +
+      '* [55] Aliaksandr Siarohin, Oliver Woodford, Jian Ren, Menglei Chai, and Sergey Tulyakov. Motion representations for articulated animation. In _CVPR_, 2021.\n' +
+      '* [56] Uriel Singer, Adam Polyak, Thomas Hayes, Xi Yin, Jie An, Songyang Zhang, Qiyuan Hu, Harry Yang, Oron Ashual, Oran Gafni, Devi Parikh, Sonal Gupta, and Yaniv Taigman. Make-a-video: Text-to-video generation without text-video data, 2022.\n' +
+      '* [57] Jiaming Song, Chenlin Meng, and Stefano Ermon. Denoising diffusion implicit models. In _International Conference on Learning Representations_, 2021.\n' +
+      '* [58] Deqing Sun, Stefan Roth, and Michael J Black. A quantitative analysis of current practices in optical flow estimation and the principles behind them. _International Journal of Computer Vision_, 106(2):115-137, 2014.\n' +
+      '* [59] Deqing Sun, Xiaodong Yang, Ming-Yu Liu, and Jan Kautz. Pwc-net: Cnns for optical flow using pyramid, warping, and cost volume. In _Proceedings of the IEEE conference on computer vision and pattern recognition_, pages 8934-8943, 2018.\n' +
+      '* [60] Jiaming Sun, Zehong Shen, Yuang Wang, Hujun Bao, and Xiaowei Zhou. Loftr: Detector-free local feature matching with transformers. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition_, pages 8922-8931, 2021.\n' +
+      '* [61] Zachary Teed and Jia Deng. Raft: Recurrent all-pairs field transforms for optical flow. In _European conference on computer vision_, pages 402-419. Springer, 2020.\n' +
+      '* [62] Fu-Yun Wang, Wenshuo Chen, Guanglu Song, Han-Jia Ye, Yu Liu, and Hongsheng Li. Gen-lvideo: Multi-text to long video generation via temporal co-denoising. _arXiv preprint arXiv:2305.18264_, 2023.\n' +
+      '* [63] Wen Wang, kangyang Xie, Zide Liu, Hao Chen, Yue Cao, Xinlong Wang, and Chunhua Shen. Zero-shot video editing using off-the-shelf image diffusion models. _arXiv preprint arXiv:2303.17599_, 2023.\n' +
+      '* [64] Xiang* Wang, Hangjie* Yuan, Shiwei* Zhang, Dayou* Chen, Jiuniu Wang, Yingya Zhang, Yujun Shen, Deli Zhao, and Jingren Zhou. Videocomposer: Compositional video synthesis with motion controllability. 2023.\n' +
+      '* [65] Yaohui WANG, Piotr Bilinski, Francois Bremond, and Antitza Dantcheva. Imaginator: Conditional spatio-temporal gan for video generation. In _The IEEE Winter Conference on Applications of Computer Vision (WACV)_, March 2020.\n' +
+      '* [66] Yaohui Wang, Piotr Bilinski, Francois Bremond, and Antitza Dantcheva. Imaginator: Conditional spatio-temporal gan for video generation. In _2020 IEEE Winter Conference on Applications of Computer Vision (WACV)_, pages 1149-1158, 2020.\n' +
+      '* [67] Yaohui Wang, Di Yang, Francois Bremond, and Antitza Dantcheva. Latent image animator: Learning to animate images via latent space navigation. In _International Conference on Learning Representations_, 2022.\n' +
+      '* [68] BIAN Weikang, Zhaoyang Huang, Xiaoyu Shi, Yitong Dong, Yijin Li, and Hongsheng Li. Context-pips: Persistent independent particles demands context features. In _Thirty-seventh Conference on Neural Information Processing Systems_, 2023.\n' +
+      '* [69] Chung-Yi Weng, Brian Curless, and Ira Kemelmacher-Shlizerman. Photo wake-up: 3d character animation from a single photo. _2019 IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR)_, pages 5901-5910, 2018.\n' +
+      '* [70] Changming Xiao, Qi Yang, Xiaoqiang Xu, Jianwei Zhang, Feng Zhou, and Changshui Zhang. Where you edit is what you get: Text-guided image editing with region-based attention. _Pattern Recognition_, 139:109458, 2023.\n' +
+      '* [71] Wenpeng Xiao, Wentao Liu, Yitong Wang, Bernard Ghanem, and Bing Li. Automatic animation of hair blowing in still portrait photos. In _Proceedings of the IEEE/CVF International Conference on Computer Vision_, pages 22963-22975, 2023.\n' +
+      '* [72] Jinbo Xing, Menghan Xia, Yong Zhang, Haoxin Chen, Wangbo Yu, Hanyuan Liu, Xintao Wang, Tien-Tsin Wong, and Ying Shan. Dynamicrafer: Animating open-domain images with video diffusion priors. _arXiv preprint arXiv:2310.12190_, 2023.\n' +
+      '* [73] Wei Xiong, Wenhan Luo, Lin Ma, Wei Liu, and Jiebo Luo. Learning to generate time-lapse videos using multi-stage dynamic generative adversarial networks. In _The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)_, June 2018.\n' +
+      '* [74] Gengshan Yang and Deva Ramanan. Volumetric correspondence networks for optical flow. _Advances in neural information processing systems_, 32:794-805, 2019.\n' +
+      '* [75] Lvmin Zhang, Anyi Rao, and Maneesh Agrawala. Adding conditional control to text-to-image diffusion models, 2023.\n' +
+      '* [76] Renrui Zhang, Rongyao Fang, Wei Zhang, Peng Gao, Kunchang Li, Jifeng Dai, Yu Qiao, and Hongsheng Li. Tip-adapter: Training-free clip-adapter for better vision-language modeling. _arXiv preprint arXiv:2111.03930_, 2021.\n' +
+      '* [77] Shiwei Zhang, Jiayu Wang, Yingya Zhang, Kang Zhao, Hangjie Yuan, Zhiwu Qing, Xiang Wang, Deli Zhao, and Jingren Zhou. I2ygen-xl: High-quality image-to-video synthesis via cascaded diffusion models. 2023.\n' +
+      '* [78] Yi Zhang, Dasono Li, Xiaoyu Shi, Dalian He, Kangning Song, Xiaogang Wang, Hongwei Qin, and Hongsheng Li. Khnet: Kernel basis network for image restoration. _arXiv preprint arXiv:2303.02881_, 2023.\n' +
+      '* [79] Yi Zhang, Xiaoyu Shi, Dasono Li, Xiaogang Wang, Jian Wang, and Hongsheng Li. A unified conditional framework for diffusion-based image restoration. _arXiv preprint arXiv:2305.20049_, 2023.\n' +
+      '\n' +
+      '* [80] Yiming Zhang, Zhening Xing, Yanhong Zeng, Youqing Fang, and Kai Chen. Pia: Your personalized image animator via plug-and-play modules in text-to-image models, 2023.\n' +
+      '* [81] Yang Zheng, Adam W Harley, Bokui Shen, Gordon Wetzstein, and Leonidas J Guibas. Pointodyssey: A large-scale synthetic dataset for long-term point tracking. In _Proceedings of the IEEE/CVF International Conference on Computer Vision_, pages 19855-19865, 2023.\n' +
+      '* [82] Daquan Zhou, Weimin Wang, Hanshu Yan, Weiwei Lv, Yizhe Zhu, and Jiashi Feng. Magicvideo: Efficient video generation with latent diffusion models, 2023.\n' +
+      '\n';
+  </script>
+  <style>
+    #content {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+  <script>
+    let script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/mathpix-markdown-it@1.0.40/es5/bundle.js";
+    document.head.append(script);
+
+    script.onload = function() {
+      const isLoaded = window.loadMathJax();
+      if (isLoaded) {
+        console.log('Styles loaded!')
+      }
+
+      const el = window.document.getElementById('content-text');
+      if (el) {
+        const options = {
+          htmlTags: true
+        };
+        const html = window.render(text, options);
+        el.outerHTML = html;
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="content"><div id="content-text"></div></div>
+</body>
+</html>

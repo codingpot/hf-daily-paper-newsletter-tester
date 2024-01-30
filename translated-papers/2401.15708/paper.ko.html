@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en" data-lt-installed="true"><head>
+  <meta charset="UTF-8">
+  <title>Title</title>
+  <script>
+    const text = '' +
+      '[MISSING_PAGE_FAIL:1]\n' +
+      '\n' +
+      '이 작업은 제한된 트레이닝 샘플들 및 모델 트레이닝 세트 내의 특정 객체들의 일반적인 부족으로 인해 상당한 도전들을 제기한다.\n' +
+      '\n' +
+      '객체 미세조정의 유효성을 향상시키기 위해, 현재의 방법들 [3; 11; 19; 22; 29]은 미리 트레이닝된 합성 모델을 최적화하는 것을 포함하는 패러다임, 또는 다수의 트레이닝 예들을 사용하여 객체를 나타내는 텍스트 프롬프트 [11; 22]를 채용한다. 최적화된 프롬프트는 사용자 프롬프트와 통합되어 다양한 스타일 및 콘텐츠를 갖는 이미지를 생성한다. 그러나, 이러한 방법들은 일반적으로 동일한 객체의 다수의 이미지들의 가용성에 의존하며, 이는 원샷 시나리오들에서 객체 정확도 및 모델 오버피팅의 문제를 악화시킨다.\n' +
+      '\n' +
+      '사용자 지정 객체를 하나의 샘플만을 사용하여 생성 모델에 정확하게 이식하는 작업에 초점을 맞추면서 모델의 일반화를 유지하면서 새로운 미세 조정 프레임워크를 제안한다. 기존의 [19; 22; 29; 35]와 달리 랜덤 초기화에서 시작하여 목표 객체의 고유한 프롬프트 표현을 반복적으로 최적화하는 새로운 미세 조정 방법을 제안한다. 안정적인 확산을 기반으로 객체에 대한 원형 임베딩을 먼저 초기화한 다음 객체 아이덴티티와 일반화 변동의 균형을 맞추기 위해 클래스 특성 정규화로 생성 모델에서 훈련한다. 그리고 추후 영상 합성에서 충실도와 일반화를 동시에 달성할 수 있도록 주어진 영상에서 객체에 의해 감독되는 객체별 손실 함수를 제안한다.\n' +
+      '\n' +
+      '간단해 보이지만, 원샷 생성 미세 조정은 1) 조건화된 객체 임베딩을 갖는 텍스트-이미지 모델을 적응시키는 것, 2) 하나의 이미지만을 사용하여 객체 충실도를 향상시키기 위한 트레이닝 프로세스를 설계하는 것, 및 3) 다양한 텍스트 프롬프트를 사용하여 상이한 객체 구성을 생성하기 위한 편집 능력을 향상시키는 것을 포함하는 몇 가지 과제를 제기하는 자명하지 않은 과제로 남아 있다. 타겟 이미지 및 그 클래스가 주어지면, 특정 객체의 텍스트 임베딩은 객체의 클래스의 다중-모달 표현들 사이의 최상의 원형 임베딩을 발견함으로써 초기화된다. 미세 조정 품질을 위해 텍스트-이미지 네트워크에 추가 주의 모듈[15]을 삽입하고, 다운스트림 이미지 합성에서 충실도를 유지하기 위해 객체별 마스크 손실을 사용한다. 그러나 객체 임베딩으로 네트워크를 직접 미세 조정하면 편집 능력이 저하된 모델 오버피팅, 즉 생성 결과에서 높은 커널 인셉션 거리(KID) [1]이 생성되며, 여기서 모델은 사용자 특정 객체만 생성하지만 텍스트 명령은 생성하지 않는다. 따라서 본 논문에서는 모델의 일반화를 위해 객체 임베딩에 대한 클래스 특성화 정규화를 제안한다. 제안하는 방법은 객체 충실도와 모델 일반화를 근본적으로 증가시켜 출력 품질, 외형 다양성, 객체 충실도 측면에서 성능 향상을 가져온다.\n' +
+      '\n' +
+      '원샷 샘플을 기반으로 개인화된 콘텐츠를 생성하는 것은 그 적용성을 향상시키기 위한 효율적인 알고리즘이 필요하다. 본 연구에서는 한 걸음 더 나아가 미세 조정 과정이 일반화 편집성이 있는 한 모델의 객체 동일성을 유지하는 데 어떻게 도움이 될 수 있는지 보여준다. 본 논문에서 제안하는 방법은 기존의 여러 방법들보다 높은 충실도의 실사 영상을 생성하고, 원샷 생성에서 풍부한 콘텐츠 합성을 지원한다. 게다가, 우리의 방법은 다중 사용자 특정 객체의 더 나은 구성 결과를 달성하는 그림 2와 같이 다중 객체 미세 조정에도 사용할 수 있다.\n' +
+      '\n' +
+      '##2. 관련업무\n' +
+      '\n' +
+      '### Text-to-Image Synthesis\n' +
+      '\n' +
+      '최근에는 조건 없는 텍스트 프롬프트를 기반으로 이미지를 합성하는 텍스트 대 이미지 생성 모델의 개발에 상당한 진전이 있었다. 이러한 모델들은 Generative Adversarial Networks (GANs) [2; 12; 16; 31], Vector Quantization (VQs) 접근법 [4; 7; 9; 27; 36], 및 확산 모델 [32; 33; 6; 14; 23; 34; 28; 30]을 포함한다. 대규모 텍스트 이미지 데이터 세트가 증가함에 따라 이러한 모델은 고품질 및 의미적으로 풍부한 이미지 합성 결과를 생성하도록 확장되었다. 이러한 대형 텍스트 대 이미지 모델의 예로는 StyleGAN-T[31], CogView2[7], Imagen[30], DALL-E2[26], Stable Diffusion[28] 등이 있다. 스타일GAN-T에서 StyleGAN 아키텍처에 텍스트 컨디셔닝을 도입함으로써 텍스트 대 이미지 합성에서 GAN의 효과를 보여주었다. 대조적으로, VQ는 자동 인코더를 사용하여 양자화 코드북을 학습하고 최종 이미지를 생성하기 위한 트랜스포머를 통해 텍스트 대 이미지 토큰을 예측한다. 마찬가지로 확산 모델은 UNet 모듈을 활용하여 트랜스포머 레이어를 통해 모델에 주입된 텍스트 프롬프트에 조건화된 잠재 공간의 노이즈 이미지를 반복적으로 노이즈 제거하여 이미지를 합성한다.\n' +
+      '\n' +
+      '특정 데이터 세트에 대해 트레이닝된 텍스트 대 이미지 모델은 고품질 이미지를 생성할 수 있지만, 종종 아이덴티티 일관성을 갖는 신규 인스턴스 또는 사용자 지정 객체를 생성하는 데 어려움을 겪는다[19]. 이는 새로운 객체를 표현하는 데 있어서 그들의 훈련 세트 제한에 기인할 수 있다. 본 연구는 Stable Diffusion 모델에 관한 것으로 사용자 지정 객체의 고충실도 이미지를 생성할 수 있는 능력을 향상시켜 개인화된 텍스트-이미지 합성이 필요한 콘텐츠 생성 작업에 모델의 적용 가능성을 확장하는 것을 목표로 한다.\n' +
+      '\n' +
+      '###개인화된 이미지 합성\n' +
+      '\n' +
+      '개인화된 텍스트-이미지 생성 목적을 위한 사전 훈련된 합성 모델을 이용한 미세 조정 방법은 크게 네트워크 파라미터 튜닝[19; 29], 이미지 증강 기반 방법[3; 9], 프롬프트 튜닝 또는 텍스트 인코더 적응[11; 22]의 네 가지 방법을 포함하며, 새로운 객체, 즉 Low-Rank Adaptation (LoRA)에 적응하는 추가 모듈을 주입한다[15]. 전체 모델 또는 파라미터의 일부를 적응시키는 단계[29]\n' +
+      '\n' +
+      '도 2. 방법론 개요. 제안하는 방법은 입력 영상과 함께 해당 마스크와 관련 클래스명을 입력으로 하여 객체별 텍스트 임베딩과 개인화된 LoRA 가중치를 생성한다. 추론 동안, 텍스트 임베딩 및 LoRA 가중치는 객체에 대한 광범위한 변동들을 생성하기 위해 다른 특징들과 결합된다.\n' +
+      '\n' +
+      ' 원샷 이미지를 사용하면 잘 훈련된 파라미터를 수정하고 치명적인 망각을 유발할 수 있기 때문에 과적합으로 쉽게 이어질 수 있다(Srivastava et al., 2017; Wang et al., 2018; Wang et al., 2019; Wang et al., 2020; Wang et al., 2021). 증강(Chen et al., 2018) 또는 프롬프트 튜닝(Wang et al., 2018) 기반 방법들은 트레이닝 프로세스에서 정규화 또는 텍스트 인코더 미세 조정을 위한 매우 다양한 샘플들을 제공하지만, 이들은 오브젝트 아이덴티티를 보존하기 위해 고군분투할 뿐만 아니라 추가적인 트레이닝 정보를 필요로 한다. 추가 모듈을 추가하는 방법은 동일한 낮은 충실도 문제를 공유하면서 과적합 문제를 완화할 수 있다. 본 논문에서는 텍스트 인코더와 트랜스포머 크로스 어텐션 모듈과 관련된 소수의 파라미터를 새로운 객체에 적응시키고, 기존의 객체들과 새로운 객체를 구성하는 충실도와 일반화 능력을 보존하기 위해 객체 구동 방식으로 모델을 미세 조정한다.\n' +
+      '\n' +
+      '### One-shot Synthesis\n' +
+      '\n' +
+      '단 하나의 샘플로 확산 모델을 미세 조정하는 것은 매우 어려운 작업이다. 기존의 미세 조정 방법(Wang et al., 2018) 또는 프롬프트 조정 접근법(Wang et al., 2018)은 원샷 시나리오에서 과적합 문제를 겪는 반면, 추가적인 훈련 전략이 개발될 필요가 있다. 세대 제어성을 유지하기 위해, 동 등(동 등, 2019)은 다중 객체 구성에서 세대 실패를 가졌던 의사 프롬프트의 표현을 대조적으로 미세 조정하기 위해 긍정 프롬프트와 부정 프롬프트를 사용한다. 다른 방법(Chen et al., 2018)은 객체를 이식하면서 원샷 샘플의 이미지 배경을 고려하고 미세 조정을 위해 배경 마스킹된 객체 임베딩을 사용한다. 정규화를 위한 원본 학습 샘플 등의 부가 정보로 전체 네트워크와 텍스트 인코더를 학습하는데, 이는 특정 객체의 생성 결함의 문제에 직면한다.\n' +
+      '\n' +
+      '앞서 언급한 패러다임과 달리, 우리의 방법은 하나의 이미지와 객체의 관심 영역만을 필요로 하며, 특정 객체 합성과 함께 특정 충실도와 일반화 변화에 초점을 맞춘다. 여러 측면에서 기존의 방법들과 차이가 있다. 먼저, 하나의 영상만으로 객체를 표현하는 어려움을 완화하고 객체 삽입의 효율성을 향상시키는 객체 기반 원형 임베딩 초기화를 소개한다. 둘째, 정확한 객체 출현 학습을 위한 객체 기반 특정 손실을 소개한다. 여기서 객체 마스크는 Wang 등(2018)이 사용된다. 셋째, 주요 잡음 제거 UNet이 유지되는 LoRA(Lou et al., 2019) 모듈과 다른 객체와의 의미적 일반화를 위한 클래스 사전 정보를 보호하고 치명적인 망각을 방지하기 위한 클래스 특성 정규화이다. 또한, 제안하는 방법은 기존의 방법(Wang et al., 2018; Wang et al., 2019)에서 어려운 다중 객체 미세 조정이 가능하다.\n' +
+      '\n' +
+      '## 3. Method\n' +
+      '\n' +
+      '### Overview\n' +
+      '\n' +
+      '제안하는 방법은 그림 3과 같이 하나의 영상에서 사용자가 지정한 단일 또는 다중 객체의 객체 기반 미세 조정에 초점을 맞춘다. 기존의 미세 조정 방법의 한계를 극복하기 위해 초기화 임베딩으로 원형 임베딩을 사용하고 생성된 영상의 다양성을 높이고 사전 학습된 모델의 사전 지식을 효과적으로 보존하기 위해 정규화된 손실 함수를 제안한다. 또한, 다중 객체 삽입에도 사용할 수 있는 고충실도 영상을 합성하기 위한 객체별 마스크 손실 함수를 소개한다. 본 절에서는 제안된 방법에 대해 자세히 설명한다.\n' +
+      '\n' +
+      '### 잠재 확산 모델\n' +
+      '\n' +
+      '이 연구에서는 잘 정립된 텍스트-이미지 확산 모델인 안정 확산 모델을 합성 네트워크로 채택한다. 안정 확산은 LDM(Latent Diffusion Model)(Wang et al., 2018)으로, 영상 공간 대신 잠재 공간에서 잡음 제거 연산을 수행한다. 간단히 말해서, 먼저 RGB 이미지\\(x\\)는 가변 자동 인코더(VAE)의 인코더\\(\\epsilon\\)에 의해 잠재 표현\\(z=\\epsilon(x)\\)으로 인코딩된다. 잠재공간에서 LDM의 잡음제거 U-Net은 텍스트 조건 이미지 생성을 위해 교차 주의 메커니즘을 사용한다. 조건부 LDM의 트레이닝 손실은 다음과 같이 공식화된다:\n' +
+      '\n' +
+      '[L_{LDM}=\\mathbb{E}_{\\mathcal{E}(x),y,\\epsilon\\sim\\mathcal{N}(0,1),t}\\left\\|\\left\\|\\epsilon-\\epsilon_{\\theta}\\left(z_{t},t,c\\right)\\right\\|\\{2}^{2}\\right\\\\\\tag{1}\\\\t.\n' +
+      '\n' +
+      '여기서 \\(c\\)은 텍스트 임베딩이고, \\(\\epsilon\\)은 표준 가우시안이고, \\(\\epsilon_{\\theta}\\)은 모델 예측이다. \\(\\epsilon_{\\theta}\\) (z_{t}\\)는 timestep \\(t\\)에서 입력 \\(z\\)의 잡음 버전이다.\n' +
+      '\n' +
+      '### Prototypical Embedding\n' +
+      '\n' +
+      '확산 모델을 미세 조정할 때, 물체의 텍스트 임베딩은 보통 트레이닝된다. 그러나, 트레이닝 데이터가 단지 하나의 이미지일 때, 때때로 오버피팅을 야기하여, 네트워크가 객체들의 텍스트 임베딩들에만 기초하여 출력을 생성하도록 유도하는 반면, 다른 텍스트 조건들은 무시된다. 실제로, 텍스트 임베딩의 적절한 초기화는 객체의 클래스에 기초하여 텍스트 임베딩을 초기화하는 Textual Inversion(TI)(Wang et al., 2018)과 같이 네트워크의 더 빠른 피팅을 가능하게 하고 오버피팅을 완화할 수 있다. 본 연구에서는 보다 효율적인 초기화를 위해 입력 영상의 임베딩과 클래스 이름(예: dog)의 텍스트 임베딩을 기반으로 프로토타입 임베딩을 찾는다. 확산 모델의 훈련을 시작하기 전에, 우리는 다음을 통해 원형 임베딩을 계산한다:\n' +
+      '\n' +
+      '\\mathcal{T}(\\epsilon_{p})\\theta_{m}(\\mathcal{I}(x),\\mathcal{I}(x_{m}),\\mathcal{T}(c_{c}))}{\\left\\|\\mathcal{T}(c_{p})\\right\\|\\left\\|\\theta_m}(\\mathcal{I}(x),\\mathcal{I}(x_{m}),\\mathcal{T}(c_{c}))\\right\\|\\heta_{m}(\\mathcal{I}(x),\\mathcal{I}(x_{m}),\\mathcal{T}(c_{c}))\\right\\heta_{m}(\\mathcal{I}(x),\\mathcal{T}(c_{c})\\right\\heta_{m}(\\mathcal{I}(x),\\mathcal{T}(c_{c}))\\right\\heta_{m}(\\mathcal{I}(x\n' +
+      '\n' +
+      '여기서 \\(x\\)은 훈련영상, \\(\\mathcal{T}\\) 및 CLIP(Wang et al., 2019)의 텍스트 인코더 \\(\\mathcal{T}\\)는 전체 이미지 임베딩 \\(\\mathcal{I}(x)\\), 객체 마스크 이미지 임베딩 \\(\\mathcal{I}(x_{m})\\), \\(\\mathcal{T}(c_{c})\\)은 객체의 클래스명 텍스트 임베딩이고 \\(\\theta_{m}\\)은 객체의 클래스명 텍스트 임베딩의 평균화 방법이다. 이 손실 함수에 의한 초기화로서 대상 이미지 임베딩과 클래스 텍스트 임베딩과 유사한 프로토타입 텍스트 임베딩 \\(\\mathcal{T}(c_{p})\\)을 얻는 것을 목표로 한다.\n' +
+      '\n' +
+      '### Class-characterizing Regularization\n' +
+      '\n' +
+      '또한, 사전 학습된 모델에서 객체 클래스의 합성 능력을 보존하기 위해 학습 과정에서 클래스 특성화 정규화를 사용하여 텍스트 임베딩을 조정한다. 클래스 특성화 손실은 다음과 같이 공식화된다:\n' +
+      '\n' +
+      '\\begin{cases}1-\\alpha_{CL}\\frac{\\mathcal{T}(c_{p})\\mathcal{T}(c_{c})}{\\left\\|\\mathcal{T}(c_{p})\\right\\|\\mathcal{T}(c_{c})\\right\\|\\mathcal{T}(c_{c}\\right\\|}&\\text{ if }p<p_{cl}\\\\0&\\text{ otherwise}\\end{cases}\\tag{3}\\text{\n' +
+      '\n' +
+      '여기서 \\(\\mathcal{T}(c_{c})\\)는 객체의 클래스명 텍스트 임베딩이고, \\(\\alpha_{cl}\\)는 코사인 손실의 가중치를 나타내며, \\(p\\sim Uni(0,1)\\) 및 \\(p_{cl}\\)은 조정 가능한 임계값이다. 이러한 맥락에서 각 객체의 클래스 이름을 미리 정할 필요가 있다. 추가 실험은 이 손실 함수의 도입이 합성에서 일반화 가능성을 향상시킨다는 것을 나타낸다.\n' +
+      '\n' +
+      '### Object-specific Loss\n' +
+      '\n' +
+      '우리의 임무는 선택된 객체를 모델의 출력 도메인에 이식하고 고유한 식별자로 바인딩하는 것이다. 선택된 객체들은 전체 이미지가 아닌 훈련 이미지의 일부라는 점에 주목하여, 이러한 이유로 우리는 향상된 충실도를 갖는 선택된 객체들의 이식을 위한 객체-특정 손실을 제안한다. 먼저, SAM(Nakir et al., 2017)과 같은 이미지 분할 알고리즘을 사용하여 객체의 마스크 이미지 \\(m\\)을 얻는다. 마스크 이미지는 잠재 공간과 훈련 과정에 도입된다. 단일-객체 이식을 위해 다음과 같이 훈련된다:\n' +
+      '\n' +
+      '[L_{SP}=\\left\\|\\bar{\\epsilon}-\\epsilon_{\\theta}\\left(\\bar{z}_{t},t,c_{m}\\right) \\right\\|_{2}^{2}+\\left\\|\\epsilon-\\epsilon-\\epsilon_{\\theta}\\left(z_{t},t,c\\right)\\right\\|_{2}^{2} \\tag{4}\\t}\\t}\\t.\n' +
+      '\n' +
+      '여기서 \\(c_{m}\\)은 마스크, 객체 타겟 잡음 \\(\\bar{\\epsilon}=e\\otimes m+\\epsilon_{\\theta}\\otimes(1-m)\\) 및 마스크 잠재 표현 \\(\\bar{z}=z\\otimes m\\)을 갖는 이 객체의 텍스트 조건이다. 손실 계산을 수행할 때 마스크 영역에 집중하는 것이 목표입니다. 또한, 다중 객체 삽입에 대하여, 삽입하고자 하는 \\(r\\)개의 객체 집합이 존재하고, 한 번에 \\(k\\)개의 별개의 객체들의 부분집합 \\(S\\)을 취한다고 가정하면, \\(k\\)-조합의 수는 \\(c_{n}^{k}\\)이 된다. 그래서, 훈련의 한 단계에서, 전체적인 객체-특정 손실은:\n' +
+      '\n' +
+      '[L_{SP}=\\sum_{i\\in S}\\left\\|\\bar{\\epsilon}_{i}-\\epsilon_{\\theta}\\left(\\bar{z}_{t,i},t,c_{m,i}\\right)\\right\\|_{2}^{2}+\\left\\|\\epsilon-\\epsilon-\\epsilon_{\\theta}\\left(z_{t},t,c\\right)\\right\\|_{2}^{2} \\tag{5}\\t}\\t}\\t.\n' +
+      '\n' +
+      '텍스트 조건 \\(c_{m,i}\\)은 마스크마다 상이하고, 전역 텍스트 조건 \\(c\\)은 모든 객체에 대한 고유 식별자에 기초한다는 점에 유의한다.\n' +
+      '\n' +
+      '## 4. Experiments\n' +
+      '\n' +
+      '### Settings\n' +
+      '\n' +
+      '우리는 사전 훈련된 안정 확산 모델을 텍스트 대 이미지 네트워크로 사용한다. CLIP 이미지와 텍스트 인코더는 원형 임베딩을 계산하고 LoRA를 미세 조정 모델로 채택하는 데 사용된다. SAM을 이용하여 물체의 미세조정을 위해 언플래쉬 영상을 이용하였고, 마스크 영상을 획득하였다. 객체 구동 미세조정에서 학습률은 \\(10^{-4}\\)이고, 학습은 v100 GPU에서 배치크기가 1인 100단계이다. 객체별 손실 조합은 슈퍼파라미터 \\(\\alpha_{cl}\\), \\(P_{cl}\\)을 1로, \\(k\\)을 2로 과조정하지 않았다. 우리는 비교를 위한 세 가지 최첨단 방법으로 드림부스, TI 및 LoRA를 사용하고 공개적으로 출시된 구현 코드를 사용한다. 또한, 그들의 학습률과 훈련 단계는 훈련에서 일관적이다.\n' +
+      '\n' +
+      '### Comparison\n' +
+      '\n' +
+      '그림 4와 같이 기존의 미세 조정 방법과 결과를 비교한다. 서로 다른 미세 조정 전략으로 인해 하나의 이미지만 입력으로 주어질 때 기존 방법은 오버핏되거나 충실도가 아닐 수 있다. 액션 생성을 위해 TI 및 LoRA의 결과는 프롬프트에서 액션을 정렬하지만 생성된 객체는 참조 이미지와 크게 다르다. 그리고 드림부스는 과잉 복장으로 인해 행동을 일으킬 수 없게 됩니다. 대조적으로, 우리의 방법은 더 높은 충실도로 액션을 생성할 수 있다. 를 포함하며,\n' +
+      '\n' +
+      '그림 3. 세부 사항을 미세 조정합니다. 단일 또는 다중 객체가 있는 하나의 이미지가 주어지면, 본 방법은 텍스트-이미지 확산 모델을 미세 조정한다. 제안하는 방법은 단일 객체를 예로 들어 초기화를 위해 원형 임베딩을 사용하고, 생성된 영상의 충실도를 보장하기 위해 클래스별 손실 함수(class-specific loss function)와 함께 생성 다양성을 향상시키기 위해 클래스 특성화 정규화를 사용한다.\n' +
+      '\n' +
+      '인간 얼굴, 우리 것을 제외한 모든 방법은 동시에 표현을 생성하고 정체성을 보존할 수 없다. 동물과 스타일 변형에 대해서도 동일한 관찰이 이루어집니다.\n' +
+      '\n' +
+      '또한 정량적 메트릭을 사용하여 다른 방법을 비교한다. 5개의 카테고리와 750개의 이미지를 정량적으로 평가하였고, 그 결과는 표 1에 표로 작성되었다. 텍스트 정렬(TA) [13], 이미지 정렬(IA) [11] 및 커널 시작 거리를 메트릭으로 사용했으며, 여기서 TA는 새로운 프롬프트에 대한 방법을 특성화하기 위한 정렬 능력의 일반화 가능성이고, IA는 이미지 유사성에 대한 일반화 가능성을 특성화한다. 따라서, 그림 6과 같은 트레이드 오프(trade-off)이다. 본 논문에서 제안하는 방법은 충실도(fidelity)와 일반화(generalization) 모두에서 이 트레이드 오프(trade-off)에서 잘 수행됨을 관찰할 수 있다.\n' +
+      '\n' +
+      '그림 4. 질적 비교. 원샷 작업의 경우 기존 방법은 주어진 텍스트로 충실도와 일반화 가능성을 모두 달성하는 데 어려움을 겪는다. 제안된 방법은 참조 이미지와 더 잘 일치하고 여러 단어들 하에서 텍스트 의미와 일치하는 이미지를 생성한다. \\({}^{*}\\) 기호는 고유한 식별자를 나타낸다.\n' +
+      '\n' +
+      '전반적으로 제안하는 방법은 충실도와 일반화 가능성을 모두 가지고 있어 과적합을 효과적으로 완화하고 객체의 특성을 학습한다.\n' +
+      '\n' +
+      '### Ablation Study\n' +
+      '\n' +
+      '###### 4.3.1. 원형 임베딩 초기화\n' +
+      '\n' +
+      '섹션 3.3에 표시된 대로 미세 조정을 위한 오버피팅 문제를 완화하기 위해 원형 임베딩을 제안하고 그 중요성을 입증하기 위해 무작위 초기화 임베딩 결과를 비교한다. 모든 비교에서 텍스트 임베딩의 초기화는 네 개의 토큰 벡터에 기초한다는 점에 유의한다. 그림 5와 같이 원형 임베딩 없이 합성 이미지는 기준 객체만을 가지고 프롬프트에서 다른 정보를 무시한다. 반대로, 원형 임베딩을 채택할 때, 모델은 객체들(예를 들어, 버킷들) 이외의 엘리먼트들을 생성할 수 있다. 원형 임베딩은 과적합의 한계를 극복하고 이미지 생성의 다양성을 개선하는 데 효과적임을 보여준다.\n' +
+      '\n' +
+      '###### 4.3.2. 클래스 특성화 정규화\n' +
+      '\n' +
+      '프로토타입 임베딩은 트레이닝 프로세스를 수반하지 않고 초기화하는 방법으로서만 사용되기 때문에, 객체 클래스의 사전 표현들은 때때로 미세 조정 동안 손실된다. 그림 7과 같이 클래스 특성화 정규화가 없는 경우 생성된 모자가 사람과 잘 통합되지 않아 맞춤형 스타일을 생성할 수 없다. 클래스 특성화 규칙화로 객체의 클래스(예: 모자)에 대한 사전 지식이 보존되는 것을 관찰한다.\n' +
+      '\n' +
+      '\\begin{table}\n' +
+      '\\begin{tabular}{c c c c c} \\hline \\hline Methods & TI & DreamBooth & LoRA & Ours \\\\ \\hline IA \\(\\uparrow\\) & 0.6084 & 0.6216 & 0.6284 & **0.6431** \\\\ TA \\(\\uparrow\\) & 0.2609 & 0.2434 & 0.2774 & **0.2800** \\\\ KID \\(\\downarrow\\) & 0.1322 & 0.2630 & **0.1222** & 0.1882 \\\\ \\hline \\hline \\end{tabular}\n' +
+      '\\end{table}\n' +
+      '표 1. 정량적 비교. 세 가지 메트릭을 사용하여 미세 조정 방법의 일반화 및 충실도를 평가한다.\n' +
+      '\n' +
+      '도 5. 원형 임베딩 초기화. 제안된 방법은 원형 임베딩을 초기화로 사용하여 문맥적으로 더 관련이 있는 이미지의 생성을 보장한다.\n' +
+      '\n' +
+      '그림 6. 정량적 평가. 우리는 각 방법에 대한 메트릭, 오른쪽 아래를 향하는 지점, 방법의 더 나은 성능을 시각화한다.\n' +
+      '\n' +
+      '그림 7. 클래스 특성화 정규화. 클래스 특성화 정규화는 미세 조정 동안 객체 클래스의 사전 표현을 보존하여 객체의 보다 자연스럽고 다양한 합성을 초래한다.\n' +
+      '\n' +
+      '[MISSING_PAGE_FAIL:7]\n' +
+      '\n' +
+      '* 다리왈과 니콜(2021) 프라풀라 다리왈과 알렉산더 니콜. 2021. 확산 모델들이 영상 합성 시 gans를 이긴다. _ 신경 정보 처리 시스템_34(2021), 8780-8794에서의 발전.\n' +
+      '* Ding et al. (2022) Ming Ding, Wendi Zheng, Wenyi Hong, 및 Jie Tang. 2022. Cogview2: 계층적 트랜스포머를 통한 더 빠르고 더 나은 텍스트-이미지 생성. _ arXiv preprint arXiv:2204.12417_(2022).\n' +
+      '* Dong et al.(2022) Ziyi Dong, Pengwei Wei, and Liang Lin. 2022. 드림아티스트: 대조적 프롬프트-튜닝을 통한 제어가능한 원샷 텍스트-대-이미지 생성에 대한 _ arXiv preprint arXiv:2211.11337_(2022).\n' +
+      '* Esser et al. (2021) Patrick Esser, Robin Rombach, and Bjorn Ommer. 2021. 고해상도 영상 합성을 위한 트래밍 트랜스포머. In _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_. 12873-12883.\n' +
+      '*프랑스어(1999) Robert M French. 1999. 연결주의 네트워크에서의 치명적인 망각__ 인지과학 분야의 동향_3, 4(1999), 128-135.\n' +
+      '* Gil et al. (2022) Himon Gil, Yuval Alaluf, Yuval Atzmon, or Patashnik, Amit H Bermano, Gal Chechik, and Daniel Cohen-Or. 2022. 이미지가 하나의 단어 가치가 있다 : 텍스트 역산을 이용하여 텍스트-이미지 생성을 개인화한다. _ arXiv preprint arXiv:2208.01618_(2022).\n' +
+      '* Goodfellow et al. (2020) Ian Goodfellow, Jean Pouget-Abadie, Mehdi Mirza, Bing Xu, David Warde-Farley, Sherjil Osair, Aaron Courville, and Yoshua Bengio. 2020. Generative adversarial networks. _ 커뮤니티 ACM_63, 11(2020), 139-144.\n' +
+      '* Hessel et al. (2021) Jack Hessel, At Holtzman, Maxwell Forbes, Roman Le Bras, and Yejin Choi. 2021. Cipscore: 이미지 캡셔닝을 위한 기준없는 평가 메트릭. _ arXiv preprint arXiv:2104.08718_(2021).\n' +
+      '* Ho et al. (2020) Jonathan Ho, Ajay Jain, and Pieter Abbeel. 2020. 디노이징 확산 확률 모델. _ Neural Information Processing Systems_33(2020), 6840-6851에서의 발전.\n' +
+      '* Hu et al. (2021) Edward Ji Hu, Kolong Shen, Phillip Walls, Zeyeyuan Allen-Zhu, Tuunnell Li, Shen Wang, Lian Wang, and Wei Weiichu Chen. 2021. 이카라: 대형 언어 모델의 저순위 적응. _ arXiv preprint arXiv:2106.09685_(2021).\n' +
+      '* Karras et al. (2021) Tero Karras, Mika Aittala, Samuli Laine, Erik Harkonen, Jaune Hellsten, Jaakko Lehtinen, and Timo Aila. 2021. All-free 생성적 적대 네트워크_ 신경 정보 프로세싱 시스템들_34(2021), 852-863에서의 진보들.\n' +
+      '* Kirillov et al. (2023) Alexander Kirillov, Eric Mitmuth, Nikhilai Nair, 하나오 Ma, Chole Rolland, Laura Gustafson, Tete Xiao, Spencer Whitehead, Alexander C Berg, Wan-Yen Lo, et al. 2023. Segment anything. _ arXiv preprint arXiv:2304.02643_(2023).\n' +
+      '* Kirkpatrick et al. (2017) James Kirkpatrick, Ravora Pascanu, Neil Rabinowitz, Joel Veness, Guillaume Desjardins, Andreis A Rusu, Kieran Milan, John Quant, Tiago Romaillo, Agnieska Grabska-Barwinska, et al. 2017. Overcoming catastrophic forgetting in neural networks. _ Proceedings of the National Academy of sciences_114, 13(2017), 3521-3526.\n' +
+      '* Kumar et al. (2022) Nupur Kumar, Bingliang Zhang, Richard Zhang, Eli Shechtman, and Jun-Yan Zhu. 2022. 텍스트-이미지 확산의 다중 개념 맞춤화. _ arXiv preprint arXiv:2212.04488_(2022).\n' +
+      '* Li et al. (2022) Dingcheng Li, Zheng Chen, Eunah Cho, Jie Hao, Xiahou Liu, Fan Xing, Chenlei Guo, and Yang Liu. 2022. seq2seq 언어 생성의 도메인 적응 동안 치명적인 망각을 극복한다. _Proceedings of the 2022 Conference of the North American chapter of Computational Linguistics Association: Human Language Technologies_. 5441-5454\n' +
+      '* Li and Hoiem (2017) Zhihong Li and Derek Hoiem. 2017. 잊지 않고 학습하는 것 _ IEEE transaction on pattern analysis and machine intelligence_40, 12(2017), 2935-2947.\n' +
+      '* Mokhay et al. (2022) Ron Mokhay, Amit Herts, Krik Abraman, Yael Priich, and Daniel Cohen-Or. 2022. 유도확산모델을 이용한 실영상 편집을 위한 널-텍스트 역산_ arXiv preprint arXiv:2212.07949_(2022).\n' +
+      '* Nichol et al. (2021) Alex Nichol, Prafulla Dhariwal, Aditya Ramesh, Pranav Shyam, Pamela Mishkin, Bob McGrew, Ilya Sutskever, and Mark Chen. 2021. 글라이드: 텍스트 유도 확산 모델을 사용한 실사 이미지 생성 및 편집을 향한다. _ arXiv preprint arXiv:2112.10741_(2021).\n' +
+      '* Radford et al. (2021) Alec Radford, Jong Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh, Sandhini Agarwal, Grishi Sastry, Amanda Askell, Pamela Mishkin, Jack Clark, et al. 2021. Learning transferable visual models from natural language supervision. 기계 학습에 관한 국제 회의에서. PMLR, 8748-8763\n' +
+      '* Venkatesh Ramaschi et al. (2022) Vinay Venkatesh Ramaschi, Aitor Lewkowycz, and Elhan Dyer. 2022. 스케일(scale)이 신경망의 치명적인 망각에 미치는 영향. _International Conference on Learning Representations_.\n' +
+      '* Ramesh et al. (2022) Aditya Ramesh, Prafulla Dhariwal, Alex Nichol, Casey Chu, and Mark Chen. 2022. 클립 래턴트를 갖는 계층적 텍스트-조건부 이미지 생성_ arXiv preprint arXiv:2204.06125_(2022).\n' +
+      '* Razavi et al. (2019) Ali Razavi, Aaron Van den Oord, and Oriol Vinyals. 2019. vq-vae-2. _Advances in neural information processing systems_32 (2019).\n' +
+      '* Rombach et al. (2022) Robin Rombach, Andreas Blattmann, Dominik Lorenz, Patrick Esser, and Bjorn Ommer. 2022. 잠재 확산 모델을 이용한 고해상도 영상 합성. In _Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition_. 10684-10695\n' +
+      '* Ruiz et al. (2022) Nataniel Ruiz, Yuanzhen Li, Varun Jampani, Yael Priich, Michael Rubinstein, and Kfir Abraman. 2022. Dreamoobtit: 피사체 중심 생성을 위한 텍스트 대 이미지 확산 모델의 미세 조정 _ arXiv preprint arXiv:2208.12234_(2022).\n' +
+      '* Saharia et al. (2022) Chitwan Saharia, William Chan, Saurabh Saxena, Lala Li, Jay Whang, Emily L. 덴톤, Kamyar Ghasempiour, Raphael Gontijo Lopes, Burcu Karagol Ayan, Tim Salimans, et al. 2022. Photorealistic text-to-image diffusion models with deep language understanding. _ 신경 정보 처리 시스템_35(2022), 36479-36494에서의 발전.\n' +
+      '* Sauer et al. (2023) Axel Sauer, Tero Karras, Samuli Laine, Andreas Geiger, and Timo Aila. 2023. Stylegan+: 빠른 대규모 텍스트-이미지 합성을 위한 gans의 파워 잠금 해제. _ arXiv preprint arXiv:2301.09515_(2023).\n' +
+      '* Sheygin et al. (2022) Shelly Sheygin, Oron Ashual, Adam Polvajk, Uriel Singer, Ornaf Gaffisi, Eliya Nachmani, and Yanir Tajim. 2022. Znn-확산: 대규모 검색을 통한 이미지 생성_ arXiv preprint arXiv:2204.02849_(2022).\n' +
+      '* Sohl-Dickstein et al. (2015) Jascha Sohl-Dickstein, Eric Weiss, Niru Mabeswaranathan, and Surya Ganguli. 2015. 비평형 열역학을 이용한 심층 비지도 학습. In _International Conference on Machine Learning_. PMLR, 2256-2265.\n' +
+      '* Song et al. (2020) Jiaming Song, Chenlin Meng, and Stefafano Ermon. 2020. Denoising diffusion implicit models. _ arXiv preprint arXiv:2004.05202_(2020).\n' +
+      '* Wen et al. (2023) Yuxin Wen, Neel Jain, John Kirchenbauer, Micah Goldblum, Jonas Geiging, and Tom Goldstein. 2023. Hard prompts made easy: Gradient-based discrete optimization for prompt tuning and discovery. _ arXiv preprint arXiv:2302.03688_(2023).\n' +
+      '* Yu et al. (2022) Jiahui Yu, Yuanhong Xu, Jing Yu Koh, Thang Luong, Gunjian Baid, Zirui Wang, Vijay Vasudevan, Alexander Ku, Yinfei Yang, Burcu Karagol Ayan, et al. 2022. Scaling autoregressive models for content-rich text-to-image generation. _ arXiv preprint arXiv:2206.10789_(2022).\n' +
+      '\n';
+  </script>
+  <style>
+    #content {
+      max-width: 800px;
+      margin: auto;
+    }
+  </style>
+  <script>
+    let script = document.createElement('script');
+    script.src = "https://cdn.jsdelivr.net/npm/mathpix-markdown-it@1.0.40/es5/bundle.js";
+    document.head.append(script);
+
+    script.onload = function() {
+      const isLoaded = window.loadMathJax();
+      if (isLoaded) {
+        console.log('Styles loaded!')
+      }
+
+      const el = window.document.getElementById('content-text');
+      if (el) {
+        const options = {
+          htmlTags: true
+        };
+        const html = window.render(text, options);
+        el.outerHTML = html;
+      }
+    };
+  </script>
+</head>
+<body>
+  <div id="content"><div id="content-text"></div></div>
+</body>
+</html>
