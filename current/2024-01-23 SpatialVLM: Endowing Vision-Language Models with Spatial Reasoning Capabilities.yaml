@@ -1,11 +1,17 @@
-date: "2024-01-23"
 author: Boyuan Chen
-title: 'SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/J0kW5ndf_m_5uGKxQ2WXf.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12168
-summary: This paper presents a system to train vision-language models with internet-scale spatial reasoning data to enhance their ability in qualitative and quantitative spatial VQA, which can unlock novel downstream applications in chain-of-thought spatial reasoning and robotics....
 opinion: placeholder
+summary: This paper presents a system to train vision-language models with internet-scale
+  spatial reasoning data to enhance their ability in qualitative and quantitative
+  spatial VQA, which can unlock novel downstream applications in chain-of-thought
+  spatial reasoning and robotics....
 tags:
-    - Computer Vision
-    - Natural Language Processing
-    - Deep Learning
+- Computer Vision
+- Natural Language Processing
+- Deep Learning
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/J0kW5ndf_m_5uGKxQ2WXf.png
+title: 'SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12168/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12168/paper.ko.html

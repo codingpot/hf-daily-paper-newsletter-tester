@@ -1,10 +1,18 @@
-date: "2024-01-23"
 author: Mingyuan Zhou
-title: 'UltrAvatar: A Realistic Animatable 3D Avatar Diffusion Model with Authenticity Guided Textures'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/i_1ovEkSCTjalX23CJGDe.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.11078
-summary: This paper presents a new approach for generating realistic 3D avatars with high-quality textures. The approach uses a diffusion model with guidance from a diffuse color extraction model and an authenticity-guided texture diffusion model to create avatars with diverse facial features and details, while avoiding oversmoothing and unwanted lighting effects. The results outperform state-of-the-art methods....
 opinion: placeholder
+summary: This paper presents a new approach for generating realistic 3D avatars with
+  high-quality textures. The approach uses a diffusion model with guidance from a
+  diffuse color extraction model and an authenticity-guided texture diffusion model
+  to create avatars with diverse facial features and details, while avoiding oversmoothing
+  and unwanted lighting effects. The results outperform state-of-the-art methods....
 tags:
-    - Deep Learning
-    - Computer Vision
+- Deep Learning
+- Computer Vision
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/i_1ovEkSCTjalX23CJGDe.png
+title: 'UltrAvatar: A Realistic Animatable 3D Avatar Diffusion Model with Authenticity
+  Guided Textures'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11078/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11078/paper.ko.html

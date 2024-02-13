@@ -1,11 +1,20 @@
-date: "2024-01-23"
 author: Zhichao Wang
-title: 'StreamVoice: Streamable Context-Aware Language Modeling for Real-time Zero-Shot Voice Conversion'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/4sD3uwJ_rJZWORp031G_S.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.11053
-summary: 'This paper presents StreamVoice, a novel streaming language model-based voice conversion model that can convert voice in real-time given arbitrary speaker prompts and source speech. It uses a fully causal context-aware LM with a temporal-independent acoustic predictor, and enhances the context-awareness through two strategies: teacher-guided context foresight and semantic masking strategy. StreamVoice is the first LM-based streaming zero-shot VC model without any future look-ahead....'
 opinion: placeholder
+summary: 'This paper presents StreamVoice, a novel streaming language model-based
+  voice conversion model that can convert voice in real-time given arbitrary speaker
+  prompts and source speech. It uses a fully causal context-aware LM with a temporal-independent
+  acoustic predictor, and enhances the context-awareness through two strategies: teacher-guided
+  context foresight and semantic masking strategy. StreamVoice is the first LM-based
+  streaming zero-shot VC model without any future look-ahead....'
 tags:
-    - Deep Learning
-    - Natural Language Processing
-    - Speech Recognition and Synthesis
+- Deep Learning
+- Natural Language Processing
+- Speech Recognition and Synthesis
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/4sD3uwJ_rJZWORp031G_S.png
+title: 'StreamVoice: Streamable Context-Aware Language Modeling for Real-time Zero-Shot
+  Voice Conversion'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11053/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11053/paper.ko.html

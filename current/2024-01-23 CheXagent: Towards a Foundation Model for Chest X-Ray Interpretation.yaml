@@ -1,13 +1,20 @@
-date: "2024-01-23"
 author: Zhihong Chen
-title: 'CheXagent: Towards a Foundation Model for Chest X-Ray Interpretation'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/mkUrcgNzR_f4O7h7FOwnw.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.12208
-summary: The paper introduces CheXagent, a foundation model for interpreting chest x-rays, by using a large-scale instruction-tuning dataset and a clinical large language model. They also introduce CheXbench, a benchmark for evaluating the model's performance, and show that CheXagent outperforms other models. They perform a fairness evaluation to check for potential performance disparities....
 opinion: placeholder
+summary: The paper introduces CheXagent, a foundation model for interpreting chest
+  x-rays, by using a large-scale instruction-tuning dataset and a clinical large language
+  model. They also introduce CheXbench, a benchmark for evaluating the model's performance,
+  and show that CheXagent outperforms other models. They perform a fairness evaluation
+  to check for potential performance disparities....
 tags:
-    - Supervised Learning
-    - Deep Learning
-    - Natural Language Processing
-    - Computer Vision
-    - Fairness, Bias, and Ethics
+- Supervised Learning
+- Deep Learning
+- Natural Language Processing
+- Computer Vision
+- Fairness, Bias, and Ethics
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/mkUrcgNzR_f4O7h7FOwnw.png
+title: 'CheXagent: Towards a Foundation Model for Chest X-Ray Interpretation'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12208/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.12208/paper.ko.html

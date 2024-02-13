@@ -1,12 +1,19 @@
-date: "2024-01-23"
 author: Ge Zhang
-title: 'CMMMU: A Chinese Massive Multi-discipline Multimodal Understanding Benchmark'
-thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/a6AjTDn9HkcaocwE3tHfy.png
+date: '2024-01-23'
 link: https://huggingface.co/papers/2401.11944
-summary: This paper introduces CMMMU, a new Chinese benchmark for evaluating large multimodal models on tasks requiring college-level knowledge and reasoning in a Chinese context. The benchmark covers six core disciplines, includes 12k multimodal questions, and evaluates existing models, highlighting a large space for improvement in this domain....
 opinion: placeholder
+summary: This paper introduces CMMMU, a new Chinese benchmark for evaluating large
+  multimodal models on tasks requiring college-level knowledge and reasoning in a
+  Chinese context. The benchmark covers six core disciplines, includes 12k multimodal
+  questions, and evaluates existing models, highlighting a large space for improvement
+  in this domain....
 tags:
-    - Supervised Learning
-    - Natural Language Processing
-    - Benchmarking
-    - Chinese Language Processing
+- Supervised Learning
+- Natural Language Processing
+- Benchmarking
+- Chinese Language Processing
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/a6AjTDn9HkcaocwE3tHfy.png
+title: 'CMMMU: A Chinese Massive Multi-discipline Multimodal Understanding Benchmark'
+translated_paths:
+  INT: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11944/paper.en.html
+  KR: https://raw.githack.com/codingpot/hf-daily-paper-newsletter-tester/main/translated-papers/2401.11944/paper.ko.html
