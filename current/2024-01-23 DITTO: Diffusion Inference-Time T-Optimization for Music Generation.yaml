@@ -1,0 +1,11 @@
+date: "2024-01-23"
+author: Zachary Novack
+title: 'DITTO: Diffusion Inference-Time T-Optimization for Music Generation'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/u0Qsb3ywE6gfKb98ojc4h.mp4
+link: https://huggingface.co/papers/2401.12179
+summary: This paper introduces DITTO, a framework for controlling pre-trained music generators at inference-time by optimizing initial noise latents. It can be used for a wide range of music generation tasks without requiring fine-tuning of the underlying model, and achieves state-of-the-art performance compared to related methods....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Music Generation
+    - Deep Learning

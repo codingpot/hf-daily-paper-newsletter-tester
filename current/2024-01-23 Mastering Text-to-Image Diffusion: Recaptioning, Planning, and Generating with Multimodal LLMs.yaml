@@ -1,0 +1,12 @@
+date: "2024-01-23"
+author: Ling Yang
+title: 'Mastering Text-to-Image Diffusion: Recaptioning, Planning, and Generating with Multimodal LLMs'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/x8Du5h62UaslJ3-VwzFK7.png
+link: https://huggingface.co/papers/2401.11708
+summary: 이 논문은 복잡한 텍스트 프롬프트를 다루기 위해 멀티모달 LLM을 사용하여 이미지 생성과 편집을 위한 새로운 프레임워크를 제안합니다. 이 프레임워크는 기존 모델보다 우수한 성능을 보이며, 다양한 LLM 및 생성 모델과 호환됩니다....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Natural Language Processing
+    - Computer Vision
+    - Emerging Applications of Machine Learning

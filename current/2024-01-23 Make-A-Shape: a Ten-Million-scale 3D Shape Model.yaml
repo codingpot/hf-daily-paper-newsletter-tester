@@ -1,0 +1,12 @@
+date: "2024-01-23"
+author: Ka-Hei Hui
+title: 'Make-A-Shape: a Ten-Million-scale 3D Shape Model'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Nhho8fb4yMSngXHbgwSyC.png
+link: https://huggingface.co/papers/2401.11067
+summary: This paper proposes a new 3D generative model called Make-A-Shape that uses a wavelet-tree representation and a diffusion model to efficiently generate high-quality shapes using a vast dataset of 10 million publicly-available shapes. The model can also generate shapes from various modalities and outperforms previous models in terms of quality and speed....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Generative Modeling
+    - 3D Shape Modeling
+    - Computer Graphics

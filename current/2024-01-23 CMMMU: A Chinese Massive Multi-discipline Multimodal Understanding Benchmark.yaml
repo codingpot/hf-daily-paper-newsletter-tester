@@ -1,0 +1,12 @@
+date: "2024-01-23"
+author: Ge Zhang
+title: 'CMMMU: A Chinese Massive Multi-discipline Multimodal Understanding Benchmark'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/a6AjTDn9HkcaocwE3tHfy.png
+link: https://huggingface.co/papers/2401.11944
+summary: This paper introduces CMMMU, a new Chinese benchmark for evaluating large multimodal models on tasks requiring college-level knowledge and reasoning in a Chinese context. The benchmark covers six core disciplines, includes 12k multimodal questions, and evaluates existing models, highlighting a large space for improvement in this domain....
+opinion: placeholder
+tags:
+    - Supervised Learning
+    - Natural Language Processing
+    - Benchmarking
+    - Chinese Language Processing

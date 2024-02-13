@@ -1,0 +1,12 @@
+date: "2024-01-23"
+author: Peiqi Liu
+title: 'OK-Robot: What Really Matters in Integrating Open-Knowledge Models for Robotics'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/Lw2SdzIXwCbZZEwTfnzFL.png
+link: https://huggingface.co/papers/2401.12202
+summary: The abstract introduces OK-Robot, a new robotics framework that combines vision, language, and grasping models for pick-and-drop operations without requiring any training. The framework has a 58.5% success rate in open-ended pick-and-drop tasks, outperforming prior work by nearly 1.8x in open-vocabulary mobile manipulation. The experiments show the importance of combining Open Knowledge systems with robotic modules....
+opinion: placeholder
+tags:
+    - Robotics and Control
+    - Computer Vision
+    - Natural Language Processing
+    - Unsupervised Learning

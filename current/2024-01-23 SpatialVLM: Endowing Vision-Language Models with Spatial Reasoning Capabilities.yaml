@@ -1,0 +1,11 @@
+date: "2024-01-23"
+author: Boyuan Chen
+title: 'SpatialVLM: Endowing Vision-Language Models with Spatial Reasoning Capabilities'
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/J0kW5ndf_m_5uGKxQ2WXf.png
+link: https://huggingface.co/papers/2401.12168
+summary: This paper presents a system to train vision-language models with internet-scale spatial reasoning data to enhance their ability in qualitative and quantitative spatial VQA, which can unlock novel downstream applications in chain-of-thought spatial reasoning and robotics....
+opinion: placeholder
+tags:
+    - Computer Vision
+    - Natural Language Processing
+    - Deep Learning

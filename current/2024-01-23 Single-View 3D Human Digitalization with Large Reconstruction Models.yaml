@@ -1,0 +1,10 @@
+date: "2024-01-23"
+author: Zhenzhen Weng
+title: Single-View 3D Human Digitalization with Large Reconstruction Models
+thumbnail: https://cdn-uploads.huggingface.co/production/uploads/60f1abe7544c2adfd699860c/C3zSCCFBEnSazjnDOXB9J.mp4
+link: https://huggingface.co/papers/2401.12175
+summary: This paper presents a large reconstruction model called Human-LRM designed to create 3D NeRF models of humans from a single image. The model is trained using extensive datasets and can handle occlusions by using a conditional triplane diffusion model. Experiments show that Human-LRM outperforms previous methods on several benchmarks....
+opinion: placeholder
+tags:
+    - Deep Learning
+    - Computer Vision
