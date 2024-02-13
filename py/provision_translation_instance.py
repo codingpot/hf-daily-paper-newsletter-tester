@@ -144,7 +144,7 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser()
   parser.add_argument('--dstack-token', type=str, default="")
   parser.add_argument('--dstack-project', type=str, default="deep-diver-main")
-  parser.add_argument('--dstack-run-name', type=str, default="paper-ko-translation-run")
+  parser.add_argument('--dstack-run-name', type=str, default="paper_ko_translation_run")
   parser.add_argument('--dstack-python-version', type=str, default="3.10")
   
   parser.add_argument('--github-token', type=str, default="")
@@ -156,7 +156,7 @@ if __name__ == "__main__":
   parser.add_argument('--target-archive-github-repo', type=str, default="deep-diver/hf-daily-paper-newsletter")
   parser.add_argument('--target-archive-dir', type=str, default="translated-papers")
 
-  parser.add_argument('--num-of-workers', type=int, default=1)
+  parser.add_argument('--num-of-workers', type=int, default=4)
   
   parser.add_argument('--hf-token', type=str, default=None)
   parser.add_argument('--model-name', type=str, default="nlp-with-deeplearning/enko-t5-small-v0")
